@@ -28,3 +28,16 @@ replay_pid*
 
 .*
 !.gitignore
+
+# Diretórios do Gradle
+.gradle/
+build/
+
+# Configurações do IDE
+.idea/
+
+# Configurações do Obsidian
+.obsidian/
+
+# Arquivos de log ou temporários
+*.log
