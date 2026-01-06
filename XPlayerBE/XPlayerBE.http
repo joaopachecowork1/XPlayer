@@ -1,0 +1,6 @@
+@XPlayerBE_HostAddress = http://localhost:5098
+
+GET {{XPlayerBE_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
