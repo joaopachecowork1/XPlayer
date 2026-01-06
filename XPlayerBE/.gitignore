@@ -1,18 +1,17 @@
-# Build Folders
+# Build folders
 bin/
 obj/
-out/
 
 # User-specific files
 *.user
 *.suo
-*.userosscache
-*.sln.docstates
 
-# Visual Studio / Rider files
-.vs/
+# Rider
 .idea/
-*.dbmdl
+*.iml
+
+# Visual Studio
+.vs/
 
 # NuGet
 *.nupkg
@@ -21,10 +20,6 @@ packages/
 
 # Logs
 *.log
-
-# Rider-specific
-.idea/
-*.iml
 
 # Publish output
 publish/
