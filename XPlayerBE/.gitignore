@@ -1,25 +1,28 @@
-# Build folders
+# Build Folders
 bin/
 obj/
+out/
 
 # User-specific files
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
 
-# Rider
-.idea/
-*.iml
-
-# Visual Studio
+# Visual Studio / Rider
 .vs/
-
-# NuGet
-*.nupkg
-packages/
-.nuget/
+.idea/
 
 # Logs
 *.log
 
-# Publish output
-publish/
+# NuGet
+*.nupkg
+packages/
+*.snupkg
+.nuget/
+
+# Dotnet temporary files
+*.tmp
+*.temp
+*.cache
