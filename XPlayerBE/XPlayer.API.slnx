@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../../../../../../FPTicketsBE/FPTicket.BL/FPTicket.BL.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTicket.Domain/FPTicket.Domain.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTickets.Contracts/FPTickets.Contracts.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTicketsAPI/FPTickets.API.csproj" />
+</Solution>

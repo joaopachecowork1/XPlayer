@@ -1,4 +1,4 @@
-namespace XPlayerBE
+namespace XPlayer.API
 {
     public class WeatherForecast
     {

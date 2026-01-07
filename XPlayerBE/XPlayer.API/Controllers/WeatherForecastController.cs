@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace XPlayerBE.Controllers
+namespace XPlayer.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
