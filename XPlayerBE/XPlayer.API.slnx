@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="../../../../../../FPTicketsBE/FPTicket.BL/FPTicket.BL.csproj" />
-  <Project Path="../../../../../../FPTicketsBE/FPTicket.Domain/FPTicket.Domain.csproj" />
-  <Project Path="../../../../../../FPTicketsBE/FPTickets.Contracts/FPTickets.Contracts.csproj" />
-  <Project Path="../../../../../../FPTicketsBE/FPTicketsAPI/FPTickets.API.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTicket.BL/XPlayer.BL.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTicket.Domain/XPlayer.Domain.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTickets.Contracts/XPlayer.Contracts.csproj" />
+  <Project Path="../../../../../../FPTicketsBE/FPTicketsAPI/XPlayer.API.csproj" />
 </Solution>

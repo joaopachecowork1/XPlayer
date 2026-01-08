@@ -1,100 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { searchGames } from "@/services/GameService";
-
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from "@/components/ui/command";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Loader2 } from "lucide-react";
+import { Input } from "./input";
+import { GameObj, searchGames } from "@/services/GameService";
+import Game from "../game/game";
 
-import { Check, ChevronsUpDown } from "lucide-react";
-import { createSession } from "@/services/SessionService";
-
-type Game = {
-  id: number;
-  name: string;
-};
-
-export default function CreateSession() {
-  const [open, setOpen] = useState(false);
+export default function CreateSessionPage() {
   const [query, setQuery] = useState("");
-  const [games, setGames] = useState<Game[]>([]);
-  const [selected, setSelected] = useState<Game | null>(null);
+  const [games, setGames] = useState<GameObj[]>([]);
+  const [selectedGame, setSelectedGame] = useState<GameObj | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("token")
-      : null;
-
-  // 🔹 API EXTERNA (RAWG)
   useEffect(() => {
-    if (!query) return;
+    if (!query) {
+      setGames([]);
+      return;
+    }
 
-    searchGames(query).then(setGames);
+    const timeout = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await searchGames(query);
+        setGames(res);
+      } catch (err) {
+        console.error(err);
+      }
+      setLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timeout);
   }, [query]);
 
-  async function handleStartSession() {
-    if (!selected || !token) return;
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const res = await searchGames(query);
+      setGames(res);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
 
-    await createSession(token, selected.id, selected.name);
-    alert("Session started 🎮");
-  }
+  const handleGameSelect = (game: Game) => {
+    setSelectedGame(game);
+  };
+
+  const handleStartSession = async () => {
+    searchGames(query);
+  };
 
   return (
-    <div className="max-w-md space-y-4">
-      <h1 className="text-xl font-semibold">Start a Session</h1>
+    <div className="p-4 max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Criar Sessão</h2>
 
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
-            {selected ? selected.name : "Select a game"}
-            <ChevronsUpDown className="h-4 w-4 opacity-50" />
-          </Button>
-        </PopoverTrigger>
+      <div className="mb-4">
+        <label className="block mb-2 font-medium">Pesquisar jogo</label>
+        <Input
+          placeholder="Escreve o nome do jogo..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
 
-        <PopoverContent className="p-0 w-full">
-          <Command>
-            <CommandInput
-              placeholder="Search game..."
-              value={query}
-              onValueChange={setQuery}
-            />
+      <Button onClick={handleSearch}>Pesquisar</Button>
 
-            <CommandList>
-              {games.map((g) => (
-                <CommandItem
-                  key={g.id}
-                  onSelect={() => {
-                    setSelected(g);
-                    setOpen(false);
-                  }}
-                >
-                  {g.name}
-                  {selected?.id === g.id && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
-                </CommandItem>
-              ))}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      
 
-      <Button
-        className="w-full"
-        disabled={!selected}
-        onClick={handleStartSession}
-      >
-        Start Session
+      <Button onClick={handleStartSession} className="mt-4">
+        Iniciar Sessão
       </Button>
     </div>
   );
