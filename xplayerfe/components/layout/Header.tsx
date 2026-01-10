@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Settings, LogOut, Bell } from "lucide-react";
+import { ModeToggle } from "./ModeToggle";
 
 export function Header() {
   return (
@@ -21,8 +22,12 @@ export function Header() {
           <h1 className="text-2xl font-bold">Dashboard</h1>
         </div>
 
+
+        
+
         {/* Actions */}
         <div className="flex items-center gap-3">
+          <ModeToggle></ModeToggle>
           {/* Notifications */}
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
