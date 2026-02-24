@@ -1,0 +1,518 @@
+{
+  "moved": [
+    {
+      "from": "app\\api\\auth\\[...nextauth]\\route.ts",
+      "to": "src\\legacy\\app\\api\\auth\\[...nextauth]\\route.ts"
+    },
+    {
+      "from": "app\\api\\login\\route.ts",
+      "to": "src\\legacy\\app\\api\\login\\route.ts"
+    },
+    {
+      "from": "app\\api\\proxy\\[...path]\\route.ts",
+      "to": "src\\legacy\\app\\api\\proxy\\[...path]\\route.ts"
+    },
+    {
+      "from": "app\\api\\route.ts",
+      "to": "src\\legacy\\app\\api\\route.ts"
+    },
+    {
+      "from": "app\\api\\sessions\\heartbeat\\route.ts",
+      "to": "src\\legacy\\app\\api\\sessions\\heartbeat\\route.ts"
+    },
+    {
+      "from": "app\\api\\sessions\\start\\route.ts",
+      "to": "src\\legacy\\app\\api\\sessions\\start\\route.ts"
+    },
+    {
+      "from": "app\\api\\sessions\\stop\\route.ts",
+      "to": "src\\legacy\\app\\api\\sessions\\stop\\route.ts"
+    },
+    {
+      "from": "app\\backlog\\page.tsx",
+      "to": "src\\legacy\\app\\backlog\\page.tsx"
+    },
+    {
+      "from": "app\\backlog\\[gameId]\\page.tsx",
+      "to": "src\\legacy\\app\\backlog\\[gameId]\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\admin\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\admin\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\amigo-secreto\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\amigo-secreto\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\categorias\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\categorias\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\error.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\error.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\gala\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\gala\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\hub\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\hub\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\layout.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\layout.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\medidas\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\medidas\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\nomeacoes\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\nomeacoes\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\stickers\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\stickers\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\votacao\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\votacao\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(app)\\wishlist\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(app)\\wishlist\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(public)\\layout.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(public)\\layout.tsx"
+    },
+    {
+      "from": "app\\canhoes\\(public)\\login\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\(public)\\login\\page.tsx"
+    },
+    {
+      "from": "app\\canhoes\\error.tsx",
+      "to": "src\\legacy\\app\\canhoes\\error.tsx"
+    },
+    {
+      "from": "app\\canhoes\\page.tsx",
+      "to": "src\\legacy\\app\\canhoes\\page.tsx"
+    },
+    {
+      "from": "app\\dashboard\\page.tsx",
+      "to": "src\\legacy\\app\\dashboard\\page.tsx"
+    },
+    {
+      "from": "app\\friends\\page.tsx",
+      "to": "src\\legacy\\app\\friends\\page.tsx"
+    },
+    {
+      "from": "app\\globals.css",
+      "to": "src\\legacy\\app\\globals.css"
+    },
+    {
+      "from": "app\\hub\\page.tsx",
+      "to": "src\\legacy\\app\\hub\\page.tsx"
+    },
+    {
+      "from": "app\\layout.tsx",
+      "to": "src\\legacy\\app\\layout.tsx"
+    },
+    {
+      "from": "app\\login\\page.tsx",
+      "to": "src\\legacy\\app\\login\\page.tsx"
+    },
+    {
+      "from": "app\\page.tsx",
+      "to": "src\\legacy\\app\\page.tsx"
+    },
+    {
+      "from": "app\\sessions\\page.tsx",
+      "to": "src\\legacy\\app\\sessions\\page.tsx"
+    },
+    {
+      "from": "app\\settings\\page.tsx",
+      "to": "src\\legacy\\app\\settings\\page.tsx"
+    },
+    {
+      "from": "auth.ts",
+      "to": "src\\legacy\\auth.ts"
+    },
+    {
+      "from": "components\\auth-wrapper.tsx",
+      "to": "src\\legacy\\components\\auth-wrapper.tsx"
+    },
+    {
+      "from": "components\\canhoes\\CanhoesAppChrome.tsx",
+      "to": "src\\legacy\\components\\canhoes\\CanhoesAppChrome.tsx"
+    },
+    {
+      "from": "components\\canhoes\\CanhoesShell.tsx",
+      "to": "src\\legacy\\components\\canhoes\\CanhoesShell.tsx"
+    },
+    {
+      "from": "components\\game\\GameList.tsx",
+      "to": "src\\legacy\\components\\game\\GameList.tsx"
+    },
+    {
+      "from": "components\\game\\GameSearchDropdown.tsx",
+      "to": "src\\legacy\\components\\game\\GameSearchDropdown.tsx"
+    },
+    {
+      "from": "components\\game\\SelectedGameCard.tsx",
+      "to": "src\\legacy\\components\\game\\SelectedGameCard.tsx"
+    },
+    {
+      "from": "components\\hub\\MediaCarousel.tsx",
+      "to": "src\\legacy\\components\\hub\\MediaCarousel.tsx"
+    },
+    {
+      "from": "components\\layout\\DashboardLayout.tsx",
+      "to": "src\\legacy\\components\\layout\\DashboardLayout.tsx"
+    },
+    {
+      "from": "components\\layout\\Header.tsx",
+      "to": "src\\legacy\\components\\layout\\Header.tsx"
+    },
+    {
+      "from": "components\\layout\\ModeToggle.tsx",
+      "to": "src\\legacy\\components\\layout\\ModeToggle.tsx"
+    },
+    {
+      "from": "components\\layout\\Sidebar.tsx",
+      "to": "src\\legacy\\components\\layout\\Sidebar.tsx"
+    },
+    {
+      "from": "components\\login-form.tsx",
+      "to": "src\\legacy\\components\\login-form.tsx"
+    },
+    {
+      "from": "components\\modules\\BacklogGameDetailModule.tsx",
+      "to": "src\\legacy\\components\\modules\\BacklogGameDetailModule.tsx"
+    },
+    {
+      "from": "components\\modules\\BacklogModule.tsx",
+      "to": "src\\legacy\\components\\modules\\BacklogModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\admin\\CanhoesAdminModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\admin\\CanhoesAdminModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\admin\\components\\CategoriesCard.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\admin\\components\\CategoriesCard.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\admin\\components\\EventStateCard.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\admin\\components\\EventStateCard.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\admin\\components\\PendingNominees.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\admin\\components\\PendingNominees.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\admin\\components\\PendingProposals.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\admin\\components\\PendingProposals.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\admin\\components\\VotesAudit.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\admin\\components\\VotesAudit.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesCategoriesModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesCategoriesModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesGalaModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesGalaModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesHubModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesHubModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesMeasuresModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesMeasuresModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesNomineesModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesNomineesModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesSecretSantaModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesSecretSantaModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesStickerSubmitModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesStickerSubmitModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesStickerUploadModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesStickerUploadModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesVotingModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesVotingModule.tsx"
+    },
+    {
+      "from": "components\\modules\\canhoes\\CanhoesWishlistModule.tsx",
+      "to": "src\\legacy\\components\\modules\\canhoes\\CanhoesWishlistModule.tsx"
+    },
+    {
+      "from": "components\\modules\\DashboardModule.tsx",
+      "to": "src\\legacy\\components\\modules\\DashboardModule.tsx"
+    },
+    {
+      "from": "components\\modules\\FriendsModule.tsx",
+      "to": "src\\legacy\\components\\modules\\FriendsModule.tsx"
+    },
+    {
+      "from": "components\\modules\\HomeModule.tsx",
+      "to": "src\\legacy\\components\\modules\\HomeModule.tsx"
+    },
+    {
+      "from": "components\\modules\\SessionsModule.tsx",
+      "to": "src\\legacy\\components\\modules\\SessionsModule.tsx"
+    },
+    {
+      "from": "components\\modules\\SettingsModule.tsx",
+      "to": "src\\legacy\\components\\modules\\SettingsModule.tsx"
+    },
+    {
+      "from": "components\\profile\\ProfileCard.tsx",
+      "to": "src\\legacy\\components\\profile\\ProfileCard.tsx"
+    },
+    {
+      "from": "components\\providers\\AuthProvider.tsx",
+      "to": "src\\legacy\\components\\providers\\AuthProvider.tsx"
+    },
+    {
+      "from": "components\\session\\ActiveSessionBar.tsx",
+      "to": "src\\legacy\\components\\session\\ActiveSessionBar.tsx"
+    },
+    {
+      "from": "components\\session\\CreateSessionSheet.tsx",
+      "to": "src\\legacy\\components\\session\\CreateSessionSheet.tsx"
+    },
+    {
+      "from": "components\\session\\SessionTimer.tsx",
+      "to": "src\\legacy\\components\\session\\SessionTimer.tsx"
+    },
+    {
+      "from": "components\\ui\\alert.tsx",
+      "to": "src\\legacy\\components\\ui\\alert.tsx"
+    },
+    {
+      "from": "components\\ui\\avatar.tsx",
+      "to": "src\\legacy\\components\\ui\\avatar.tsx"
+    },
+    {
+      "from": "components\\ui\\badge.tsx",
+      "to": "src\\legacy\\components\\ui\\badge.tsx"
+    },
+    {
+      "from": "components\\ui\\button.tsx",
+      "to": "src\\legacy\\components\\ui\\button.tsx"
+    },
+    {
+      "from": "components\\ui\\card.tsx",
+      "to": "src\\legacy\\components\\ui\\card.tsx"
+    },
+    {
+      "from": "components\\ui\\checkbox.tsx",
+      "to": "src\\legacy\\components\\ui\\checkbox.tsx"
+    },
+    {
+      "from": "components\\ui\\command.tsx",
+      "to": "src\\legacy\\components\\ui\\command.tsx"
+    },
+    {
+      "from": "components\\ui\\dialog.tsx",
+      "to": "src\\legacy\\components\\ui\\dialog.tsx"
+    },
+    {
+      "from": "components\\ui\\dropdown-menu.tsx",
+      "to": "src\\legacy\\components\\ui\\dropdown-menu.tsx"
+    },
+    {
+      "from": "components\\ui\\EmptyState.tsx",
+      "to": "src\\legacy\\components\\ui\\EmptyState.tsx"
+    },
+    {
+      "from": "components\\ui\\field.tsx",
+      "to": "src\\legacy\\components\\ui\\field.tsx"
+    },
+    {
+      "from": "components\\ui\\form.tsx",
+      "to": "src\\legacy\\components\\ui\\form.tsx"
+    },
+    {
+      "from": "components\\ui\\input.tsx",
+      "to": "src\\legacy\\components\\ui\\input.tsx"
+    },
+    {
+      "from": "components\\ui\\label.tsx",
+      "to": "src\\legacy\\components\\ui\\label.tsx"
+    },
+    {
+      "from": "components\\ui\\navigation-menu.tsx",
+      "to": "src\\legacy\\components\\ui\\navigation-menu.tsx"
+    },
+    {
+      "from": "components\\ui\\popover.tsx",
+      "to": "src\\legacy\\components\\ui\\popover.tsx"
+    },
+    {
+      "from": "components\\ui\\progress.tsx",
+      "to": "src\\legacy\\components\\ui\\progress.tsx"
+    },
+    {
+      "from": "components\\ui\\select.tsx",
+      "to": "src\\legacy\\components\\ui\\select.tsx"
+    },
+    {
+      "from": "components\\ui\\separator.tsx",
+      "to": "src\\legacy\\components\\ui\\separator.tsx"
+    },
+    {
+      "from": "components\\ui\\sheet.tsx",
+      "to": "src\\legacy\\components\\ui\\sheet.tsx"
+    },
+    {
+      "from": "components\\ui\\skeleton.tsx",
+      "to": "src\\legacy\\components\\ui\\skeleton.tsx"
+    },
+    {
+      "from": "components\\ui\\sonner.tsx",
+      "to": "src\\legacy\\components\\ui\\sonner.tsx"
+    },
+    {
+      "from": "components\\ui\\tabs.tsx",
+      "to": "src\\legacy\\components\\ui\\tabs.tsx"
+    },
+    {
+      "from": "components\\ui\\textarea.tsx",
+      "to": "src\\legacy\\components\\ui\\textarea.tsx"
+    },
+    {
+      "from": "components\\ui\\themeprovider.tsx",
+      "to": "src\\legacy\\components\\ui\\themeprovider.tsx"
+    },
+    {
+      "from": "constants\\mockGames.ts",
+      "to": "src\\legacy\\constants\\mockGames.ts"
+    },
+    {
+      "from": "constants\\navigation.ts",
+      "to": "src\\legacy\\constants\\navigation.ts"
+    },
+    {
+      "from": "contexts\\AuthContext.tsx",
+      "to": "src\\legacy\\contexts\\AuthContext.tsx"
+    },
+    {
+      "from": "hooks\\useAuth.ts",
+      "to": "src\\legacy\\hooks\\useAuth.ts"
+    },
+    {
+      "from": "hooks\\useSession.ts",
+      "to": "src\\legacy\\hooks\\useSession.ts"
+    },
+    {
+      "from": "lib\\api\\types.ts",
+      "to": "src\\legacy\\lib\\api\\types.ts"
+    },
+    {
+      "from": "lib\\api\\xplayerClient.ts",
+      "to": "src\\legacy\\lib\\api\\xplayerClient.ts"
+    },
+    {
+      "from": "lib\\media.ts",
+      "to": "src\\legacy\\lib\\media.ts"
+    },
+    {
+      "from": "lib\\next-auth.d.ts",
+      "to": "src\\legacy\\lib\\next-auth.d.ts"
+    },
+    {
+      "from": "lib\\rawg.ts",
+      "to": "src\\legacy\\lib\\rawg.ts"
+    },
+    {
+      "from": "lib\\repositories\\backlogRepo.ts",
+      "to": "src\\legacy\\lib\\repositories\\backlogRepo.ts"
+    },
+    {
+      "from": "lib\\repositories\\canhoesRepo.ts",
+      "to": "src\\legacy\\lib\\repositories\\canhoesRepo.ts"
+    },
+    {
+      "from": "lib\\repositories\\sessionRepo.ts",
+      "to": "src\\legacy\\lib\\repositories\\sessionRepo.ts"
+    },
+    {
+      "from": "lib\\storage.ts",
+      "to": "src\\legacy\\lib\\storage.ts"
+    },
+    {
+      "from": "lib\\time.ts",
+      "to": "src\\legacy\\lib\\time.ts"
+    },
+    {
+      "from": "lib\\user-storage.ts",
+      "to": "src\\legacy\\lib\\user-storage.ts"
+    },
+    {
+      "from": "lib\\utils.ts",
+      "to": "src\\legacy\\lib\\utils.ts"
+    },
+    {
+      "from": "lib\\xp-calculator.ts",
+      "to": "src\\legacy\\lib\\xp-calculator.ts"
+    },
+    {
+      "from": "models\\backlog.ts",
+      "to": "src\\legacy\\models\\backlog.ts"
+    },
+    {
+      "from": "models\\profile.ts",
+      "to": "src\\legacy\\models\\profile.ts"
+    },
+    {
+      "from": "models\\session.ts",
+      "to": "src\\legacy\\models\\session.ts"
+    },
+    {
+      "from": "next-env.d.ts",
+      "to": "src\\legacy\\next-env.d.ts"
+    },
+    {
+      "from": "next.config.ts",
+      "to": "src\\legacy\\next.config.ts"
+    },
+    {
+      "from": "pages\\_app.tsx",
+      "to": "src\\legacy\\pages\\_app.tsx"
+    },
+    {
+      "from": "pages\\_error.tsx",
+      "to": "src\\legacy\\pages\\_error.tsx"
+    }
+  ],
+  "duplicates": [
+    {
+      "hash": "a128b9b69965fd8a1370fc5338a6794e04c5d64101bbabab408fa60ee6aa3d33",
+      "files": [
+        "app\\canhoes\\(app)\\error.tsx",
+        "app\\canhoes\\error.tsx"
+      ]
+    }
+  ],
+  "note": "Se existir mais de um ficheiro com o mesmo hash, podes apagar os duplicados com segurança."
+}
