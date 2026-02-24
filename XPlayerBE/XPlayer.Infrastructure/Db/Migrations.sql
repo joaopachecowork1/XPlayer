@@ -1,0 +1,75 @@
+-- Minimal SQL migration script (use EF migrations in real runs)
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='Users')
+BEGIN
+  CREATE TABLE Users (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    Email NVARCHAR(256) NOT NULL UNIQUE,
+    DisplayName NVARCHAR(128) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    TotalXp INT NOT NULL DEFAULT 0
+  );
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='Games')
+BEGIN
+  CREATE TABLE Games (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    ExternalId NVARCHAR(64) NOT NULL UNIQUE,
+    Name NVARCHAR(256) NOT NULL,
+    CoverUrl NVARCHAR(512) NULL,
+    Released DATETIME2 NULL,
+    Metascore INT NULL
+  );
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='Sessions')
+BEGIN
+  CREATE TABLE Sessions (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    UserId UNIQUEIDENTIFIER NOT NULL,
+    GameId UNIQUEIDENTIFIER NOT NULL,
+    StartedAt DATETIME2 NOT NULL,
+    EndedAt DATETIME2 NULL,
+    TotalPausedMs INT NOT NULL DEFAULT 0,
+    Status INT NOT NULL,
+    XpAwarded INT NOT NULL DEFAULT 0
+  );
+  CREATE INDEX IX_Sessions_User_Game ON Sessions(UserId, GameId);
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='SessionEvents')
+BEGIN
+  CREATE TABLE SessionEvents (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    SessionId UNIQUEIDENTIFIER NOT NULL,
+    Type INT NOT NULL,
+    OccurredAt DATETIME2 NOT NULL
+  );
+  CREATE INDEX IX_SessionEvents_SessionId ON SessionEvents(SessionId);
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='UserDailyStats')
+BEGIN
+  CREATE TABLE UserDailyStats (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    UserId UNIQUEIDENTIFIER NOT NULL,
+    Day DATE NOT NULL,
+    Sessions INT NOT NULL,
+    ActiveSeconds INT NOT NULL,
+    Xp INT NOT NULL,
+    CONSTRAINT UQ_UserDay UNIQUE(UserId, Day)
+  );
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='UserGameStats')
+BEGIN
+  CREATE TABLE UserGameStats (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    UserId UNIQUEIDENTIFIER NOT NULL,
+    GameId UNIQUEIDENTIFIER NOT NULL,
+    Sessions INT NOT NULL,
+    ActiveSeconds INT NOT NULL,
+    Xp INT NOT NULL,
+    CONSTRAINT UQ_UserGame UNIQUE(UserId, GameId)
+  );
+END

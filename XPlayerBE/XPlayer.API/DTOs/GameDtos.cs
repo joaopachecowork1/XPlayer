@@ -1,0 +1,1 @@
+namespace XPlayer.Api.DTOs; public record GameImageResponse(string Url,bool Cached);

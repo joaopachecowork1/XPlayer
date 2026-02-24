@@ -1,34 +1,56 @@
+# ==============================
 # Build Folders
+# ==============================
 bin/
 obj/
 out/
 
+# ==============================
 # User-specific files
+# ==============================
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-# Visual Studio / Rider
+# ==============================
+# Visual Studio / Rider / IDEs
+# ==============================
 .vs/
 .idea/
+.vscode/
 
+# ==============================
 # Logs
+# ==============================
 *.log
 
+# ==============================
 # NuGet
+# ==============================
 *.nupkg
 packages/
 *.snupkg
 .nuget/
 
+# ==============================
 # Dotnet temporary files
+# ==============================
 *.tmp
 *.temp
 *.cache
 
-# Bases de dados locais
+# ==============================
+# Base de Dados (SQLite)
+# ==============================
 *.db
 *.db-wal
 *.db-shm
+*.sqlite
+*.sqlite3
 
+# ==============================
+# Configurações de Ambiente Locais
+# ==============================
+appsettings.Development.json
+*.env

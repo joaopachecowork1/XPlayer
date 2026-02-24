@@ -1,9 +1,3 @@
+using XPlayer.Domain.Enums;
 namespace XPlayer.Domain.Entities;
-
-public class Session
-{
-    public Guid Id { get; set; }
-    public DateTime StartTime { get; set; }
-    public DateTime? EndTime { get; set; }
-    public Guid? TaskId { get; set; }
-}
+public class Session { public Guid Id{get;set;} public Guid UserId{get;set;} public Guid GameId{get;set;} public DateTime StartedAt{get;set;} public DateTime? EndedAt{get;set;} public int TotalPausedMs{get;set;} public SessionStatus Status{get;set;} public int XpAwarded{get;set;} public ICollection<SessionEvent> Events{get;set;}=new List<SessionEvent>(); }

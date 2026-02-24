@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="XPlayer.Api/XPlayer.Api.csproj" />
+  <Project Path="XPlayer.Domain/XPlayer.Domain.csproj" />
+  <Project Path="XPlayer.Infrastructure/XPlayer.Infrastructure.csproj" />
+  <Project Path="XPlayer.Tests/XPlayer.Tests.csproj" />
+</Solution>

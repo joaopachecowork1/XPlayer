@@ -1,0 +1,2 @@
+namespace XPlayer.Domain.Entities;
+public class UserGameStat { public Guid Id{get;set;} public Guid UserId{get;set;} public Guid GameId{get;set;} public int Sessions{get;set;} public int ActiveSeconds{get;set;} public int Xp{get;set;} }
