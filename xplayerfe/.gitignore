@@ -58,7 +58,6 @@ obj/
 *.suo
 *.cache
 *.log
-*.db
 
 # =====================
 # IDEs
@@ -72,4 +71,12 @@ obj/
 # =====================
 .DS_Store
 Thumbs.db
+
+# Ignorar bases de dados locais se houver alguma no frontend
+*.db
+*.db-wal
+
+# Pastas de IDEs
+.vs/
+.vscode/
 
