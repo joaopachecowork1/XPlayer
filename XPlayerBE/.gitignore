@@ -26,3 +26,9 @@ packages/
 *.tmp
 *.temp
 *.cache
+
+# Bases de dados locais
+*.db
+*.db-wal
+*.db-shm
+
