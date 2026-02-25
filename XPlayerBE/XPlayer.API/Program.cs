@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using XPlayer.Api.Auth;
 using XPlayer.Api.Data;
+using XPlayer.BL.Interfaces;
+using XPlayer.BL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,8 @@ builder.Services.AddDbContext<XPlayerDbContext>(opt =>
         ?? "Data Source=localhost;Initial Catalog=XPlayer;Integrated Security=True;TrustServerCertificate=True;";
     opt.UseSqlServer(cs);
 });
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // --- AUTH (Google id_token) ---
 var clientId = builder.Configuration["Auth:Google:ClientId"];
@@ -72,6 +76,12 @@ app.UseSwaggerUI();
 app.UseStaticFiles();
 
 app.UseAuthentication();
+// Injetamos o nosso Mock SE a flag estiver ativa
+var useMockAuth = builder.Configuration.GetValue<bool>("Auth:UseMockAuth");
+if (useMockAuth)
+{
+    app.UseMiddleware<MockAuthMiddleware>();
+}
 app.UseAuthorization();
 
 // Map authenticated Google user to local DB user (first user becomes admin)

@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace XPlayer.Api.Auth;
@@ -26,33 +27,31 @@ public sealed class MockAuthMiddleware
 
     public async Task Invoke(HttpContext ctx)
     {
-        // 1) Prefer explicit header (useful for local testing/tools)
-        var headerUserId = ctx.Request.Headers["X-User-Id"].ToString();
-        if (Guid.TryParse(headerUserId, out var uidFromHeader))
+        // 1. Lemos os valores do ficheiro appsettings
+        var mockIdStr = _cfg["Auth:MockUserId"] ?? "11111111-1111-1111-1111-111111111111";
+        var mockEmail = _cfg["Auth:MockUserEmail"] ?? "dev@xplayer.com";
+
+        // 2. Criamos as "Claims" (a informação do utilizador falso)
+        var claims = new List<Claim>
         {
-            ctx.Items["UserId"] = uidFromHeader;
-            await _next(ctx);
-            return;
+            new Claim(JwtRegisteredClaimNames.Sub, mockEmail),
+            new Claim(JwtRegisteredClaimNames.Email, mockEmail),
+            new Claim("displayName", "Mock Admin"),
+            // Usamos o ID mockado para preencher a Claim de Identifier
+            new Claim(ClaimTypes.NameIdentifier, mockIdStr)
+        };
+
+        // 3. Criamos uma identidade "autenticada" e injetamos no contexto do pedido
+        var identity = new ClaimsIdentity(claims, "MockAuthScheme");
+        ctx.User = new ClaimsPrincipal(identity);
+
+        // 4. Mantemos o ctx.Items para compatibilidade com o teu UserContextMiddleware
+        if (Guid.TryParse(mockIdStr, out var mockId))
+        {
+            ctx.Items["UserId"] = mockId;
         }
 
-        // 2) If there's an auth token, treat as logged-in
-        var auth = ctx.Request.Headers.Authorization.ToString();
-        if (!string.IsNullOrWhiteSpace(auth) && auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-        {
-            // In the future, parse the token to get the real user id.
-            var mock = _cfg["XPlayer:MockUserId"] ?? "11111111-1111-1111-1111-111111111111";
-            if (Guid.TryParse(mock, out var mockId))
-            {
-                ctx.Items["UserId"] = mockId;
-                await _next(ctx);
-                return;
-            }
-        }
-
-        // 3) Last resort: still set a mock id (so dev doesn't break)
-        var fallback = _cfg["XPlayer:MockUserId"] ?? "11111111-1111-1111-1111-111111111111";
-        ctx.Items["UserId"] = Guid.Parse(fallback);
-
+        // Passamos a bola ao próximo passo na pipeline
         await _next(ctx);
     }
 }

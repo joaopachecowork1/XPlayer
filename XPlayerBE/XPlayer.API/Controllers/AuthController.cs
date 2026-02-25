@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using XPlayer.Api.DTOs;
+using XPlayer.BL.Interfaces;
+using XPlayer.Domain.Services; // Ajusta o namespace consoante a tua estrutura
 
 namespace XPlayer.Api.Controllers;
 
@@ -11,17 +9,22 @@ namespace XPlayer.Api.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IConfiguration _config;
-    public AuthController(IConfiguration config)=>_config=config;
+    private readonly ITokenService _tokenService;
+
+    // Injeção de dependência mais limpa
+    public AuthController(ITokenService tokenService)
+    {
+        _tokenService = tokenService;
+    }
 
     [HttpPost("login")]
     public ActionResult<LoginResponse> Login([FromBody] LoginRequest req)
     {
-        var claims=new[]{ new Claim(JwtRegisteredClaimNames.Sub,req.Email), new Claim(JwtRegisteredClaimNames.Email,req.Email), new Claim("displayName", req.Email.Split('@')[0]) };
-        var key=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-        var creds=new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires=DateTime.UtcNow.AddMinutes(int.Parse(_config["Jwt:ExpiresMinutes"]??"120"));
-        var token=new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"], claims, expires:expires, signingCredentials:creds);
-        return Ok(new LoginResponse(new JwtSecurityTokenHandler().WriteToken(token), req.Email.Split('@')[0]));
+        // No futuro, aqui terás a validação na BD: if(!_userService.VerifyPassword(req.Email, req.Password)) return Unauthorized();
+
+        var token = _tokenService.GenerateToken(req.Email);
+        var displayName = req.Email.Split('@')[0];
+
+        return Ok(new LoginResponse(token, displayName));
     }
 }

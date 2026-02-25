@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="XPlayer.Api/XPlayer.Api.csproj" />
+  <Project Path="XPlayer.BL/XPlayer.BL.csproj" Id="b51b444b-2774-434f-8245-abdb9d608c66" />
   <Project Path="XPlayer.Domain/XPlayer.Domain.csproj" />
   <Project Path="XPlayer.Infrastructure/XPlayer.Infrastructure.csproj" />
   <Project Path="XPlayer.Tests/XPlayer.Tests.csproj" />
