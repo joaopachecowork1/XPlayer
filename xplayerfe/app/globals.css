@@ -114,3 +114,21 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
+
+/*
+  Canhões do Ano: um accent mais festivo sem mexer no tema global.
+  Aplicado apenas dentro de um container com data-theme="canhoes".
+
+  Notas:
+  - Mantém o design clean (shadcn) mas com mais "piada" no highlight.
+  - Variáveis em OKLCH para manter consistência com o tema.
+*/
+.dark [data-theme="canhoes"] {
+  /* Emerald / plant vibe */
+  --primary: oklch(0.72 0.17 152);
+  --primary-foreground: oklch(0.16 0.03 264.665);
+  --ring: oklch(0.72 0.12 152);
+  --sidebar-primary: oklch(0.72 0.17 152);
+  --sidebar-primary-foreground: oklch(0.16 0.03 264.665);
+  --chart-4: oklch(0.72 0.16 152);
+}

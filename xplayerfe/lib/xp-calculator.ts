@@ -5,6 +5,8 @@
  */
 export class XPCalculator {
   private static readonly XP_PER_MINUTE = 10;
+  /** Cada nível requer uma quantidade fixa de XP. */
+  private static readonly XP_PER_LEVEL = 1000;
   
   static calculateXP(durationInSeconds: number, streakDays: number = 0): number {
     const minutes = Math.floor(durationInSeconds / 60);
@@ -14,16 +16,24 @@ export class XPCalculator {
   }
 
   static calculateLevel(totalXP: number): number {
-    // Fórmula: level = floor(sqrt(totalXP / 100))
-    return Math.floor(Math.sqrt(totalXP / 100));
+    // Regra atual: 1000 XP por nível.
+    // Nível 1: 0-999 XP, Nível 2: 1000-1999 XP, etc.
+    return Math.max(1, Math.floor(totalXP / this.XP_PER_LEVEL) + 1);
   }
 
   static calculateXPToNextLevel(currentLevel: number): number {
-    const nextLevel = currentLevel + 1;
-    return (nextLevel * nextLevel * 100);
+    const nextLevelThreshold = currentLevel * this.XP_PER_LEVEL;
+    return nextLevelThreshold;
   }
 
   static calculateXPForCurrentLevel(currentLevel: number): number {
-    return currentLevel * currentLevel * 100;
+    // XP mínimo necessário para o nível atual.
+    return Math.max(0, (currentLevel - 1) * this.XP_PER_LEVEL);
+  }
+
+  static calculateXPToNextLevelFromTotal(totalXP: number): number {
+    const currentLevel = this.calculateLevel(totalXP);
+    const nextLevelMinXP = currentLevel * this.XP_PER_LEVEL;
+    return Math.max(0, nextLevelMinXP - totalXP);
   }
 }

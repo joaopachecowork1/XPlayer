@@ -9,8 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GameList } from "./GameList";
 import { SelectedGameCard } from "./SelectedGameCard";
 
-const RAWG_API_KEY = "61371c565b6c444c80736a29fc5d6628";
-const BASE_URL = "https://api.rawg.io/api/games";
+import { rawgSearchGames } from "@/lib/rawg";
 
 interface Platform {
   platform: {
@@ -28,13 +27,8 @@ export interface GameResult {
 }
 
 async function searchGames(query: string): Promise<GameResult[]> {
-  if (!query) return [];
-  const res = await fetch(
-    `${BASE_URL}?key=${RAWG_API_KEY}&search=${encodeURIComponent(query)}&page_size=10`
-  );
-  if (!res.ok) throw new Error("Failed to fetch games");
-  const data = await res.json();
-  return data.results || [];
+  // Reuse the shared RAWG client (no duplicated key/base URL).
+  return (await rawgSearchGames(query, 10)) as unknown as GameResult[];
 }
 
 export default function GameSearchDropdown() {

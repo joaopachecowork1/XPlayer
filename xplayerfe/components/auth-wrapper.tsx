@@ -1,40 +1,39 @@
-"use client"
+"use client";
 
-import { ReactNode, useEffect, useState } from "react"
-import { useAuth } from "@/hooks/useAuth"
-import { useRouter } from "next/navigation"
+import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
-type AuthWrapperProps = {
-    children: ReactNode
-    redirectTo?: string
-}
+/**
+ * AuthWrapper (NON-invasive):
+ * - Por omissão, NÃO faz login automático nem redireciona.
+ * - Se `required` = true, mostra um CTA com botão para login.
+ */
+export default function AuthWrapper({
+  children,
+  required = false,
+}: {
+  children: React.ReactNode;
+  required?: boolean;
+}) {
+  const { isLogged, loading, loginGoogle } = useAuth();
 
-export function AuthWrapper({ children, redirectTo = "/login" }: AuthWrapperProps) {
-    const { token, loading } = useAuth()
-    const router = useRouter()
-    const [ready, setReady] = useState(false)
+  if (!required) return <>{children}</>;
 
-    useEffect(() => {
-        if (!loading) {
-            if (!token) {
-                router.push(redirectTo)
-            } else {
-                setReady(true)
-            }
-        }
-    }, [token, loading, router, redirectTo])
+  if (loading) return <div className="p-6 text-sm text-muted-foreground">A carregar…</div>;
 
-    // Em vez de null, mostramos um pequeno indicador de loading
-    if (!ready) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <div className="animate-pulse flex flex-col items-center gap-4">
-                    <div className="h-8 w-8 rounded-full bg-primary/20 animate-spin border-t-2 border-primary"></div>
-                    <p className="text-muted-foreground text-sm">A carregar a tua sessão...</p>
-                </div>
-            </div>
-        )
-    }
+  if (!isLogged) {
+    return (
+      <div className="p-6 text-sm">
+        Precisas de iniciar sessão para aceder a esta página.&nbsp;
+        <button
+          onClick={loginGoogle}
+          className="underline underline-offset-4 hover:opacity-90"
+        >
+          Entrar com Google
+        </button>
+      </div>
+    );
+  }
 
-    return <>{children}</>
+  return <>{children}</>;
 }
