@@ -135,8 +135,10 @@ public class SessionsController : ControllerBase
 
         var endedAt = req.EndedAt ?? DateTimeOffset.UtcNow;
 
-        // Compute duration and XP server-side (source of truth)
-        var durationSeconds = (int)Math.Max(0, (endedAt - session.StartedAt).TotalSeconds);
+        // Compute active (non-paused) duration server-side (source of truth).
+        var totalSeconds = (int)Math.Max(0, (endedAt - session.StartedAt).TotalSeconds);
+        var pausedSeconds = Math.Max(0, req.PausedSeconds ?? 0);
+        var durationSeconds = Math.Max(0, totalSeconds - pausedSeconds);
         var xp = XpCalculator.CalculateXp(durationSeconds);
 
         session.EndedAt = endedAt;

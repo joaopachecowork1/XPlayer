@@ -40,7 +40,9 @@ public record StartSessionRequest(
 );
 
 public record StopSessionRequest(
-    DateTimeOffset? EndedAt
+    DateTimeOffset? EndedAt,
+    /// <summary>Total seconds the session was paused. Used to compute net active play time.</summary>
+    int? PausedSeconds = null
 );
 
 // ------------------------------

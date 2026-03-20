@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
 using XPlayer.Api.Auth;
 using XPlayer.Api.Data;
 using XPlayer.Api.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace XPlayer.Api.Controllers;
 
