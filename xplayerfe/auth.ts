@@ -1,7 +1,6 @@
 // src/auth.ts
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import "@/lib/next-auth.d";
 
 /**
  * Estratégia: confiar no campo `isAdmin` do utilizador vindo do Adapter/DB.

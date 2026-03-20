@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import "@/lib/next-auth.d";
 
 export async function GET() {
   const backend = process.env.XPLAYER_API_URL || process.env.NEXT_PUBLIC_XPLAYER_API_URL;

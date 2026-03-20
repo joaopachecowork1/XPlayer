@@ -18,7 +18,6 @@ import { CommentsSection } from "./components/CommentsSection";
 import { MediaCarousel } from "./components/MediaCarousel";
 import { PollBox } from "./components/PollBox";
 import { HUB_EMOJIS, ReactionRail } from "./components/ReactionRail";
-import "@/lib/next-auth.d";
 
 const EMOJIS = HUB_EMOJIS;
 

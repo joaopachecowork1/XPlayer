@@ -3,8 +3,6 @@ import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 
-import "@/lib/next-auth.d";
-
 /**
  * Proxy to the backend (avoids CORS) + injects Google id_token.
  *
