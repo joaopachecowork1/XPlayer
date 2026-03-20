@@ -384,6 +384,19 @@ public class CanhoesController : ControllerBase
         return NoContent();
     }
 
+    [HttpDelete("wishlist/{id}")]
+    public async Task<IActionResult> DeleteWishlistItem([FromRoute] string id, CancellationToken ct)
+    {
+        var userId = HttpContext.GetUserId();
+        var item = await _db.WishlistItems.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (item is null) return NotFound();
+        if (item.UserId != userId && !IsAdmin()) return Forbid();
+
+        _db.WishlistItems.Remove(item);
+        await _db.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
     // ------------------------------
     // Secret Santa (draw + "me")
     // ------------------------------

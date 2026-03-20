@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
+import { useAuth } from "@/hooks/useAuth";
 import type { PublicUserDto, WishlistItemDto } from "@/lib/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ImageOff, Link as LinkIcon, Upload } from "lucide-react";
+import { ImageOff, Link as LinkIcon, Trash2, Upload } from "lucide-react";
 import { XPLAYER_API_URL } from "@/lib/api/xplayerClient";
 
 function byUser(items: WishlistItemDto[]) {
@@ -25,10 +26,12 @@ function byUser(items: WishlistItemDto[]) {
 }
 
 export function CanhoesWishlistModule() {
+  const { user } = useAuth();
   const [members, setMembers] = useState<PublicUserDto[]>([]);
   const [items, setItems] = useState<WishlistItemDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Create form (for current user)
   const [title, setTitle] = useState("");
@@ -70,6 +73,16 @@ export function CanhoesWishlistModule() {
     }
   };
 
+  const onDelete = async (id: string) => {
+    setDeleting(id);
+    try {
+      await canhoesRepo.deleteWishlistItem(id);
+      setItems((prev) => prev.filter((it) => it.id !== id));
+    } finally {
+      setDeleting(null);
+    }
+  };
+
   const usersById = useMemo(() => new Map(members.map(m => [m.id, m])), [members]);
   const grouped = useMemo(() => byUser(items), [items]);
 
@@ -90,39 +103,41 @@ export function CanhoesWishlistModule() {
           <CardTitle className="text-base">Adicionar item à tua wishlist</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Mouse sem fios" />
             <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL (opcional)" />
           </div>
           <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notas (opcional)" />
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <label className="inline-flex items-center gap-2 text-sm">
+            <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
               <Upload className="h-4 w-4" />
               <input type="file" accept="image/png,image/jpeg" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
             </label>
-            <Button disabled={!canSubmit || saving} onClick={onCreate}>
+            <Button disabled={!canSubmit || saving} onClick={onCreate} className="sm:w-auto w-full">
               {saving ? "A guardar..." : "Adicionar"}
             </Button>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            TODO: editar/remover itens (quando quiseres).
           </div>
         </CardContent>
       </Card>
 
       {loading ? (
-        <div className="text-sm text-muted-foreground">A carregar...</div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          A carregar...
+        </div>
       ) : (
         <div className="space-y-4">
           {members.map((m) => {
             const list = grouped.get(m.id) ?? [];
+            const isMe = m.id === user?.id;
             return (
               <Card key={m.id}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     <span className="truncate">{m.displayName || m.email}</span>
-                    {m.isAdmin ? <Badge variant="outline">admin</Badge> : null}
-                    <span className="text-xs text-muted-foreground ml-auto">{list.length} itens</span>
+                    {isMe && <Badge variant="outline" className="text-xs">tu</Badge>}
+                    {m.isAdmin && !isMe ? <Badge variant="outline" className="text-xs">admin</Badge> : null}
+                    <span className="text-xs text-muted-foreground ml-auto shrink-0">{list.length} itens</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -131,7 +146,7 @@ export function CanhoesWishlistModule() {
                   ) : (
                     list.map((it) => (
                       <div key={it.id} className="flex gap-3 rounded-xl border p-2">
-                        <div className="h-12 w-12 overflow-hidden rounded-md bg-muted flex items-center justify-center">
+                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted flex items-center justify-center">
                           {it.imageUrl ? (
                             <img
                               src={`${XPLAYER_API_URL}${it.imageUrl}`}
@@ -158,8 +173,20 @@ export function CanhoesWishlistModule() {
                             </a>
                           ) : null}
                         </div>
-                        <div className="text-[11px] text-muted-foreground whitespace-nowrap">
-                          {new Date(it.updatedAtUtc).toLocaleDateString()}
+                        <div className="flex flex-col items-end justify-between gap-1 shrink-0">
+                          <div className="text-[11px] text-muted-foreground whitespace-nowrap">
+                            {new Date(it.updatedAtUtc).toLocaleDateString()}
+                          </div>
+                          {isMe && (
+                            <button
+                              onClick={() => void onDelete(it.id)}
+                              disabled={deleting === it.id}
+                              className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                              aria-label="Apagar item"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))

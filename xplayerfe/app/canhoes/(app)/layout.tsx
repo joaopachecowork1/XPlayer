@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CanhoesAppChrome } from "@/components/canhoes/CanhoesAppChrome";
+import { CanhoesChrome } from "@/components/chrome/canhoes/CanhoesChrome";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function CanhoesAppLayout({ children }: { children: React.ReactNode }) {
@@ -27,5 +27,5 @@ export default function CanhoesAppLayout({ children }: { children: React.ReactNo
     );
   }
 
-  return <CanhoesAppChrome>{children}</CanhoesAppChrome>;
+  return <CanhoesChrome>{children}</CanhoesChrome>;
 }

@@ -111,6 +111,9 @@ export const canhoesRepo = {
       body: JSON.stringify(payload),
     }),
 
+  deleteWishlistItem: (id: string) =>
+    xplayerFetch<void>(`/canhoes/wishlist/${id}`, { method: "DELETE" }),
+
   uploadWishlistImage: async (itemId: string, file: File) => {
     const form = new FormData();
     form.append("file", file);
@@ -176,9 +179,6 @@ export const canhoesRepo = {
   // ADMIN - Categories & State
   // ==========================================
 
-  adminListCategories: () => xplayerFetch<T.AwardCategoryDto[]>("/canhoes/admin/categories"),
-
-  // Back-compat alias (newer UI uses this name)
   adminGetAllCategories: () => xplayerFetch<T.AwardCategoryDto[]>("/canhoes/admin/categories"),
 
   adminCreateCategory: (payload: T.CreateAwardCategoryRequest) =>

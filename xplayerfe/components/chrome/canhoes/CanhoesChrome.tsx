@@ -26,6 +26,11 @@ export function CanhoesChrome({ children }: { children: React.ReactNode }) {
     if (pathname.startsWith("/canhoes/votacao")) return "Votação";
     if (pathname.startsWith("/canhoes/stickers")) return "Stickers";
     if (pathname.startsWith("/canhoes/admin")) return "Admin";
+    if (pathname.startsWith("/canhoes/wishlist")) return "Wishlist";
+    if (pathname.startsWith("/canhoes/amigo-secreto")) return "Amigo Secreto";
+    if (pathname.startsWith("/canhoes/gala")) return "Gala";
+    if (pathname.startsWith("/canhoes/medidas")) return "Medidas";
+    if (pathname.startsWith("/canhoes/nomeacoes")) return "Nomeações";
     return "Feed";
   }, [pathname]);
 
@@ -33,7 +38,7 @@ export function CanhoesChrome({ children }: { children: React.ReactNode }) {
     <div
       data-theme="canhoes"
       className={cn(
-        "min-h-dvh flex flex-col",
+        "min-h-[100svh] flex flex-col",
         // subtle party background
         "bg-[radial-gradient(1000px_500px_at_-10%_-10%,rgba(16,185,129,0.25)_0%,transparent_60%),radial-gradient(800px_400px_at_110%_10%,rgba(34,197,94,0.18)_0%,transparent_60%),linear-gradient(180deg,rgba(2,6,23,0.8)_0%,rgba(2,6,23,0.95)_100%)]"
       )}
