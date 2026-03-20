@@ -18,7 +18,12 @@ export function CanhoesMoreSheet({
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-2xl">
+      <SheetContent
+        side="bottom"
+        className="rounded-t-2xl"
+        /* 16px fallback gives breathing room on devices that don't support safe-area-inset-bottom */
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 16px)" }}
+      >
         <SheetHeader className="pb-2">
           <SheetTitle>Mais</SheetTitle>
         </SheetHeader>
@@ -35,7 +40,7 @@ export function CanhoesMoreSheet({
         {isAdmin && (
           <>
             <Separator />
-            <div className="p-4">
+            <div className="p-4 pb-0">
               <Button className="w-full" onClick={() => onNavigate("/canhoes/admin")}>
                 <Shield className="h-4 w-4 mr-2" /> Admin
               </Button>

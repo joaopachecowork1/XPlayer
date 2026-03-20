@@ -123,6 +123,8 @@
   Notas:
   - Mantém o design clean (shadcn) mas com mais "piada" no highlight.
   - Variáveis em OKLCH para manter consistência com o tema.
+  - O fundo do módulo é verde musgo escuro por defeito (ver CanhoesChrome.tsx).
+    Os fundos alternativos são também escuros, por isso mantemos o esquema dark.
 */
 .dark [data-theme="canhoes"] {
   /* Emerald / plant vibe */
@@ -132,4 +134,8 @@
   --sidebar-primary: oklch(0.72 0.17 152);
   --sidebar-primary-foreground: oklch(0.16 0.03 264.665);
   --chart-4: oklch(0.72 0.16 152);
+
+  /* Slightly warmer muted tones to complement the green backgrounds */
+  --muted: oklch(0.22 0.03 152);
+  --muted-foreground: oklch(0.68 0.06 152);
 }

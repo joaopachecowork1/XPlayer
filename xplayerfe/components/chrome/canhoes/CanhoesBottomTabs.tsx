@@ -17,7 +17,10 @@ function active(pathname: string, href: string) {
 
 export function CanhoesBottomTabs({ pathname, onNavigate, onCompose, onMore }: Props) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
       <div className="mx-auto max-w-2xl px-2">
         <div className="h-16 grid grid-cols-5 items-center">
           <Tab
