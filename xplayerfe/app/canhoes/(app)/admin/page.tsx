@@ -2,13 +2,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
-import dynamic from "next/dynamic";
-import "@/lib/next-auth.d";
-
-const CanhoesAdminModule = dynamic(
-  () => import("@/components/modules/canhoes/admin/CanhoesAdminModule"),
-  { ssr: false }
-);
+import CanhoesAdminModule from "@/components/modules/canhoes/admin/CanhoesAdminModule";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
