@@ -63,15 +63,15 @@ async function handleProxyRequest(request: NextRequest, params: { path: string[]
     const contentType = request.headers.get("content-type");
     if (contentType) headers.set("Content-Type", contentType);
 
-    let body: string | undefined;
+    let body: ArrayBuffer | undefined;
     if (method !== "GET" && method !== "DELETE") {
-      body = await request.text();
+      body = await request.arrayBuffer();
     }
 
     const response = await fetch(backendUrl, {
       method,
       headers,
-      body: body || undefined,
+      body: body ?? undefined,
     });
 
     // 204 has no body by definition; passing a body causes NextResponse to throw.
