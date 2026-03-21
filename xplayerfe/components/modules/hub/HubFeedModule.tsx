@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-import { PostComposer } from "./components/PostComposer";
+import { PostComposer, type PostComposerSubmitData } from "./components/PostComposer";
 import { PostHeader } from "./components/PostHeader";
 import { CommentsSection } from "./components/CommentsSection";
 import { MediaCarousel } from "./components/MediaCarousel";
@@ -44,14 +44,6 @@ export function HubFeedModule({
   }, [posts]);
 
   const [loading, setLoading] = useState(true);
-
-  const [text, setText] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-
-  const [pollOn, setPollOn] = useState(false);
-  const [pollQuestion, setPollQuestion] = useState("");
-  const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
 
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [comments, setComments] = useState<Record<string, HubCommentDto[]>>({});
@@ -106,54 +98,33 @@ export function HubFeedModule({
     }
   }, []);
 
-  const onPickFiles = (list: FileList | null) => {
-    if (!list) return;
-    const arr = Array.from(list).slice(0, 10);
-    setFiles(arr);
-  };
-
-  const onCreate = async () => {
-    const trimmed = text.trim();
+  const onCreate = async (data: PostComposerSubmitData) => {
+    const trimmed = data.text.trim();
     if (!trimmed) return;
 
-    setSubmitting(true);
-    try {
-      let mediaUrls: string[] = [];
-      if (files.length > 0) {
-        mediaUrls = await hubRepo.uploadImages(files);
-      }
-
-      const normalizedPollQuestion = pollOn ? pollQuestion.trim() : "";
-      const normalizedPollOptions = pollOn
-        ? pollOptions.map((o) => o.trim()).filter(Boolean)
-        : [];
-
-      const created = await hubRepo.createPost({
-        text: trimmed,
-        mediaUrls,
-        pollQuestion: pollOn && normalizedPollQuestion ? normalizedPollQuestion : null,
-        pollOptions: pollOn ? normalizedPollOptions : null,
-      });
-
-      setText("");
-      setFiles([]);
-      setPollOn(false);
-      setPollQuestion("");
-      setPollOptions(["", ""]);
-
-      // Be defensive: if the backend returns null/invalid, don't poison the list
-      if (created?.id) {
-        setPosts((p) => [created, ...(p ?? [])]);
-      } else {
-        await load();
-      }
-      toast.success("Post publicado");
-    } catch (e) {
-      console.error(e);
-      toast.error("Não foi possível publicar");
-    } finally {
-      setSubmitting(false);
+    let mediaUrls: string[] = [];
+    if (data.files.length > 0) {
+      mediaUrls = await hubRepo.uploadImages(data.files);
     }
+
+    const pollQuestion = data.pollOn ? data.pollQuestion.trim() : "";
+    const pollOptions = data.pollOn
+      ? data.pollOptions.map((o) => o.trim()).filter(Boolean)
+      : [];
+
+    const created = await hubRepo.createPost({
+      text: trimmed,
+      mediaUrls,
+      pollQuestion: data.pollOn && pollQuestion ? pollQuestion : null,
+      pollOptions: data.pollOn ? pollOptions : null,
+    });
+
+    if (created?.id) {
+      setPosts((p) => [created, ...(p ?? [])]);
+    } else {
+      await load();
+    }
+    toast.success("Post publicado");
   };
 
   const toggleReaction = async (postId: string, emoji: string) => {
@@ -232,7 +203,7 @@ export function HubFeedModule({
     } catch (e) {
       console.error(e);
       toast.error("Erro ao votar");
-      load();
+      void load();
     }
   };
 
@@ -301,30 +272,7 @@ export function HubFeedModule({
         </Button>
       </div>
 
-      {showComposer && (
-        <PostComposer
-          text={text}
-          onTextChange={setText}
-          files={files}
-          onPickFiles={onPickFiles}
-          pollOn={pollOn}
-          onPollOnChange={setPollOn}
-          pollQuestion={pollQuestion}
-          onPollQuestionChange={setPollQuestion}
-          pollOptions={pollOptions}
-          onPollOptionChange={(idx, v) =>
-            setPollOptions((prev) => prev.map((x, i) => (i === idx ? v : x)))
-          }
-          onAddPollOption={() =>
-            setPollOptions((prev) => (prev.length >= 6 ? prev : [...prev, ""]))
-          }
-          onRemovePollOption={(idx) =>
-            setPollOptions((prev) => prev.filter((_, i) => i !== idx))
-          }
-          onSubmit={onCreate}
-          submitting={submitting}
-        />
-      )}
+      {showComposer && <PostComposer onSubmit={onCreate} />}
 
       <div className="space-y-4">
         {safePosts.map((p) => {

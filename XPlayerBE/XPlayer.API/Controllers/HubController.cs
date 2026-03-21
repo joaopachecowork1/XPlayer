@@ -230,6 +230,20 @@ public sealed class HubController : ControllerBase
         _db.HubPosts.Add(post);
         await _db.SaveChangesAsync(ct);
 
+        // Associate any previously-uploaded media records (PostId == null) with this post.
+        if (mediaUrls.Count > 0)
+        {
+            var orphanMedia = await _db.HubPostMedia
+                .Where(m => mediaUrls.Contains(m.Url) && m.PostId == null)
+                .ToListAsync(ct);
+
+            foreach (var m in orphanMedia)
+                m.PostId = post.Id;
+
+            if (orphanMedia.Count > 0)
+                await _db.SaveChangesAsync(ct);
+        }
+
         // Create poll rows after we have a post id
         HubPollDto? pollDto = null;
         if (pollQuestion is not null)
@@ -363,6 +377,8 @@ public sealed class HubController : ControllerBase
     {
         if (files is null || files.Count == 0) return BadRequest("No files uploaded.");
 
+        var userId = HttpContext.GetUserId();
+
         // Save *under* WebRootPath so the files are immediately available via UseStaticFiles().
         // If WebRootPath is ever null (non-standard host), fall back to <ContentRoot>/wwwroot.
         var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
@@ -370,6 +386,9 @@ public sealed class HubController : ControllerBase
         Directory.CreateDirectory(hubDir);
 
         var urls = new List<string>();
+        var mediaRecords = new List<HubPostMediaEntity>();
+
+        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
 
         foreach (var f in files.Take(10))
         {
@@ -377,27 +396,34 @@ public sealed class HubController : ControllerBase
 
             var ext = Path.GetExtension(f.FileName);
             if (string.IsNullOrWhiteSpace(ext)) ext = ".jpg";
-
-            // naive allowlist
-            var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
             if (!allowed.Contains(ext)) continue;
 
             var fileName = $"{Guid.NewGuid():N}{ext}";
             var abs = Path.Combine(hubDir, fileName);
 
-            await using (var stream = new FileStream(
-                abs,
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 1024 * 64,
-                useAsync: true))
+            await using (var stream = new FileStream(abs, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 1024 * 64, useAsync: true))
             {
                 await f.CopyToAsync(stream, ct);
                 await stream.FlushAsync(ct);
             }
 
-            urls.Add($"/uploads/hub/{fileName}");
+            var url = $"/uploads/hub/{fileName}";
+            urls.Add(url);
+
+            mediaRecords.Add(new HubPostMediaEntity
+            {
+                Url = url,
+                OriginalFileName = f.FileName,
+                FileSizeBytes = f.Length,
+                UploadedByUserId = userId == Guid.Empty ? null : userId,
+                UploadedAtUtc = DateTime.UtcNow
+            });
+        }
+
+        if (mediaRecords.Count > 0)
+        {
+            _db.HubPostMedia.AddRange(mediaRecords);
+            await _db.SaveChangesAsync(ct);
         }
 
         return Ok(urls);

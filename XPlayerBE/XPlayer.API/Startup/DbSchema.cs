@@ -195,6 +195,22 @@ BEGIN
   );
   CREATE INDEX IX_HubPostPollVotes_PostId ON HubPostPollVotes(PostId);
 END
+
+-- Hub media uploads – one row per uploaded file, PostId populated on post creation.
+IF OBJECT_ID('dbo.HubPostMedia', 'U') IS NULL
+BEGIN
+  CREATE TABLE HubPostMedia (
+    Id NVARCHAR(64) NOT NULL PRIMARY KEY,
+    PostId NVARCHAR(64) NULL,
+    Url NVARCHAR(1024) NOT NULL,
+    OriginalFileName NVARCHAR(260) NOT NULL DEFAULT(''),
+    FileSizeBytes BIGINT NOT NULL DEFAULT(0),
+    UploadedByUserId UNIQUEIDENTIFIER NULL,
+    UploadedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+  );
+  CREATE INDEX IX_HubPostMedia_PostId ON HubPostMedia(PostId);
+  CREATE UNIQUE INDEX UQ_HubPostMedia_Url ON HubPostMedia(Url);
+END
 ");
         }
         catch

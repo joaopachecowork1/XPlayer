@@ -36,6 +36,8 @@ public class XPlayerDbContext : DbContext
     public DbSet<HubPostPollOptionEntity> HubPostPollOptions => Set<HubPostPollOptionEntity>();
     public DbSet<HubPostPollVoteEntity> HubPostPollVotes => Set<HubPostPollVoteEntity>();
 
+    public DbSet<HubPostMediaEntity> HubPostMedia => Set<HubPostMediaEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -137,6 +139,17 @@ public class XPlayerDbContext : DbContext
             e.Property(x => x.Emoji).HasMaxLength(16);
             e.HasIndex(x => new { x.PostId, x.UserId, x.Emoji }).IsUnique();
             e.HasIndex(x => x.PostId);
+        });
+
+        modelBuilder.Entity<HubPostMediaEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasMaxLength(64);
+            e.Property(x => x.PostId).HasMaxLength(64);
+            e.Property(x => x.Url).HasMaxLength(1024);
+            e.Property(x => x.OriginalFileName).HasMaxLength(260);
+            e.HasIndex(x => x.PostId);
+            e.HasIndex(x => x.Url).IsUnique();
         });
     }
 }

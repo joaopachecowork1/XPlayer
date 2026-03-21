@@ -137,3 +137,29 @@ public sealed class HubPostPollVoteEntity
 
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }
+
+/// <summary>
+/// Tracks every file uploaded via the /hub/uploads endpoint.
+/// PostId is null until the media is associated with a post via CreatePost.
+/// </summary>
+public sealed class HubPostMediaEntity
+{
+    [Key]
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+
+    // Populated when the post is created. Null for freshly uploaded, not-yet-posted files.
+    public string? PostId { get; set; }
+
+    [Required]
+    [MaxLength(1024)]
+    public string Url { get; set; } = string.Empty;
+
+    [MaxLength(260)]
+    public string OriginalFileName { get; set; } = string.Empty;
+
+    public long FileSizeBytes { get; set; }
+
+    public Guid? UploadedByUserId { get; set; }
+
+    public DateTime UploadedAtUtc { get; set; } = DateTime.UtcNow;
+}
