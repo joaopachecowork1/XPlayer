@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +45,16 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
   const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
   const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Stable object URLs – revoked automatically when files change or dialog closes.
+  const previewUrls = useMemo(
+    () => files.map((f) => URL.createObjectURL(f)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [files]
+  );
+  useEffect(() => {
+    return () => previewUrls.forEach((u) => URL.revokeObjectURL(u));
+  }, [previewUrls]);
 
   const reset = useCallback(() => {
     setText("");
@@ -149,15 +159,13 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
           {/* Image previews */}
           {files.length > 0 && (
             <div className="grid grid-cols-3 gap-2 animate-slide-up">
-              {files.map((f, idx) => {
-                const previewUrl = URL.createObjectURL(f);
-                return (
+              {files.map((f, idx) => (
                   <div
                     key={`${f.name}-${f.size}-${idx}`}
                     className="relative group aspect-square rounded-xl overflow-hidden border border-jungle-700/30"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={previewUrl} className="w-full h-full object-cover" alt={f.name} />
+                    <img src={previewUrls[idx]} className="w-full h-full object-cover" alt={f.name} />
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <button
                       type="button"
@@ -167,8 +175,7 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
                       <X className="w-3 h-3 text-white" />
                     </button>
                   </div>
-                );
-              })}
+              ))}
               {files.length < 10 && (
                 <button
                   type="button"

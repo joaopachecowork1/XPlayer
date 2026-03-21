@@ -102,29 +102,35 @@ export function HubFeedModule({
     const trimmed = data.text.trim();
     if (!trimmed) return;
 
-    let mediaUrls: string[] = [];
-    if (data.files.length > 0) {
-      mediaUrls = await hubRepo.uploadImages(data.files);
+    try {
+      let mediaUrls: string[] = [];
+      if (data.files.length > 0) {
+        mediaUrls = await hubRepo.uploadImages(data.files);
+      }
+
+      const pollQuestion = data.pollOn ? data.pollQuestion.trim() : "";
+      const pollOptions = data.pollOn
+        ? data.pollOptions.map((o) => o.trim()).filter(Boolean)
+        : [];
+
+      const created = await hubRepo.createPost({
+        text: trimmed,
+        mediaUrls,
+        pollQuestion: data.pollOn && pollQuestion ? pollQuestion : null,
+        pollOptions: data.pollOn ? pollOptions : null,
+      });
+
+      if (created?.id) {
+        setPosts((p) => [created, ...(p ?? [])]);
+      } else {
+        await load();
+      }
+      toast.success("Post publicado");
+    } catch (e) {
+      console.error(e);
+      toast.error("Não foi possível publicar");
+      throw e; // re-throw so PostComposer keeps the dialog open
     }
-
-    const pollQuestion = data.pollOn ? data.pollQuestion.trim() : "";
-    const pollOptions = data.pollOn
-      ? data.pollOptions.map((o) => o.trim()).filter(Boolean)
-      : [];
-
-    const created = await hubRepo.createPost({
-      text: trimmed,
-      mediaUrls,
-      pollQuestion: data.pollOn && pollQuestion ? pollQuestion : null,
-      pollOptions: data.pollOn ? pollOptions : null,
-    });
-
-    if (created?.id) {
-      setPosts((p) => [created, ...(p ?? [])]);
-    } else {
-      await load();
-    }
-    toast.success("Post publicado");
   };
 
   const toggleReaction = async (postId: string, emoji: string) => {

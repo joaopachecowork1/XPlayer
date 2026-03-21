@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { BarChart3, ImagePlus, Leaf, Loader2, PlusCircle, Send, Trash2, X } from "lucide-react";
@@ -32,6 +32,16 @@ export function CanhoesComposeSheet({
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Stable object URLs – revoked when files change or sheet closes.
+  const previewUrls = useMemo(
+    () => files.map((f) => URL.createObjectURL(f)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [files]
+  );
+  useEffect(() => {
+    return () => previewUrls.forEach((u) => URL.revokeObjectURL(u));
+  }, [previewUrls]);
 
   const reset = useCallback(() => {
     setText("");
@@ -128,12 +138,10 @@ export function CanhoesComposeSheet({
 
             {files.length > 0 && (
               <div className="grid grid-cols-4 gap-2">
-                {files.map((f, idx) => {
-                  const previewUrl = URL.createObjectURL(f);
-                  return (
+                {files.map((f, idx) => (
                     <div key={`${f.name}-${f.size}-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden border border-jungle-700/30">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={previewUrl} className="w-full h-full object-cover" alt={f.name} />
+                      <img src={previewUrls[idx]} className="w-full h-full object-cover" alt={f.name} />
                       <button
                         type="button"
                         onClick={() => removeFile(idx)}
@@ -142,8 +150,7 @@ export function CanhoesComposeSheet({
                         <X className="w-3 h-3 text-white" />
                       </button>
                     </div>
-                  );
-                })}
+                ))}
               </div>
             )}
 

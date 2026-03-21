@@ -17,6 +17,9 @@ public sealed class HubController : ControllerBase
     private readonly XPlayerDbContext _db;
     private readonly IWebHostEnvironment _env;
 
+    private static readonly HashSet<string> AllowedImageExtensions =
+        new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+
     public HubController(XPlayerDbContext db, IWebHostEnvironment env)
     {
         _db = db;
@@ -388,7 +391,7 @@ public sealed class HubController : ControllerBase
         var urls = new List<string>();
         var mediaRecords = new List<HubPostMediaEntity>();
 
-        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+        var allowed = AllowedImageExtensions;
 
         foreach (var f in files.Take(10))
         {
