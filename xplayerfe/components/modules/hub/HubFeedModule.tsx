@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useIsAdmin } from "@/lib/auth/useIsAdmin";
 
 import { PostComposer, type PostComposerSubmitData } from "./components/PostComposer";
 import { PostHeader } from "./components/PostHeader";
@@ -70,8 +71,10 @@ export function HubFeedModule({
 }>) {
   const { data: session, status } = useSession();
 
-  // NOTE: isAdmin is also enforced server-side; this only toggles UI affordances.
-  const isAdmin = useMemo(() => Boolean(session?.user?.isAdmin), [session]);
+  // useIsAdmin() reads from AuthContext (which calls /api/me to get DB isAdmin).
+  // This is correct — session?.user?.isAdmin is always false for Google OAuth
+  // because NextAuth does not populate it from the JWT at sign-in time.
+  const isAdmin = useIsAdmin();
 
   const [posts, setPosts] = useState<HubPostDto[]>([]);
   const safePosts = useMemo(() => {
@@ -287,17 +290,32 @@ export function HubFeedModule({
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2 px-2 sm:px-0">
-        <div className="text-base sm:text-lg font-semibold">Feed</div>
-        <Button variant="ghost" size="sm" className="canhoes-tap h-8" onClick={() => void load()} disabled={loading}>
+    <div className="space-y-0 sm:space-y-3">
+      {/* Feed header */}
+      <div
+        className="flex items-center justify-between gap-2 px-3 py-2 sm:px-0 sm:py-0 sm:mb-2"
+      >
+        <div
+          className="canhoes-title text-base"
+          style={{ fontSize: "16px" }}
+        >
+          🌿 Feed
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="canhoes-tap h-8 w-8 p-0 rounded-xl"
+          onClick={() => void load()}
+          disabled={loading}
+          style={{ color: "rgba(0,255,68,0.60)", background: "rgba(0,255,68,0.06)", border: "1px solid rgba(0,255,68,0.12)" }}
+        >
           <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
         </Button>
       </div>
 
       {showComposer && <PostComposer onSubmit={onCreate} />}
 
-      <div className="space-y-3">
+      <div className="space-y-0 sm:space-y-3">
         {safePosts.map((p) => {
           if (!p) return null;
           const media = (p.mediaUrls ?? []).filter(Boolean);
@@ -352,8 +370,26 @@ export function HubFeedModule({
           if (variant === "instagram") {
             const counts = p.reactionCounts || {};
             return (
-              <Card key={p.id} className="overflow-hidden rounded-none border-x-0 sm:rounded-2xl sm:border-x">
-                <CardContent className="p-0">
+              // "canhao-card" visual — dark glass card with neon-green border and glow.
+              // On mobile: full-bleed (no border-x). On sm+: rounded card with border.
+              <div
+                key={p.id}
+                className="overflow-hidden rounded-none sm:rounded-2xl"
+                style={{
+                  background: "linear-gradient(145deg, #0f2018, #0a1510)",
+                  border: "0px solid transparent",
+                  borderTop: "1px solid rgba(0,255,68,0.12)",
+                  borderBottom: "1px solid rgba(0,255,68,0.08)",
+                }}
+              >
+                <div
+                  className="sm:rounded-2xl sm:m-0"
+                  style={{
+                    borderRadius: "inherit",
+                    boxShadow: "0 0 0 1px rgba(0,255,68,0.10), 0 0 20px rgba(0,170,51,0.12), inset 0 1px 0 rgba(255,255,255,0.04)",
+                  }}
+                >
+                  {/* Post header */}
                   <div className="px-3 pt-3 pb-2.5 sm:p-4">
                     <PostHeader
                       authorName={p.authorName}
@@ -363,7 +399,14 @@ export function HubFeedModule({
                       onAdminPin={() => void adminPin(p.id)}
                       onAdminDelete={() => void adminDelete(p.id)}
                     />
-                    {!!p.text && <div className="mt-2.5 whitespace-pre-wrap break-words text-[13px] sm:text-sm">{p.text}</div>}
+                    {!!p.text && (
+                      <div
+                        className="mt-2.5 whitespace-pre-wrap break-words text-[13px] sm:text-sm leading-relaxed"
+                        style={{ color: "#d0f0d0", fontFamily: "'Nunito', sans-serif", fontWeight: 600 }}
+                      >
+                        {p.text}
+                      </div>
+                    )}
                   </div>
 
                   {media.length > 0 && (
@@ -391,6 +434,15 @@ export function HubFeedModule({
                               size="sm"
                               onClick={() => void toggleReaction(p.id, emoji)}
                               className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
+                              style={active ? {
+                                background: "linear-gradient(90deg, #00cc44, #008833)",
+                                border: "1.5px solid rgba(0,255,68,0.40)",
+                                color: "white",
+                              } : {
+                                background: "rgba(0,20,10,0.6)",
+                                border: "1px solid rgba(0,255,68,0.18)",
+                                color: "rgba(0,255,68,0.80)",
+                              }}
                             >
                               <span className="text-sm leading-none">{emoji}</span>
                               <span className="tabular-nums text-xs">{count}</span>
@@ -403,13 +455,32 @@ export function HubFeedModule({
                           size="sm"
                           onClick={() => void toggleComments(p.id)}
                           className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
+                          style={{
+                            background: "rgba(0,20,10,0.6)",
+                            border: "1px solid rgba(0,255,68,0.18)",
+                            color: "rgba(0,255,68,0.80)",
+                          }}
                         >
                           <span className="text-sm leading-none">💬</span>
                           <span className="tabular-nums text-xs">{p.commentCount ?? 0}</span>
                         </Button>
                       </div>
 
-                      {p.isPinned && <Badge variant="secondary">Fixado</Badge>}
+                      {p.isPinned && (
+                        <Badge
+                          variant="secondary"
+                          style={{
+                            background: "rgba(255,225,53,0.10)",
+                            border: "1px solid rgba(255,225,53,0.35)",
+                            color: "#ffe135",
+                            fontFamily: "'Nunito', sans-serif",
+                            fontWeight: 700,
+                            fontSize: "11px",
+                          }}
+                        >
+                          📌 Fixado
+                        </Badge>
+                      )}
                     </div>
 
                     {openComments[p.id] && (
@@ -423,8 +494,8 @@ export function HubFeedModule({
                       </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           }
 

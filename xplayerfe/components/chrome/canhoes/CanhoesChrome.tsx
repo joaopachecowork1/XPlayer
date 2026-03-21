@@ -12,30 +12,33 @@ import { CanhoesMoreSheet } from "./CanhoesMoreSheet";
 import { CanhoesComposeSheet } from "./CanhoesComposeSheet";
 
 // Available background presets — cycle through them with the palette button.
+// Each entry has both a CSS-variables-based `gradient` (always applied via inline
+// `style`) and an optional Tailwind `className` for extended radial layers.
+// The inline `style` approach is reliable regardless of Tailwind's class purging.
 const BG_PRESETS = [
   {
     id: "musgo",
-    label: "Verde Musgo",
-    className:
-      "bg-[radial-gradient(900px_380px_at_10%_-10%,rgba(0,255,68,0.10)_0%,transparent_55%),radial-gradient(640px_320px_at_90%_0%,rgba(0,180,50,0.08)_0%,transparent_60%),linear-gradient(160deg,#0b1a12_0%,#060e09_100%)]",
+    label: "Verde Musgo 🌿",
+    gradient: "linear-gradient(160deg, #0b1a12 0%, #060e09 100%)",
+    overlay: "radial-gradient(900px 380px at 10% -10%, rgba(0,255,68,0.10) 0%, transparent 55%), radial-gradient(640px 320px at 90% 0%, rgba(0,180,50,0.08) 0%, transparent 60%)",
   },
   {
     id: "noite",
-    label: "Noite",
-    className:
-      "bg-[radial-gradient(1000px_500px_at_-10%_-10%,rgba(0,200,80,0.12)_0%,transparent_60%),radial-gradient(800px_400px_at_110%_10%,rgba(0,255,68,0.08)_0%,transparent_60%),linear-gradient(180deg,rgba(2,6,23,0.95)_0%,rgba(4,10,6,0.98)_100%)]",
+    label: "Noite ✨",
+    gradient: "linear-gradient(180deg, rgba(2,6,23,0.95) 0%, rgba(4,10,6,0.98) 100%)",
+    overlay: "radial-gradient(1000px 500px at -10% -10%, rgba(0,200,80,0.12) 0%, transparent 60%), radial-gradient(800px 400px at 110% 10%, rgba(0,255,68,0.08) 0%, transparent 60%)",
   },
   {
     id: "floresta",
-    label: "Floresta",
-    className:
-      "bg-[radial-gradient(780px_380px_at_25%_-10%,rgba(0,200,80,0.14)_0%,transparent_60%),radial-gradient(900px_460px_at_110%_0%,rgba(139,0,255,0.10)_0%,transparent_62%),linear-gradient(180deg,#0b1a0f_0%,#060c08_100%)]",
+    label: "Floresta 🌲",
+    gradient: "linear-gradient(180deg, #0b1a0f 0%, #060c08 100%)",
+    overlay: "radial-gradient(780px 380px at 25% -10%, rgba(0,200,80,0.14) 0%, transparent 60%), radial-gradient(900px 460px at 110% 0%, rgba(139,0,255,0.10) 0%, transparent 62%)",
   },
   {
     id: "queimada",
-    label: "Queimada",
-    className:
-      "bg-[radial-gradient(900px_460px_at_12%_-12%,rgba(255,140,0,0.14)_0%,transparent_58%),radial-gradient(700px_360px_at_88%_4%,rgba(0,200,80,0.10)_0%,transparent_62%),linear-gradient(180deg,#120e08_0%,#070c08_70%,#050807_100%)]",
+    label: "Queimada 🔥",
+    gradient: "linear-gradient(180deg, #120e08 0%, #070c08 70%, #050807 100%)",
+    overlay: "radial-gradient(900px 460px at 12% -12%, rgba(255,140,0,0.14) 0%, transparent 58%), radial-gradient(700px 360px at 88% 4%, rgba(0,200,80,0.10) 0%, transparent 62%)",
   },
 ] as const;
 
@@ -110,7 +113,8 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
   return (
     <div
       data-theme="canhoes"
-      className={cn("relative isolate min-h-[100svh] flex flex-col overflow-hidden", currentBg.className)}
+      className="relative isolate min-h-[100svh] flex flex-col overflow-hidden"
+      style={{ background: `${currentBg.overlay}, ${currentBg.gradient}` }}
     >
       {/* ── Layer 1: atmospheric neon mist overlay ── */}
       <div
@@ -165,7 +169,7 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
               className="canhoes-tap h-8 w-8 flex items-center justify-center rounded-xl text-base"
               style={{ color: "rgba(0,255,68,0.55)" }}
               aria-label={`Fundo: ${currentBg.label}`}
-              title={`Fundo: ${currentBg.label}`}
+              title={currentBg.label}
             >
               🎨
             </button>
