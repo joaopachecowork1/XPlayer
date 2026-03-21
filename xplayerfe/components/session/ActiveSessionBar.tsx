@@ -4,15 +4,15 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/hooks/useSession";
 import { SessionStatus } from "@/models/session";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatHMS } from "@/lib/time";
 import { Pause, Play, Square, Timer } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 /**
  * Small, global indicator shown across pages when a session is active.
- * Goal: keep it compact and mobile-friendly.
+ * Mobile-first: compact, thumb-reachable controls, clear active state.
  */
 export function ActiveSessionBar() {
   const router = useRouter();
@@ -24,65 +24,95 @@ export function ActiveSessionBar() {
 
   if (!activeSession) return null;
 
+  const isPaused = activeSession.status === SessionStatus.PAUSED;
+
   return (
-    <div className="px-4 sm:px-6">
-      <Card className="mb-4 p-3 sm:p-4 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-3">
-          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-md bg-muted">
-            {activeSession.coverUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={activeSession.coverUrl}
-                alt={activeSession.gameName ?? "Jogo"}
-                className="h-full w-full object-cover"
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">—</div>
-            )}
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => router.push(href)}
-                className="min-w-0 text-left"
-              >
-                <p className="font-semibold truncate">{activeSession.gameName ?? "Sessão"}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {activeSession.platform ? `${activeSession.platform} • ` : ""}
-                  <span className="inline-flex items-center gap-1 font-mono">
-                    <Timer className="h-3.5 w-3.5" /> {formatHMS(elapsedSeconds)}
-                  </span>
-                </p>
-              </button>
-              <Badge variant="secondary" className="shrink-0">
-                {activeSession.status === SessionStatus.PAUSED ? "Pausada" : "Ativa"}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {activeSession.status === SessionStatus.PAUSED ? (
-              <Button variant="secondary" size="sm" className="gap-2" onClick={resumeSession}>
-                <Play className="h-4 w-4" />
-                <span className="hidden sm:inline">Retomar</span>
-              </Button>
-            ) : (
-              <Button variant="secondary" size="sm" className="gap-2" onClick={pauseSession}>
-                <Pause className="h-4 w-4" />
-                <span className="hidden sm:inline">Pausar</span>
-              </Button>
-            )}
-            <Button size="sm" className="gap-2" onClick={() => void stopSession()}>
-              <Square className="h-4 w-4" />
-              <span className="hidden sm:inline">Terminar</span>
-            </Button>
-          </div>
+    <div className="px-3 sm:px-4 pt-3">
+      <div
+        className={cn(
+          "rounded-xl border border-border/60 p-3",
+          "bg-card/80 backdrop-blur-sm",
+          "flex items-center gap-3",
+          "animate-slide-up",
+        )}
+      >
+        {/* Cover thumbnail */}
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
+          {activeSession.coverUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={activeSession.coverUrl}
+              alt={activeSession.gameName ?? "Jogo"}
+              className="h-full w-full object-cover"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">—</div>
+          )}
         </div>
-      </Card>
+
+        {/* Game info — clickable to go to detail */}
+        <button
+          type="button"
+          onClick={() => router.push(href)}
+          className="min-w-0 flex-1 text-left"
+        >
+          <p className="text-sm font-semibold truncate leading-tight">{activeSession.gameName ?? "Sessão"}</p>
+          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+            <Timer className="h-3 w-3 text-primary" />
+            <span className="font-mono text-primary">{formatHMS(elapsedSeconds)}</span>
+            {activeSession.platform && (
+              <span className="text-muted-foreground/60">· {activeSession.platform}</span>
+            )}
+          </p>
+        </button>
+
+        {/* Status badge */}
+        <Badge
+          variant="secondary"
+          className={cn(
+            "shrink-0 text-[10px] px-1.5 py-0.5 h-5",
+            isPaused ? "text-amber-400 bg-amber-400/10" : "text-emerald-400 bg-emerald-400/10",
+          )}
+        >
+          {isPaused ? "Pausada" : "Ativa"}
+        </Badge>
+
+        {/* Controls */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {isPaused ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 tap-scale text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10"
+              onClick={resumeSession}
+              aria-label="Retomar sessão"
+            >
+              <Play className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 tap-scale text-muted-foreground hover:text-foreground hover:bg-accent/60"
+              onClick={pauseSession}
+              aria-label="Pausar sessão"
+            >
+              <Pause className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 tap-scale text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={() => void stopSession()}
+            aria-label="Terminar sessão"
+          >
+            <Square className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

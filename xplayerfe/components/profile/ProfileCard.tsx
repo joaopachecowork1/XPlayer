@@ -16,48 +16,50 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   const progressPercent = (xpInCurrentLevel / xpNeededForLevel) * 100;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5" />
+    <Card className="border-border/60 bg-card/80">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Trophy className="h-4 w-4 text-primary" />
           Perfil
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Level</p>
-            <p className="text-3xl font-bold">{profile.level}</p>
+            <p className="text-xs text-muted-foreground">Level</p>
+            <p className="text-3xl font-bold tabular-nums text-foreground">{profile.level}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">XP Total</p>
-            <p className="text-2xl font-semibold">{profile.totalXP.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground">XP Total</p>
+            <p className="text-2xl font-semibold tabular-nums text-emerald-400">
+              {profile.totalXP.toLocaleString()}
+            </p>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Progresso</span>
-            <span className="font-medium">
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Progresso nível</span>
+            <span className="font-medium tabular-nums">
               {xpInCurrentLevel} / {xpNeededForLevel} XP
             </span>
           </div>
-          <Progress value={progressPercent} />
+          <Progress value={progressPercent} className="h-1.5" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-2">
-          <div className="flex items-center gap-2">
-            <Flame className="h-5 w-5 text-orange-500" />
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="flex items-center gap-2.5">
+            <Flame className="h-4 w-4 text-orange-400 shrink-0" />
             <div>
-              <p className="text-sm text-muted-foreground">Streak</p>
-              <p className="text-xl font-bold">{profile.streak} dias</p>
+              <p className="text-[11px] text-muted-foreground leading-tight">Streak</p>
+              <p className="text-lg font-bold tabular-nums leading-tight">{profile.streak} dias</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-yellow-500" />
+          <div className="flex items-center gap-2.5">
+            <Zap className="h-4 w-4 text-amber-400 shrink-0" />
             <div>
-              <p className="text-sm text-muted-foreground">Sessões</p>
-              <p className="text-xl font-bold">{profile.totalSessions}</p>
+              <p className="text-[11px] text-muted-foreground leading-tight">Sessões</p>
+              <p className="text-lg font-bold tabular-nums leading-tight">{profile.totalSessions}</p>
             </div>
           </div>
         </div>

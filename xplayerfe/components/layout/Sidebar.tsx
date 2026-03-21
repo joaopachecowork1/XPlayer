@@ -41,8 +41,6 @@ const NAVIGATION_ITEMS: NavItem[] = [
     label: "Canhões",
     icon: Trophy,
     href: "/canhoes",
-    // Mantemos sub-itens para acesso rápido (especialmente no desktop), mas o clique no item principal
-    // deve SEMPRE levar ao feed (/canhoes), mesmo para admins.
     children: [
       { id: "canhoes-feed", label: "Feed", href: "/canhoes", icon: Sparkles },
       { id: "canhoes-categories", label: "Categorias", href: "/canhoes/categorias", icon: Library },
@@ -74,8 +72,6 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
 
   const isAdmin = !!user?.isAdmin;
   const items = useMemo(() => {
-    // Keep the primary navigation minimal. If the user is admin, expose a dedicated Admin entry
-    // (separate from the Canhões module) at the bottom.
     if (!isAdmin) return NAVIGATION_ITEMS;
     return [
       ...NAVIGATION_ITEMS,
@@ -85,17 +81,19 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
 
   return (
     <aside className={cn(
-      "border-r bg-background transition-all duration-300",
+      "border-r border-border/50 bg-sidebar transition-all duration-300",
       mode === "mobile" ? "w-full" : (collapsed ? "w-16" : "w-64"),
       className
     )}>
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-border/50">
           {!collapsed && (
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600" />
-              <span className="text-xl font-bold">XPlayer</span>
+            <Link href="/dashboard" className="flex items-center gap-2.5 tap-scale">
+              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center glow-primary">
+                <span className="text-xs font-black text-white leading-none">X</span>
+              </div>
+              <span className="text-lg font-bold tracking-tight text-foreground">XPlayer</span>
             </Link>
           )}
           {mode === "desktop" && (
@@ -103,15 +101,15 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
               variant="ghost"
               size="icon"
               onClick={() => onCollapsedChange(!collapsed)}
-              className={collapsed ? "mx-auto" : ""}
+              className={cn("h-9 w-9 shrink-0", collapsed ? "mx-auto" : "")}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4" />
             </Button>
           )}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           {items.map((item) => {
             const Icon = item.icon;
             const currentPath = pathname ?? "";
@@ -120,25 +118,39 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
             const children = (item.children ?? []).filter((c) => !c.adminOnly || isAdmin);
 
             const wrapperClass = cn(
-              "space-y-1",
-              item.id === "canhoes-admin" && !collapsed && "mt-4 pt-4 border-t border-border/60"
+              "space-y-0.5",
+              item.id === "canhoes-admin" && !collapsed && "mt-3 pt-3 border-t border-border/40"
             );
 
             return (
               <div key={item.id} className={wrapperClass}>
                 <Link href={item.href} onClick={onNavigate}>
                   <Button
-                    variant={isActive ? "secondary" : "ghost"}
-                    className={cn("w-full justify-start gap-3", collapsed && "justify-center")}
+                    variant="ghost"
+                    className={cn(
+                      "w-full h-10 justify-start gap-3 tap-scale rounded-lg",
+                      "transition-all duration-150",
+                      collapsed && "justify-center px-0",
+                      isActive
+                        ? "bg-primary/15 text-primary font-semibold hover:bg-primary/20"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+                    )}
                   >
-                    <Icon className="h-5 w-5 flex-shrink-0" />
-                    {!collapsed && <span>{item.label}</span>}
+                    <Icon className={cn(
+                      "h-4.5 w-4.5 flex-shrink-0",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )} strokeWidth={isActive ? 2.5 : 1.8} />
+                    {!collapsed && <span className="text-sm">{item.label}</span>}
+                    {/* Active dot for collapsed mode */}
+                    {collapsed && isActive && (
+                      <span className="absolute right-1 top-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-primary" />
+                    )}
                   </Button>
                 </Link>
 
                 {/* Submódulos (apenas quando expandido) */}
                 {!collapsed && children.length > 0 ? (
-                  <div className="pl-2 border-l border-border/50 space-y-1">
+                  <div className="pl-3 ml-2 border-l border-border/40 space-y-0.5">
                     {children.map((c) => {
                       const CIcon = c.icon;
                       const childActive = pathname === c.href;
@@ -146,10 +158,15 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
                         <Link key={c.id} href={c.href} onClick={onNavigate}>
                           <Button
                             size="sm"
-                            variant={childActive ? "secondary" : "ghost"}
-                            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+                            variant="ghost"
+                            className={cn(
+                              "w-full h-8 justify-start gap-2 text-xs tap-scale rounded-md",
+                              childActive
+                                ? "text-primary bg-primary/10 font-medium"
+                                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                            )}
                           >
-                            <CIcon className="h-4 w-4 flex-shrink-0" />
+                            <CIcon className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={childActive ? 2.5 : 1.8} />
                             <span>{c.label}</span>
                           </Button>
                         </Link>
@@ -163,11 +180,16 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
         </nav>
 
         {/* New Session Button */}
-        <div className="p-4 border-t">
+        <div className="p-3 border-t border-border/50">
           <Link href="/sessions" onClick={onNavigate}>
-            <Button className="w-full gap-2">
-              <Plus className="h-5 w-5" />
-              {!collapsed && <span>Nova Sessão</span>}
+            <Button
+              className={cn(
+                "w-full gap-2 h-10 tap-scale glow-primary-sm",
+                "bg-primary text-primary-foreground hover:bg-primary/90",
+              )}
+            >
+              <Plus className="h-4 w-4" />
+              {!collapsed && <span className="text-sm font-semibold">Nova Sessão</span>}
             </Button>
           </Link>
         </div>

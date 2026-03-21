@@ -51,25 +51,31 @@ export function SessionsModule() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in">
       {filterGameId && (
-        <div className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 bg-background/60 backdrop-blur">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3 bg-card/60">
           <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">Sessões filtradas</p>
-            <p className="font-semibold truncate">{filterGameName ?? filterGameId}</p>
+            <p className="text-[11px] text-muted-foreground">Sessões filtradas</p>
+            <p className="text-sm font-semibold truncate">{filterGameName ?? filterGameId}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {activeSession && String(activeSession.gameId ?? "") === String(filterGameId) ? (
               <Button
                 variant="destructive"
-                className="h-9 gap-2"
+                className="h-9 gap-2 text-xs tap-scale"
                 onClick={() => void stopSession()}
               >
-                <Square className="h-4 w-4" />
+                <Square className="h-3.5 w-3.5" />
                 Parar ({formatHMS(elapsedSeconds)})
               </Button>
             ) : null}
-            <Button variant="secondary" className="h-9" onClick={() => router.push("/sessions")}>Limpar</Button>
+            <Button
+              variant="outline"
+              className="h-9 text-xs tap-scale border-border/60"
+              onClick={() => router.push("/sessions")}
+            >
+              Limpar
+            </Button>
           </div>
         </div>
       )}
@@ -79,18 +85,18 @@ export function SessionsModule() {
         <ProfileCard profile={profile} />
       </div>
 
-      {/* PS-style session history list */}
-      <div className="rounded-xl border overflow-hidden">
+      {/* Session history list */}
+      <div className="rounded-xl border border-border/60 overflow-hidden bg-card/60">
         {filteredHistory.length === 0 ? (
-          <div className="p-6 text-center text-muted-foreground">
+          <div className="p-6 text-center text-sm text-muted-foreground">
             {filterGameId ? "Nenhuma sessão para este jogo" : "Nenhuma sessão registada ainda"}
           </div>
         ) : (
-          <ul className="divide-y">
+          <ul className="divide-y divide-border/40">
             {filteredHistory.slice(0, 100).map((s) => (
-              <li key={s.id} className="p-3 sm:p-4">
+              <li key={s.id} className="p-3.5">
                 <div className="flex gap-3">
-                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted">
+                  <div className="h-12 w-9 shrink-0 overflow-hidden rounded-lg bg-muted">
                     {s.coverUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -108,13 +114,13 @@ export function SessionsModule() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-semibold truncate">{s.gameName ?? "Sessão"}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {s.platform ? `${s.platform} • ` : ""}
+                        <p className="text-sm font-semibold truncate leading-tight">{s.gameName ?? "Sessão"}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {s.platform ? `${s.platform} · ` : ""}
                           {new Date(s.startTime).toLocaleString("pt-PT", {
                             day: "2-digit",
                             month: "2-digit",
-                            year: "numeric",
+                            year: "2-digit",
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
@@ -122,18 +128,16 @@ export function SessionsModule() {
                       </div>
 
                       <div className="shrink-0 text-right">
-                        <p className="font-mono text-sm">{formatHMS(s.duration)}</p>
-                        <p className="text-xs text-muted-foreground">+{s.xpEarned} XP</p>
+                        <p className="font-mono text-xs font-semibold">{formatHMS(s.duration)}</p>
+                        <p className="text-[11px] text-emerald-400 font-medium">+{s.xpEarned} XP</p>
                       </div>
                     </div>
 
-                    <div className="mt-2 flex items-center gap-2">
-                      {typeof s.score === "number" ? (
-                        <Badge variant="secondary" className="font-mono">{s.score}</Badge>
-                      ) : (
-                        <Badge variant="outline" className="font-mono">—</Badge>
-                      )}
-                    </div>
+                    {typeof s.score === "number" && (
+                      <div className="mt-1.5">
+                        <Badge variant="secondary" className="font-mono text-[10px] h-4 px-1.5">{s.score}</Badge>
+                      </div>
+                    )}
                   </div>
                 </div>
               </li>
@@ -141,12 +145,6 @@ export function SessionsModule() {
           </ul>
         )}
       </div>
-
-      {/* TODO
-        - Add per-session "edit" (notes/tags)
-        - Add pagination / virtualization for large history
-        - When backend exists: server-side filtering + canonical session IDs
-      */}
     </div>
   );
 }
