@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CanhoesChrome } from "@/components/chrome/canhoes/CanhoesChrome";
 import { useAuth } from "@/hooks/useAuth";
 
-export default function CanhoesAppLayout({ children }: { children: React.ReactNode }) {
+export default function CanhoesAppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
   const { isLogged, loading } = useAuth();
 

@@ -56,7 +56,7 @@ export function CanhoesStickerSubmitModule() {
   }, [categoryId]);
 
   useEffect(() => {
-    void refresh();
+    refresh().catch(console.error);
   }, [refresh]);
 
   const isNominations = state?.phase === "nominations";

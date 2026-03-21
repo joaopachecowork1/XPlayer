@@ -179,6 +179,44 @@
   .mb-safe {
     margin-bottom: max(0px, env(safe-area-inset-bottom));
   }
+
+  /* ══════════════════════════════════════════
+     CANHOES CUSTOM UTILITIES
+     Mobile-first Instagram-like design system
+     IMPROVED VISIBILITY: Better contrast & readability
+  ══════════════════════════════════════════ */
+  
+  /* Glassmorphism effect for cards — lighter & more visible */
+  .canhoes-glass {
+    background-color: rgba(15, 36, 21, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid oklch(0.72 0.19 152 / 0.35);
+  }
+  
+  /* Elevated pill/badge component with glow */
+  .canhoes-chip {
+    background-color: rgba(20, 45, 25, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid oklch(0.72 0.19 152 / 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(126, 255, 183, 0.1);
+  }
+  
+  /* Mobile tap feedback with smooth scale transition */
+  .canhoes-tap {
+    @apply transition-transform duration-100 ease-out active:scale-95;
+  }
+  
+  /* Floating animation for prominent CTAs */
+  .canhoes-float {
+    @apply animate-canhoes-float;
+  }
+  
+  /* Pulsing glow effect for floating action button */
+  .canhoes-pulse {
+    @apply animate-canhoes-pulse;
+  }
 }
 
 /* ─────────────────────────────────────────
@@ -211,4 +249,12 @@
 @keyframes nav-indicator {
   from { transform: scaleX(0); }
   to   { transform: scaleX(1); }
+}
+@keyframes canhoes-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+@keyframes canhoes-pulse {
+  0%, 100% { box-shadow: 0 0 12px oklch(0.72 0.19 152 / 25%); }
+  50%       { box-shadow: 0 0 28px oklch(0.72 0.19 152 / 45%), 0 0 8px oklch(0.72 0.19 152 / 30%); }
 }

@@ -95,9 +95,7 @@ export function ThemeProvider({
     }
 
     // Safari fallback
-    // eslint-disable-next-line deprecation/deprecation
     mql.addListener(onChange)
-    // eslint-disable-next-line deprecation/deprecation
     return () => mql.removeListener(onChange)
   }, [enableSystem, theme])
 

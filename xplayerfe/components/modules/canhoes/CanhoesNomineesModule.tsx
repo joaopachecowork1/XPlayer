@@ -52,7 +52,7 @@ export function CanhoesNomineesModule() {
   }, []);
 
   const isNominations = state?.phase === "nominations";
-  let phaseLabel = state?.phase;
+  let phaseLabel: string | undefined = state?.phase;
   if (state?.phase === "nominations") {
     phaseLabel = "Nomeações";
   } else if (state?.phase === "voting") {
@@ -120,7 +120,7 @@ export function CanhoesNomineesModule() {
                   <SelectValue placeholder="Escolhe a categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">(Admin decide depois)</SelectItem>
+                  <SelectItem value="__none__">(Admin decide depois)</SelectItem>
                   {categories.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}

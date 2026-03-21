@@ -152,11 +152,12 @@ export function CanhoesVotingModule() {
                           onClick={() => void castVote(cat.id, n.id)}
                           disabled={!isVoting || Boolean(saving)}
                           className={cn(
-                            "canhoes-tap flex items-center gap-2.5 rounded-lg border p-2 text-left transition",
-                            isSelected && "border-primary bg-primary/5"
+                            "canhoes-tap flex items-center gap-2.5 rounded-xl border p-2 text-left transition hover:bg-primary/10",
+                            isSelected ? "border-jungle-300 bg-jungle-500/20" : "border-jungle-400/30 hover:border-jungle-300",
+                            (!isVoting || Boolean(saving)) && "opacity-50 cursor-not-allowed"
                           )}
                         >
-                          <div className="h-12 w-12 overflow-hidden rounded-md bg-muted">
+                          <div className="h-12 w-12 overflow-hidden rounded-md bg-background/60 border border-jungle-400/30">
                             {n.imageUrl ? (
                               <img
                                 src={`/api/proxy${n.imageUrl}`}
@@ -167,18 +168,15 @@ export function CanhoesVotingModule() {
                             ) : null}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium">{n.title}</div>
-                            {isSelected && <div className="text-xs text-muted-foreground">O teu voto</div>}
+                            <div className="truncate font-medium text-jungle-100">{n.title}</div>
+                            {isSelected && <div className="text-xs text-jungle-300">✓ O teu voto</div>}
                           </div>
-                          <Button
-                            type="button"
-                            variant={isSelected ? "secondary" : "outline"}
-                            size="sm"
-                            className="canhoes-tap h-8"
-                            disabled={!isVoting || Boolean(saving)}
-                          >
-                              {voteCta}
-                          </Button>
+                          <span className={cn(
+                            "px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap",
+                            isSelected ? "bg-jungle-500/60 text-jungle-100" : "bg-jungle-400/20 text-jungle-200"
+                          )}>
+                            {voteCta}
+                          </span>
                         </button>
                       );
                     })}
@@ -211,23 +209,21 @@ export function CanhoesVotingModule() {
                         onClick={() => void castUserVote(cat.id, u.id)}
                         disabled={!isVoting || Boolean(saving)}
                         className={cn(
-                          "canhoes-tap flex items-center justify-between gap-2.5 rounded-lg border p-2 text-left transition",
-                          isSelected && "border-primary bg-primary/5"
+                          "canhoes-tap flex items-center justify-between gap-2.5 rounded-xl border p-2.5 text-left transition hover:bg-magenta-500/10",
+                          isSelected ? "border-magenta-400 bg-magenta-500/15" : "border-magenta-400/30 hover:border-magenta-400",
+                          (!isVoting || Boolean(saving)) && "opacity-50 cursor-not-allowed"
                         )}
                       >
                         <div className="min-w-0">
-                          <div className="truncate font-medium">{u.displayName ?? u.email}</div>
-                          <div className="text-xs text-muted-foreground truncate">{u.email}</div>
+                          <div className="truncate font-medium text-jungle-100">{u.displayName ?? u.email}</div>
+                          <div className="text-xs text-jungle-300/80 truncate">{u.email}</div>
                         </div>
-                        <Button
-                          type="button"
-                          variant={isSelected ? "secondary" : "outline"}
-                          size="sm"
-                          className="canhoes-tap h-8"
-                          disabled={!isVoting || Boolean(saving)}
-                        >
+                        <span className={cn(
+                          "px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap",
+                          isSelected ? "bg-magenta-500/60 text-magenta-100" : "bg-magenta-400/20 text-magenta-200"
+                        )}>
                           {voteCta}
-                        </Button>
+                        </span>
                       </button>
                     );
                   })}

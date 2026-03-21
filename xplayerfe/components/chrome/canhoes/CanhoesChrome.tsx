@@ -13,31 +13,19 @@ import { CanhoesBottomTabs } from "./CanhoesBottomTabs";
 import { CanhoesMoreSheet } from "./CanhoesMoreSheet";
 import { CanhoesComposeSheet } from "./CanhoesComposeSheet";
 
-// Available background presets – cycle through them with the palette button.
+// Available background presets – simpler, more visible design
 const BG_PRESETS = [
   {
     id: "musgo",
     label: "Verde Musgo",
     className:
-      "bg-[radial-gradient(900px_380px_at_10%_-10%,rgba(109,191,135,0.25)_0%,transparent_55%),radial-gradient(640px_320px_at_90%_0%,rgba(64,121,79,0.22)_0%,transparent_60%),linear-gradient(160deg,#162d1d_0%,#0b160f_100%)]",
+      "bg-[linear-gradient(135deg,#0f2415_0%,#162d1c_50%,#0d1a11_100%)]",
   },
   {
-    id: "noite",
-    label: "Noite",
+    id: "noite-clara",
+    label: "Noite Clara",
     className:
-      "bg-[radial-gradient(1000px_500px_at_-10%_-10%,rgba(16,185,129,0.25)_0%,transparent_60%),radial-gradient(800px_400px_at_110%_10%,rgba(34,197,94,0.18)_0%,transparent_60%),linear-gradient(180deg,rgba(2,6,23,0.8)_0%,rgba(2,6,23,0.95)_100%)]",
-  },
-  {
-    id: "floresta",
-    label: "Floresta",
-    className:
-      "bg-[radial-gradient(780px_380px_at_25%_-10%,rgba(61,128,86,0.30)_0%,transparent_60%),radial-gradient(900px_460px_at_110%_0%,rgba(143,73,36,0.22)_0%,transparent_62%),linear-gradient(180deg,#10261b_0%,#08110d_100%)]",
-  },
-  {
-    id: "queimada",
-    label: "Queimada",
-    className:
-      "bg-[radial-gradient(900px_460px_at_12%_-12%,rgba(250,117,56,0.30)_0%,transparent_58%),radial-gradient(700px_360px_at_88%_4%,rgba(209,72,38,0.24)_0%,transparent_62%),linear-gradient(180deg,#211810_0%,#090e0b_70%,#050807_100%)]",
+      "bg-[linear-gradient(180deg,#1a2620_0%,#0f1f16_100%)]",
   },
 ] as const;
 

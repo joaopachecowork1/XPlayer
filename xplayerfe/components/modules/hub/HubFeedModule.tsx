@@ -121,7 +121,7 @@ export function HubFeedModule({
     const handler = (evt: Event) => {
       const created = (evt as CustomEvent).detail as HubPostDto | undefined;
       if (!created?.id) return;
-      setPosts((prev) => prependPostIfMissing(prev, created));
+      setPosts((prev: HubPostDto[]) => prependPostIfMissing(prev, created));
     };
 
     if (globalThis.window !== undefined) {
@@ -153,7 +153,7 @@ export function HubFeedModule({
       });
 
       if (created?.id) {
-        setPosts((p) => [created, ...(p ?? [])]);
+        setPosts((p: HubPostDto[]) => [created, ...(p ?? [])]);
       } else {
         await load();
       }
@@ -167,8 +167,8 @@ export function HubFeedModule({
 
   const toggleReaction = async (postId: string, emoji: string) => {
     // optimistic UI
-    setPosts((prev) =>
-      (prev ?? []).map((p) => {
+    setPosts((prev: HubPostDto[]) =>
+      (prev ?? []).map((p: HubPostDto) => {
         if (p?.id !== postId) return p;
         const mine = new Set(p.myReactions || []);
         const wasActive = mine.has(emoji);
@@ -198,8 +198,8 @@ export function HubFeedModule({
       if (emoji === "❤️") {
         const r = await hubRepo.toggleLike(postId);
         // reconcile likedByMe + likeCount (server truth)
-        setPosts((prev) =>
-          (prev ?? []).map((p) => {
+        setPosts((prev: HubPostDto[]) =>
+          (prev ?? []).map((p: HubPostDto) => {
             if (p?.id !== postId) return p;
             const mine = new Set(p.myReactions || []);
             if (r.liked) mine.add("❤️");
@@ -219,7 +219,7 @@ export function HubFeedModule({
 
   const votePoll = async (postId: string, optionId: string) => {
     // optimistic update
-    setPosts((prev) => applyOptimisticPollVote(prev, postId, optionId));
+    setPosts((prev: HubPostDto[]) => applyOptimisticPollVote(prev, postId, optionId));
 
     try {
       await hubRepo.votePoll(postId, optionId);
@@ -231,11 +231,11 @@ export function HubFeedModule({
   };
 
   const toggleComments = async (postId: string) => {
-    setOpenComments((m) => ({ ...m, [postId]: !m[postId] }));
+    setOpenComments((m: Record<string, boolean>) => ({ ...m, [postId]: !m[postId] }));
     if (!comments[postId]) {
       try {
         const list = await hubRepo.getComments(postId);
-        setComments((c) => ({ ...c, [postId]: (list ?? []).filter(Boolean) }));
+        setComments((c: Record<string, HubCommentDto[]>) => ({ ...c, [postId]: (list ?? []).filter(Boolean) }));
       } catch (e) {
         console.error(e);
         toast.error("Erro ao carregar comentários");
@@ -248,10 +248,10 @@ export function HubFeedModule({
     if (!draft) return;
     try {
       const c = await hubRepo.createComment(postId, { text: draft });
-      setCommentDrafts((d) => ({ ...d, [postId]: "" }));
-      setComments((prev) => ({ ...prev, [postId]: [...(prev[postId] ?? []), ...(c ? [c] : [])] }));
-      setPosts((prev) =>
-        (prev ?? []).map((p) =>
+      setCommentDrafts((d: Record<string, string>) => ({ ...d, [postId]: "" }));
+      setComments((prev: Record<string, HubCommentDto[]>) => ({ ...prev, [postId]: [...(prev[postId] ?? []), ...(c ? [c] : [])] }));
+      setPosts((prev: HubPostDto[]) =>
+        (prev ?? []).map((p: HubPostDto) =>
           p?.id === postId ? { ...p, commentCount: (p.commentCount ?? 0) + 1 } : p
         )
       );
@@ -264,10 +264,10 @@ export function HubFeedModule({
   const adminPin = async (postId: string) => {
     try {
       const r = await hubRepo.adminTogglePin(postId);
-      setPosts((prev) =>
+      setPosts((prev: HubPostDto[]) =>
         [...(prev ?? [])]
-          .map((p) => (p?.id === postId ? { ...p, isPinned: r.pinned } : p))
-          .sort((a, b) => Number(Boolean(b?.isPinned)) - Number(Boolean(a?.isPinned)) || (String(b?.createdAtUtc) > String(a?.createdAtUtc) ? 1 : -1))
+          .map((p: HubPostDto) => (p?.id === postId ? { ...p, isPinned: r.pinned } : p))
+          .sort((a: HubPostDto, b: HubPostDto) => Number(Boolean(b?.isPinned)) - Number(Boolean(a?.isPinned)) || (String(b?.createdAtUtc) > String(a?.createdAtUtc) ? 1 : -1))
       );
     } catch (e) {
       console.error(e);
@@ -278,7 +278,7 @@ export function HubFeedModule({
   const adminDelete = async (postId: string) => {
     try {
       await hubRepo.adminDeletePost(postId);
-      setPosts((prev) => (prev ?? []).filter((p) => p?.id !== postId));
+      setPosts((prev: HubPostDto[]) => (prev ?? []).filter((p: HubPostDto) => p?.id !== postId));
       toast.success("Post removido");
     } catch (e) {
       console.error(e);
@@ -298,7 +298,7 @@ export function HubFeedModule({
       {showComposer && <PostComposer onSubmit={onCreate} />}
 
       <div className="space-y-3">
-        {safePosts.map((p) => {
+        {safePosts.map((p: HubPostDto) => {
           if (!p) return null;
           const media = (p.mediaUrls ?? []).filter(Boolean);
 
@@ -339,7 +339,7 @@ export function HubFeedModule({
                       <CommentsSection
                         comments={comments[p.id] ?? []}
                         draft={commentDrafts[p.id] ?? ""}
-                        onDraftChange={(v) => setCommentDrafts((d) => ({ ...d, [p.id]: v }))}
+                        onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
                         onSubmit={() => void addComment(p.id)}
                       />
                     )}
@@ -417,7 +417,7 @@ export function HubFeedModule({
                         <CommentsSection
                           comments={comments[p.id] ?? []}
                           draft={commentDrafts[p.id] ?? ""}
-                          onDraftChange={(v) => setCommentDrafts((d) => ({ ...d, [p.id]: v }))}
+                          onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
                           onSubmit={() => void addComment(p.id)}
                         />
                       </div>

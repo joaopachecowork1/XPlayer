@@ -106,7 +106,7 @@ export function PendingNominees({ nominees, categories, loading, onUpdate }: Pro
                         <SelectValue placeholder="Categoria" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">(sem categoria)</SelectItem>
+                        <SelectItem value="__none__">(sem categoria)</SelectItem>
                         {categories.map((c) => (
                           <SelectItem key={c.id} value={c.id}>
                             {c.name}
