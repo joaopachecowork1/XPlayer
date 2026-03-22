@@ -49,7 +49,6 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
   // Stable object URLs – revoked automatically when files change or dialog closes.
   const previewUrls = useMemo(
     () => files.map((f) => URL.createObjectURL(f)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [files]
   );
   useEffect(() => {

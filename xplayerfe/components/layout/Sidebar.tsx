@@ -87,7 +87,7 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
 
   return (
     <aside className={cn(
-      "border-r border-jungle-400/20 bg-[linear-gradient(180deg,rgba(8,18,13,0.96)_0%,rgba(5,11,8,0.98)_100%)] backdrop-blur-md transition-all duration-300",
+      "border-r border-border/50 bg-sidebar backdrop-blur-md transition-all duration-300",
       widthClass,
       className
     )}>
@@ -96,7 +96,7 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
         <div className="flex items-center justify-between h-16 px-4 border-b border-border/50">
           {!collapsed && (
             <Link href="/dashboard" className="flex items-center gap-2.5 tap-scale">
-              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center glow-primary">
+              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center glow-primary">
                 <span className="text-xs font-black text-white leading-none">X</span>
               </div>
               <span className="text-lg font-bold tracking-tight text-foreground">XPlayer</span>
@@ -138,13 +138,13 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
                       "transition-all duration-150",
                       collapsed && "justify-center px-0",
                       isActive
-                            ? "canhoes-chip text-jungle-100 font-semibold shadow-[0_0_18px_rgba(65,255,134,0.14)]"
-                            : "text-jungle-300/80 hover:text-jungle-100 hover:bg-jungle-800/55",
+                            ? "bg-primary/15 text-primary font-semibold"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
                     )}
                   >
                     <Icon className={cn(
                       "h-4.5 w-4.5 flex-shrink-0",
-                          isActive ? "text-jungle-100" : "text-jungle-400/85"
+                          isActive ? "text-primary" : "text-muted-foreground"
                     )} strokeWidth={isActive ? 2.5 : 1.8} />
                     {!collapsed && <span className="text-sm">{item.label}</span>}
                     {/* Active dot for collapsed mode */}

@@ -7,47 +7,31 @@ import { GameObj, searchGames } from "@/services/GameService";
 
 export default function CreateSessionPage() {
   const [query, setQuery] = useState("");
-  const [games, setGames] = useState<GameObj[]>([]);
-  const [selectedGame, setSelectedGame] = useState<GameObj | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!query) {
-      setGames([]);
-      return;
-    }
+    if (!query) return;
 
     const timeout = setTimeout(async () => {
-      setLoading(true);
       try {
-        const res = await searchGames(query);
-        setGames(res);
+        await searchGames(query);
       } catch (err) {
         console.error(err);
       }
-      setLoading(false);
     }, 300);
 
     return () => clearTimeout(timeout);
   }, [query]);
 
   const handleSearch = async () => {
-    setLoading(true);
     try {
-      const res = await searchGames(query);
-      setGames(res);
+      await searchGames(query);
     } catch (err) {
       console.error(err);
     }
-    setLoading(false);
-  };
-
-  const handleGameSelect = (game: GameObj) => {
-    setSelectedGame(game);
   };
 
   const handleStartSession = async () => {
-    searchGames(query);
+    await searchGames(query);
   };
 
   return (
@@ -65,11 +49,12 @@ export default function CreateSessionPage() {
 
       <Button onClick={handleSearch}>Pesquisar</Button>
 
-      
-
       <Button onClick={handleStartSession} className="mt-4">
         Iniciar Sessão
       </Button>
     </div>
   );
 }
+
+// Required by GameService type
+export type { GameObj };

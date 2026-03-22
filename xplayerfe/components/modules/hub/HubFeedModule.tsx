@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 
 import type { HubCommentDto, HubPostDto } from "@/lib/api/types";
 import { hubRepo } from "@/lib/repositories/hubRepo";
@@ -22,25 +21,6 @@ import { PollBox } from "./components/PollBox";
 import { HUB_EMOJIS, ReactionRail } from "./components/ReactionRail";
 
 const EMOJIS = HUB_EMOJIS;
-
-function withUpdatedPost(
-  posts: HubPostDto[],
-  postId: string,
-  updater: (post: HubPostDto) => HubPostDto
-) {
-  return (posts ?? []).map((post) => {
-    if (post?.id !== postId) return post;
-    return updater(post);
-  });
-}
-
-function sortPinnedThenRecent(posts: HubPostDto[]) {
-  return [...(posts ?? [])].sort(
-    (a, b) =>
-      Number(Boolean(b?.isPinned)) - Number(Boolean(a?.isPinned)) ||
-      (String(b?.createdAtUtc) > String(a?.createdAtUtc) ? 1 : -1)
-  );
-}
 
 function reactionCount(post: HubPostDto, emoji: string) {
   return post.reactionCounts?.[emoji] ?? (emoji === "❤️" ? post.likeCount ?? 0 : 0);
@@ -94,7 +74,6 @@ export function HubFeedModule({
   showComposer?: boolean;
 }>) {
   const { data: session, status } = useSession();
-  const { user } = useAuth();
 
   // useIsAdmin() reads from AuthContext (which calls /api/me to get DB isAdmin).
   // This is correct — session?.user?.isAdmin is always false for Google OAuth
