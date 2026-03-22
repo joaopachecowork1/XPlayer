@@ -90,7 +90,7 @@ export default function CanhoesAdminModule() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [st, cats, pend, allNoms, votesResp, hist] = await Promise.all([
+      const [st, cats, pend, allNoms, votesResp, hist, measuresAll] = await Promise.all([
         safe<CanhoesStateDto | null>(canhoesRepo.getState(), null),
         safe<AwardCategoryDto[]>(
           canhoesRepo.adminGetAllCategories(),
