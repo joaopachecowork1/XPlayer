@@ -8,9 +8,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 /**
  * Mobile-first media carousel (Instagram-ish).
  * - Full width
- * - Swipe/scroll horizontally
+ * - Swipe/scroll horizontally (only when gesture is clearly horizontal)
  * - Snap paging
  * - Dots indicator
+ *
+ * Touch-action: pan-y allows the browser to handle vertical scroll natively.
+ * A manual touch handler kicks in only when |deltaX| > |deltaY|.
  */
 export function MediaCarousel({
   urls,
@@ -24,6 +27,8 @@ export function MediaCarousel({
   const media = useMemo(() => (urls ?? []).filter(Boolean), [urls]);
   const ref = useRef<HTMLDivElement | null>(null);
   const [index, setIndex] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const isDragging = useRef(false);
 
   useEffect(() => {
     setIndex(0);
@@ -48,6 +53,37 @@ export function MediaCarousel({
     el.scrollTo({ left: clamped * el.clientWidth, behavior: "smooth" });
   };
 
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+    isDragging.current = false;
+  };
+
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - touchStart.current.x);
+    const dy = Math.abs(t.clientY - touchStart.current.y);
+    // Only take over scroll when gesture is clearly horizontal
+    if (dx > dy && dx > 8) {
+      isDragging.current = true;
+      e.stopPropagation();
+    }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current || !isDragging.current) {
+      touchStart.current = null;
+      return;
+    }
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.current.x;
+    touchStart.current = null;
+    isDragging.current = false;
+    if (dx < -40) goTo(index + 1);
+    else if (dx > 40) goTo(index - 1);
+  };
+
   const aspectCls =
     aspect === "portrait" ? "aspect-[4/5]" : "aspect-square";
 
@@ -57,12 +93,86 @@ export function MediaCarousel({
         <div
           ref={ref}
           onScroll={onScroll}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          style={{ touchAction: "pan-y" }}
           className={cn(
             "relative w-full overflow-x-auto",
             "snap-x snap-mandatory",
-            "flex scrollbar-none touch-pan-x"
+            "flex scrollbar-none"
           )}
         >
+          {media.map((u, i) => (
+          <div
+            key={u}
+            className={cn(
+              "min-w-full snap-center transition-transform duration-300 ease-out",
+              "bg-muted/20",
+              i === index ? "scale-[1.0]" : "scale-[0.985]",
+              aspectCls
+            )}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={absMediaUrl(u)}
+              alt="post media"
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
+              draggable={false}
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          ))}
+        </div>
+
+        {media.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => goTo(index - 1)}
+              aria-label="Imagem anterior"
+              className="canhoes-tap absolute left-1.5 sm:left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/30 bg-black/35 p-1 text-white opacity-90 sm:opacity-0 shadow-lg transition-all sm:group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-35"
+              disabled={index === 0}
+            >
+              <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => goTo(index + 1)}
+              aria-label="Próxima imagem"
+              className="canhoes-tap absolute right-1.5 sm:right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/30 bg-black/35 p-1 text-white opacity-90 sm:opacity-0 shadow-lg transition-all sm:group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-35"
+              disabled={index === media.length - 1}
+            >
+              <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </button>
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/35 to-transparent" />
+          </>
+        )}
+      </div>
+
+      {media.length > 1 && (
+        <div className="mt-1.5 flex items-center justify-center gap-1">
+          {media.map((u, i) => (
+            <button
+              key={`dot-${u}-${i}`}
+              type="button"
+              aria-label={`Ir para imagem ${i + 1}`}
+              className={cn(
+                "canhoes-tap h-1.5 rounded-full transition-all",
+                i === index ? "w-4 sm:w-5 bg-primary" : "w-1.5 bg-primary/40"
+              )}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
           {media.map((u, i) => (
           <div
             key={u}

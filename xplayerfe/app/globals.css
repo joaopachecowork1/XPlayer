@@ -1,5 +1,5 @@
-/* ── Google Fonts: Fredoka One (display) + Nunito (body) ─────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap');
+/* ── Google Fonts: Inter (body) + Fredoka One (display) ─────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka+One&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,7 +10,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Inter', var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -141,6 +141,22 @@
   --sidebar-accent-foreground: oklch(0.88 0.01 265);
   --sidebar-border: oklch(0.68 0.22 280 / 12%);
   --sidebar-ring: oklch(0.68 0.22 280 / 40%);
+}
+
+/* ─────────────────────────────────────────
+   Global base styles
+───────────────────────────────────────── */
+html, body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  color: oklch(0.93 0.01 265);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure inputs/textareas have visible placeholder text on dark backgrounds */
+::placeholder {
+  color: oklch(0.55 0.04 265);
+  opacity: 1;
 }
 
 /* ─────────────────────────────────────────
