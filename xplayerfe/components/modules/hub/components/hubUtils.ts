@@ -4,7 +4,7 @@ export function initials(name: string) {
   const parts = (name || "").trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
   const a = parts[0]?.[0] ?? "?";
-  const b = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? "" : "";
+  const b = parts.length > 1 ? parts.at(-1)?.[0] ?? "" : "";
   return (a + b).toUpperCase();
 }
 
@@ -21,13 +21,41 @@ export function formatDateTime(value: string | Date) {
 // Backend returns "/uploads/...". In dev frontend is a different origin.
 export function absMediaUrl(url: string) {
   if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+
+  const raw = url.trim();
+  if (!raw) return "";
+
+  // Some backend responses may contain Windows separators.
+  const normalized = raw.replaceAll("\\", "/");
+
+  const uploadsIndex = normalized.toLowerCase().indexOf("/uploads/");
+  if (uploadsIndex >= 0) {
+    return normalized.slice(uploadsIndex);
+  }
+
+  if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
+    try {
+      const parsed = new URL(normalized);
+      // Backend may return absolute local URLs (e.g. localhost) that break on phones.
+      // Prefer same-origin /uploads so Next rewrite can proxy consistently.
+      if (parsed.pathname.startsWith("/uploads/")) {
+        return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      }
+    } catch {
+      return normalized;
+    }
+    return normalized;
+  }
+
+  if (normalized.startsWith("uploads/")) {
+    return `/${normalized}`;
+  }
 
   // If backend returns "/uploads/...", keep it as a same-origin path.
   // In dev we add a Next rewrite to proxy /uploads/* -> backend, which avoids
   // mixed-content + CORS issues and makes images load reliably.
-  if (url.startsWith("/uploads/")) return url;
+  if (normalized.startsWith("/uploads/")) return normalized;
 
-  if (url.startsWith("/")) return `${XPLAYER_API_URL}${url}`;
-  return `${XPLAYER_API_URL}/${url}`;
+  if (normalized.startsWith("/")) return `${XPLAYER_API_URL}${normalized}`;
+  return `${XPLAYER_API_URL}/${normalized}`;
 }

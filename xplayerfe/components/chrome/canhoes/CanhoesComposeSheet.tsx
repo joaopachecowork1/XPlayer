@@ -28,6 +28,37 @@ const ACCEPTED_IMAGE_TYPES = new Set([
   "image/heic",
   "image/heif",
 ]);
+const ACCEPTED_IMAGE_EXTENSIONS = new Set([
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "gif",
+  "heic",
+  "heif",
+]);
+const TRANSCODE_IMAGE_TYPES = new Set([
+  "image/heic",
+  "image/heif",
+]);
+
+function fileExtension(name: string) {
+  const i = name.lastIndexOf(".");
+  if (i < 0) return "";
+  return name.slice(i + 1).toLowerCase();
+}
+
+function isAcceptedImage(file: File) {
+  const mime = (file.type || "").toLowerCase();
+  if (mime && ACCEPTED_IMAGE_TYPES.has(mime)) return true;
+  return ACCEPTED_IMAGE_EXTENSIONS.has(fileExtension(file.name));
+}
+
+function shouldTranscode(file: File) {
+  const mime = (file.type || "").toLowerCase();
+  if (TRANSCODE_IMAGE_TYPES.has(mime)) return true;
+  return ["heic", "heif"].includes(fileExtension(file.name));
+}
 
 function supportsWebpEncode() {
   if (typeof document === "undefined") return false;
@@ -71,8 +102,10 @@ async function decodeImage(file: File) {
 }
 
 async function normalizeUploadImage(file: File) {
-  // Keep tiny files untouched for speed.
-  if (file.size <= TARGET_UPLOAD_BYTES) return file;
+  const mustTranscode = shouldTranscode(file);
+
+  // Keep tiny files untouched for speed, except HEIC/HEIF (mobile compatibility).
+  if (!mustTranscode && file.size <= TARGET_UPLOAD_BYTES) return file;
 
   try {
     const source = await decodeImage(file);
@@ -93,7 +126,8 @@ async function normalizeUploadImage(file: File) {
       canvas.toBlob(resolve, mime, TARGET_QUALITY)
     );
 
-    if (!blob || blob.size >= file.size) return file;
+    if (!blob) return file;
+    if (!mustTranscode && blob.size >= file.size) return file;
 
     const nextExt = mime === "image/webp" ? "webp" : "jpg";
     const baseName = file.name.replace(/\.[^/.]+$/, "");
@@ -159,7 +193,7 @@ export function CanhoesComposeSheet({
     for (const original of incoming) {
       const key = `${original.name}-${original.size}-${original.lastModified}`;
       if (existingKeys.has(key)) continue;
-      if (!ACCEPTED_IMAGE_TYPES.has(original.type)) {
+      if (!isAcceptedImage(original)) {
         toast.error(`${original.name}: formato não suportado`);
         continue;
       }
@@ -257,7 +291,11 @@ export function CanhoesComposeSheet({
       onOpenChange(false);
     } catch (e) {
       console.error(e);
-      toast.error("Não foi possível publicar");
+      const msg =
+        e instanceof Error && e.message
+          ? `: ${e.message.slice(0, 160)}`
+          : "";
+      toast.error(`Não foi possível publicar${msg}`);
     } finally {
       setSubmitting(false);
     }
