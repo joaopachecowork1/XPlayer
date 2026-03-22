@@ -50,6 +50,15 @@ export const hubRepo = {
       body: JSON.stringify(payload),
     }),
 
+  toggleCommentReaction: (postId: string, commentId: string, emoji: string) =>
+    xplayerFetch<{ emoji: string; active: boolean }>(
+      `/hub/posts/${postId}/comments/${commentId}/reactions`,
+      {
+        method: "POST",
+        body: JSON.stringify({ emoji } satisfies T.ToggleReactionRequest),
+      }
+    ),
+
   // Admin
   adminTogglePin: (postId: string) =>
     xplayerFetch<{ pinned: boolean }>(`/hub/admin/posts/${postId}/pin`, {

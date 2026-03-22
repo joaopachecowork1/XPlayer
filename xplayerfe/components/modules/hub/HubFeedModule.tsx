@@ -293,6 +293,31 @@ export function HubFeedModule({
     }
   };
 
+  const toggleCommentReaction = async (postId: string, commentId: string, emoji: string) => {
+    try {
+      const r = await hubRepo.toggleCommentReaction(postId, commentId, emoji);
+      setComments((prev: Record<string, HubCommentDto[]>) => ({
+        ...prev,
+        [postId]: (prev[postId] ?? []).map((c: HubCommentDto) => {
+          if (c.id !== commentId) return c;
+          const counts = { ...(c.reactionCounts ?? {}) };
+          const mine = [...(c.myReactions ?? [])];
+          if (r.active) {
+            counts[emoji] = (counts[emoji] ?? 0) + 1;
+            if (!mine.includes(emoji)) mine.push(emoji);
+          } else {
+            counts[emoji] = Math.max(0, (counts[emoji] ?? 1) - 1);
+            const idx = mine.indexOf(emoji);
+            if (idx >= 0) mine.splice(idx, 1);
+          }
+          return { ...c, reactionCounts: counts, myReactions: mine };
+        }),
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <div className="space-y-0 sm:space-y-3">
       {/* Feed header */}
@@ -360,9 +385,11 @@ export function HubFeedModule({
                     {openComments[p.id] && (
                       <CommentsSection
                         comments={comments[p.id] ?? []}
+                        postId={p.id}
                         draft={commentDrafts[p.id] ?? ""}
                         onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
                         onSubmit={() => void addComment(p.id)}
+                        onToggleCommentReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
                       />
                     )}
                   </div>
@@ -490,9 +517,11 @@ export function HubFeedModule({
                       <div className="mt-4">
                         <CommentsSection
                           comments={comments[p.id] ?? []}
+                          postId={p.id}
                           draft={commentDrafts[p.id] ?? ""}
                           onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
                           onSubmit={() => void addComment(p.id)}
+                          onToggleCommentReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
                         />
                       </div>
                     )}
@@ -555,9 +584,11 @@ export function HubFeedModule({
                 {openComments[p.id] && (
                   <CommentsSection
                     comments={comments[p.id] ?? []}
+                    postId={p.id}
                     draft={commentDrafts[p.id] ?? ""}
                     onDraftChange={(v) => setCommentDrafts((d) => ({ ...d, [p.id]: v }))}
                     onSubmit={() => void addComment(p.id)}
+                    onToggleCommentReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
                   />
                 )}
               </CardContent>
