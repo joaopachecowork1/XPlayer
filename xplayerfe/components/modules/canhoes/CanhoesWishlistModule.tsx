@@ -89,7 +89,12 @@ export function CanhoesWishlistModule() {
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <div className="text-lg sm:text-xl font-semibold text-jungle-100 inline-flex items-center gap-2"><Gift className="h-5 w-5 text-amber-300" />Wishlist</div>
+          <div
+            className="canhoes-title inline-flex items-center gap-2"
+            style={{ fontSize: "17px" }}
+          >
+            <Gift className="h-5 w-5" style={{ color: "#ffe135" }} />Wishlist
+          </div>
           <div className="text-sm text-muted-foreground">
             Toda a gente vê a wishlist de toda a gente. Só tu vês o teu amigo secreto.
           </div>

@@ -69,15 +69,23 @@ export function CanhoesMeasuresModule() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="text-base sm:text-lg font-semibold flex items-center gap-2 text-jungle-100">
-          <Flame className="h-4 w-4 text-orange-300" /> Medidas
+        <div
+          className="canhoes-title flex items-center gap-2"
+          style={{ fontSize: "17px" }}
+        >
+          <Flame className="h-4 w-4" style={{ color: "#ff8c00" }} /> Medidas
         </div>
         {state ? <Badge variant="outline">Fase: {state.phase}</Badge> : null}
       </div>
 
       <Card className="canhoes-glass rounded-2xl">
         <CardHeader className="pb-1.5">
-          <CardTitle className="text-base inline-flex items-center gap-2"><Gavel className="h-4 w-4 text-jungle-200" />Propor medida</CardTitle>
+          <CardTitle
+            className="canhoes-label text-sm inline-flex items-center gap-2"
+            style={{ color: "rgba(0,255,68,0.80)" }}
+          >
+            <Gavel className="h-4 w-4" style={{ color: "#ffe135" }} />Propor medida
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-1">

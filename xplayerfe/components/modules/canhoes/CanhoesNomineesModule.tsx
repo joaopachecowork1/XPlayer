@@ -10,6 +10,19 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Cigarette, ImageOff, Upload } from "lucide-react";
+import { toast } from "sonner";
+
+const UNCATEGORIZED_VALUE = "__uncategorized__";
+
+const PHASE_LABELS: Record<string, string> = {
+  nominations: "nomeações",
+  voting: "votação",
+  gala: "gala",
+};
+
+// Sentinel for "no category selected yet" — Radix UI Select does NOT
+// accept value="" so we use a non-empty placeholder value instead.
+const NO_CATEGORY = "__none__";
 
 function statusVariant(status: NomineeDto["status"]) {
   if (status === "approved") return "secondary";
@@ -24,8 +37,8 @@ export function CanhoesNomineesModule() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Form
-  const [categoryId, setCategoryId] = useState<string>("");
+  // Form — categoryId defaults to sentinel "no category"
+  const [categoryId, setCategoryId] = useState<string>(NO_CATEGORY);
   const [title, setTitle] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const canSubmit = useMemo(() => Boolean(title.trim().length >= 2), [title]);
@@ -68,18 +81,35 @@ export function CanhoesNomineesModule() {
     if (!canSubmit || !state) return;
     if (state.phase !== "nominations") return;
 
+    if (file && !file.type.startsWith("image/")) {
+      toast.error("Só é permitido upload de imagens.");
+      return;
+    }
+
+    if (file && file.size > 10 * 1024 * 1024) {
+      toast.error("A imagem excede 10MB.");
+      return;
+    }
+
     setSaving(true);
     try {
-      const created = await canhoesRepo.createNominee({ categoryId: categoryId || null, title: title.trim() });
+      const created = await canhoesRepo.createNominee({
+        // Convert sentinel back to null (no category).
+        categoryId: categoryId === NO_CATEGORY ? null : (categoryId || null),
+        title: title.trim(),
+      });
       if (file) {
         await canhoesRepo.uploadNomineeImage(created.id, file);
       }
       setTitle("");
+      setCategoryId("");
       setFile(null);
+      setCategoryId(NO_CATEGORY);
       await refresh();
+      toast.success("Nomeação submetida com sucesso.");
     } catch (e) {
-      // Keep it simple: console only for now.
       console.error(e);
+      toast.error("Não foi possível submeter a nomeação.");
     } finally {
       setSaving(false);
     }
@@ -98,25 +128,53 @@ export function CanhoesNomineesModule() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg sm:text-xl font-semibold text-jungle-100 inline-flex items-center gap-2"><Cigarette className="h-5 w-5 text-orange-300" />Canhões do Ano</h1>
+      {/* ── Section header ── */}
+      <div className="flex items-center justify-between px-1">
+        <h1
+          className="canhoes-title inline-flex items-center gap-2"
+          style={{ fontSize: "18px" }}
+        >
+          <Cigarette className="h-5 w-5" style={{ color: "#ff8c00" }} />
+          Canhões do Ano
+        </h1>
         {state && (
-          <Badge variant="outline">
+          <Badge
+            variant="outline"
+            style={{
+              border: "1px solid rgba(0,255,68,0.35)",
+              color: "#00ff44",
+              background: "rgba(0,255,68,0.06)",
+              fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700,
+              fontSize: "11px",
+            }}
+          >
             Fase: {phaseLabel}
           </Badge>
         )}
       </div>
 
+      {/* ── Submission form ── */}
       <Card className="canhoes-glass rounded-2xl">
         <CardHeader className="pb-1.5">
-          <CardTitle className="text-base">Submeter nomeação</CardTitle>
+          <CardTitle
+            className="canhoes-label text-sm"
+            style={{ color: "rgba(0,255,68,0.80)" }}
+          >
+            Submeter nomeação
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid gap-2.5 sm:grid-cols-2">
             <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Categoria</div>
+              <div className="text-xs text-muted-foreground canhoes-label">Categoria</div>
               <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger>
+                <SelectTrigger
+                  style={{
+                    background: "rgba(0,10,5,0.7)",
+                    border: "1px solid rgba(0,255,68,0.20)",
+                  }}
+                >
                   <SelectValue placeholder="Escolhe a categoria" />
                 </SelectTrigger>
                 <SelectContent>
@@ -130,34 +188,67 @@ export function CanhoesNomineesModule() {
               </Select>
             </div>
             <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Título</div>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: O sticker mais lendário" />
+              <div className="text-xs text-muted-foreground canhoes-label">Título</div>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex.: O sticker mais lendário"
+                style={{
+                  background: "rgba(0,10,5,0.7)",
+                  border: "1px solid rgba(0,255,68,0.20)",
+                  color: "#e0ffe0",
+                }}
+              />
             </div>
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <label className="inline-flex items-center gap-2 text-sm">
+            <label
+              className="inline-flex items-center gap-2 text-sm cursor-pointer"
+              style={{ color: "rgba(0,255,68,0.65)" }}
+            >
               <Upload className="h-4 w-4" />
               <input
                 type="file"
                 accept="image/*"
+                className="sr-only"
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               />
+              {file ? (
+                <span style={{ color: "#ffe135", fontWeight: 700 }}>{file.name}</span>
+              ) : (
+                <span>Adicionar imagem (opcional)</span>
+              )}
             </label>
 
-            <Button className="canhoes-tap h-9" disabled={!isNominations || !canSubmit || saving} onClick={onSubmit}>
+            <Button
+              className="canhoes-tap h-9 px-6 font-bold rounded-full"
+              disabled={!isNominations || !canSubmit || saving}
+              onClick={onSubmit}
+              style={{
+                background: isNominations && canSubmit
+                  ? "linear-gradient(90deg, #00cc44, #008833)"
+                  : undefined,
+                border: "1.5px solid rgba(0,255,68,0.40)",
+                fontFamily: "'Nunito', sans-serif",
+              }}
+            >
               {submitLabel}
             </Button>
           </div>
 
           <div className="text-xs text-muted-foreground">
-            Nota: começa como <b>pendente</b> até um admin aprovar.
+            Nota: começa como <b style={{ color: "#ffe135" }}>pendente</b> até um admin aprovar.
           </div>
         </CardContent>
       </Card>
 
+      {/* ── Nominees list by category ── */}
       {loading ? (
-        <div className="text-sm text-muted-foreground">A carregar...</div>
+        <div className="flex items-center gap-2 py-4 px-2 text-sm text-muted-foreground">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          A carregar nomeações…
+        </div>
       ) : (
         <div className="space-y-3">
           {categories.map((cat) => {
@@ -166,12 +257,28 @@ export function CanhoesNomineesModule() {
             return (
               <Card key={cat.id} className="canhoes-glass rounded-2xl">
                 <CardHeader className="pb-1.5">
-                  <CardTitle className="text-base">{cat.name}</CardTitle>
+                  <CardTitle
+                    className="canhoes-label text-sm"
+                    style={{ color: "rgba(0,255,68,0.80)" }}
+                  >
+                    {cat.name}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {list.map((n) => (
-                    <div key={n.id} className="flex items-center gap-3 rounded-lg border p-2">
-                      <div className="h-12 w-12 overflow-hidden rounded-md bg-muted flex items-center justify-center">
+                    <div
+                      key={n.id}
+                      className="flex items-center gap-3 rounded-xl p-2"
+                      style={{
+                        background: "rgba(0,255,68,0.04)",
+                        border: "1px solid rgba(0,255,68,0.12)",
+                      }}
+                    >
+                      {/* Thumbnail */}
+                      <div
+                        className="h-12 w-12 overflow-hidden rounded-lg flex items-center justify-center shrink-0"
+                        style={{ background: "rgba(0,20,10,0.8)", border: "1px solid rgba(0,255,68,0.15)" }}
+                      >
                         {n.imageUrl ? (
                           <img
                             src={`${XPLAYER_API_URL}${n.imageUrl}`}
@@ -183,11 +290,30 @@ export function CanhoesNomineesModule() {
                           <ImageOff className="h-4 w-4 text-muted-foreground" />
                         )}
                       </div>
+
+                      {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{n.title}</div>
-                        <div className="text-xs text-muted-foreground">{new Date(n.createdAtUtc).toLocaleString()}</div>
+                        <div className="truncate font-semibold text-sm" style={{ color: "#e0ffe0" }}>
+                          {n.title}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(n.createdAtUtc).toLocaleString()}
+                        </div>
                       </div>
-                      <Badge variant={statusVariant(n.status)}>{n.status}</Badge>
+
+                      {/* Status badge */}
+                      <Badge
+                        variant={statusVariant(n.status)}
+                        style={
+                          n.status === "approved"
+                            ? { border: "1px solid #00ff44", color: "#00ff44", background: "rgba(0,255,68,0.08)" }
+                            : n.status === "rejected"
+                            ? { border: "1px solid #ff2d75", color: "#ff2d75", background: "rgba(255,45,117,0.08)" }
+                            : { border: "1px solid rgba(255,225,53,0.40)", color: "#ffe135", background: "rgba(255,225,53,0.06)" }
+                        }
+                      >
+                        {n.status}
+                      </Badge>
                     </div>
                   ))}
                 </CardContent>

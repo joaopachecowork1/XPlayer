@@ -18,7 +18,7 @@ const client = new QueryClient({
   },
 });
 
-export default function AppProviders({ children }: { children: React.ReactNode }) {
+export default function AppProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <SessionProvider>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>

@@ -11,7 +11,7 @@ namespace XPlayer.Api.Controllers;
 [ApiController]
 [Route("api/canhoes")]
 [Authorize]
-public class CanhoesController : ControllerBase
+public partial class CanhoesController : ControllerBase
 {
     private readonly XPlayerDbContext _db;
     private readonly IWebHostEnvironment _env;
@@ -61,11 +61,11 @@ public class CanhoesController : ControllerBase
 
         var dto = new AdminProposalsHistoryDto(
             new ProposalsByStatus<CategoryProposalDto>(
-                catsApproved.Select(p => new CategoryProposalDto(p.Id, p.Name, p.Description, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero))),
-                catsRejected.Select(p => new CategoryProposalDto(p.Id, p.Name, p.Description, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero)))),
+                catsApproved.Select(ToCategoryProposalDto),
+                catsRejected.Select(ToCategoryProposalDto)),
             new ProposalsByStatus<MeasureProposalDto>(
-                measApproved.Select(p => new MeasureProposalDto(p.Id, p.Text, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero))),
-                measRejected.Select(p => new MeasureProposalDto(p.Id, p.Text, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero))))
+                measApproved.Select(ToMeasureProposalDto),
+                measRejected.Select(ToMeasureProposalDto))
         );
 
         return Ok(dto);
@@ -89,9 +89,7 @@ public class CanhoesController : ControllerBase
             .Where(c => c.IsActive)
             .OrderBy(c => c.SortOrder)
             .ToListAsync(ct);
-        return cats.Select(c => new AwardCategoryDto(
-            c.Id, c.Name, c.SortOrder, c.IsActive, c.Kind.ToString(), c.Description, c.VoteQuestion, c.VoteRules
-        )).ToList();
+        return cats.Select(ToAwardCategoryDto).ToList();
     }
 
     [HttpGet("nominees")]
@@ -167,7 +165,7 @@ public class CanhoesController : ControllerBase
         };
         _db.CategoryProposals.Add(p);
         await _db.SaveChangesAsync(ct);
-        return new CategoryProposalDto(p.Id, p.Name, p.Description, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero));
+        return ToCategoryProposalDto(p);
     }
 
     [HttpPost("measures/proposals")]
@@ -187,7 +185,7 @@ public class CanhoesController : ControllerBase
         };
         _db.MeasureProposals.Add(p);
         await _db.SaveChangesAsync(ct);
-        return new MeasureProposalDto(p.Id, p.Text, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero));
+        return ToMeasureProposalDto(p);
     }
 
     [HttpPost("nominees/{id}/upload")]
@@ -569,25 +567,16 @@ public class CanhoesController : ControllerBase
             .AsNoTracking()
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Name)
-            .Select(x => new AwardCategoryDto(
-                x.Id,
-                x.Name,
-                x.SortOrder,
-                x.IsActive,
-                x.Kind.ToString(),
-                x.Description,
-                x.VoteQuestion,
-                x.VoteRules
-            ))
             .ToListAsync(ct);
 
-        return Ok(cats);
+        return Ok(cats.Select(ToAwardCategoryDto).ToList());
     }
 
     /// <summary>
     /// Updates a category (name/sort/isActive/kind/description/voteQuestion/voteRules).
     /// </summary>
     [HttpPatch("admin/categories/{id}")]
+    [HttpPut("admin/categories/{id}")]
     public async Task<ActionResult<AwardCategoryDto>> AdminUpdateCategory(
         [FromRoute] string id,
         [FromBody] UpdateAwardCategoryRequest req,
@@ -615,16 +604,7 @@ public class CanhoesController : ControllerBase
 
         await _db.SaveChangesAsync(ct);
 
-        return Ok(new AwardCategoryDto(
-            cat.Id,
-            cat.Name,
-            cat.SortOrder,
-            cat.IsActive,
-            cat.Kind.ToString(),
-            cat.Description,
-            cat.VoteQuestion,
-            cat.VoteRules
-        ));
+        return Ok(ToAwardCategoryDto(cat));
     }
 
     [HttpPost("admin/categories")]
@@ -651,7 +631,7 @@ public class CanhoesController : ControllerBase
 
         _db.AwardCategories.Add(cat);
         await _db.SaveChangesAsync(ct);
-        return new AwardCategoryDto(cat.Id, cat.Name, cat.SortOrder, cat.IsActive, cat.Kind.ToString(), cat.Description, cat.VoteQuestion, cat.VoteRules);
+        return ToAwardCategoryDto(cat);
     }
 
     // ------------------------------
@@ -717,8 +697,8 @@ public class CanhoesController : ControllerBase
 
         return new PendingAdminDto(
             nominees.Select(ToNomineeDto).ToList(),
-            cats.Select(p => new CategoryProposalDto(p.Id, p.Name, p.Description, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero))).ToList(),
-            meas.Select(p => new MeasureProposalDto(p.Id, p.Text, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero))).ToList()
+            cats.Select(ToCategoryProposalDto).ToList(),
+            meas.Select(ToMeasureProposalDto).ToList()
         );
     }
 
@@ -751,7 +731,7 @@ public class CanhoesController : ControllerBase
         };
         _db.AwardCategories.Add(cat);
         await _db.SaveChangesAsync(ct);
-        return new AwardCategoryDto(cat.Id, cat.Name, cat.SortOrder, cat.IsActive, cat.Kind.ToString(), cat.Description, cat.VoteQuestion, cat.VoteRules);
+        return ToAwardCategoryDto(cat);
     }
 
     [HttpPost("admin/categories/{id}/reject")]
@@ -762,7 +742,7 @@ public class CanhoesController : ControllerBase
         if (p is null) return NotFound();
         p.Status = "rejected";
         await _db.SaveChangesAsync(ct);
-        return new CategoryProposalDto(p.Id, p.Name, p.Description, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero));
+        return ToCategoryProposalDto(p);
     }
 
     [HttpPost("admin/measures/{id}/approve")]
@@ -792,7 +772,7 @@ public class CanhoesController : ControllerBase
         if (p is null) return NotFound();
         p.Status = "rejected";
         await _db.SaveChangesAsync(ct);
-        return new MeasureProposalDto(p.Id, p.Text, p.Status, new DateTimeOffset(p.CreatedAtUtc, TimeSpan.Zero));
+        return ToMeasureProposalDto(p);
     }
 
     [HttpGet("admin/votes")]

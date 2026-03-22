@@ -112,7 +112,12 @@ export function CanhoesVotingModule() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg sm:text-xl font-semibold text-jungle-100 inline-flex items-center gap-2"><Trophy className="h-5 w-5 text-amber-300" />Votação</h1>
+        <h1
+          className="canhoes-title inline-flex items-center gap-2"
+          style={{ fontSize: "17px" }}
+        >
+          <Trophy className="h-5 w-5" style={{ color: "#ffe135" }} />Votação
+        </h1>
         {state && (
           <Badge variant="outline">
             {state.phase === "voting" ? "Votações abertas" : "Votações fechadas"}

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Switch } from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 
 type Props = {
   categories: AwardCategoryDto[];
@@ -27,11 +27,43 @@ type Draft = {
   isActive: boolean;
 };
 
-export function CategoriesAdmin({ categories, categoryProposals, measureProposals, loading, onUpdate }: Props) {
+type ProposalStatus = "pending" | "approved" | "rejected";
+type ProposalSummary = Record<ProposalStatus, number>;
+
+function ensureArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  return [];
+}
+
+function summarizeStatuses(items: unknown): ProposalSummary {
+  const list = ensureArray<{ status: string }>(items);
+  return list.reduce<ProposalSummary>(
+    (acc, item) => {
+      if (item.status === "pending") acc.pending += 1;
+      else if (item.status === "approved") acc.approved += 1;
+      else if (item.status === "rejected") acc.rejected += 1;
+      return acc;
+    },
+    { pending: 0, approved: 0, rejected: 0 }
+  );
+}
+
+function statusBadgeVariant(status: string): "default" | "destructive" | "secondary" {
+  if (status === "approved") return "default";
+  if (status === "rejected") return "destructive";
+  return "secondary";
+}
+
+export function CategoriesAdmin({ categories, categoryProposals, measureProposals, loading, onUpdate }: Readonly<Props>) {
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [newKind, setNewKind] = useState<"Sticker" | "UserVote">("Sticker");
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
+
+  const categoriesById = useMemo(
+    () => new Map(categories.map((category) => [category.id, category] as const)),
+    [categories]
+  );
 
   const rows = useMemo(() => {
     return categories
@@ -53,12 +85,13 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
 
   const setDraft = (id: string, patch: Partial<Draft>) => {
     setDrafts((prev) => {
+      const sourceCategory = categoriesById.get(id);
       const base = prev[id] ?? {
         id,
-        name: categories.find((c) => c.id === id)?.name ?? "",
-        sortOrder: String(categories.find((c) => c.id === id)?.sortOrder ?? 0),
-        kind: categories.find((c) => c.id === id)?.kind ?? "Sticker",
-        isActive: categories.find((c) => c.id === id)?.isActive ?? true,
+        name: sourceCategory?.name ?? "",
+        sortOrder: String(sourceCategory?.sortOrder ?? 0),
+        kind: sourceCategory?.kind ?? "Sticker",
+        isActive: sourceCategory?.isActive ?? true,
       };
       return { ...prev, [id]: { ...base, ...patch } };
     });
@@ -110,59 +143,66 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
   };
 
   const proposalsSummary = useMemo(() => {
-    const cat = {
-      pending: categoryProposals.filter((p) => p.status === "pending").length,
-      approved: categoryProposals.filter((p) => p.status === "approved").length,
-      rejected: categoryProposals.filter((p) => p.status === "rejected").length,
-    };
-    const meas = {
-      pending: measureProposals.filter((p) => p.status === "pending").length,
-      approved: measureProposals.filter((p) => p.status === "approved").length,
-      rejected: measureProposals.filter((p) => p.status === "rejected").length,
-    };
+    const cat = summarizeStatuses(categoryProposals);
+    const meas = summarizeStatuses(measureProposals);
     return { cat, meas };
   }, [categoryProposals, measureProposals]);
 
+  const categoryProposalsList = useMemo(
+    () => ensureArray<CategoryProposalDto>(categoryProposals),
+    [categoryProposals]
+  );
+
   return (
     <div className="space-y-3">
-      <Card>
+      <Card className="canhoes-glass border-primary/30">
         <CardHeader className="pb-2">
-          <div className="font-semibold">Criar categoria</div>
+          <div className="font-semibold canhoes-title text-xl">Criar categoria</div>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nome" />
+            <Input
+              className="bg-black/30 border-primary/30 text-foreground placeholder:text-muted-foreground/80"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Nome"
+            />
             <Select value={newKind} onValueChange={(v) => setNewKind(v as "Sticker" | "UserVote")}>
-              <SelectTrigger><SelectValue placeholder="Tipo" /></SelectTrigger>
+              <SelectTrigger className="bg-black/30 border-primary/30"><SelectValue placeholder="Tipo" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Sticker">Sticker</SelectItem>
                 <SelectItem value="UserVote">Votar num utilizador</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={create} disabled={creating || !newName.trim()}>
+            <Button className="canhoes-tap canhoes-neon-border" onClick={create} disabled={creating || !newName.trim()}>
               Criar
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="canhoes-glass border-primary/30">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <div className="font-semibold">Categorias</div>
+            <div className="font-semibold canhoes-title text-xl">Categorias</div>
             <Badge variant="outline">{categories.length}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid gap-2">
             {rows.map((r) => (
-              <div key={r.id} className="rounded-lg border p-3 space-y-2">
+              <div key={r.id} className="rounded-lg border border-primary/25 bg-black/25 p-3 space-y-2">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
                   <div className="md:col-span-5">
-                    <Input value={r.name} onChange={(e) => setDraft(r.id, { name: e.target.value })} />
+                    <Input
+                      className="bg-black/30 border-primary/30"
+                      value={r.name}
+                      onChange={(e) => setDraft(r.id, { name: e.target.value })}
+                    />
                   </div>
                   <div className="md:col-span-2">
                     <Input
+                      className="bg-black/30 border-primary/30"
                       value={r.sortOrder}
                       onChange={(e) => setDraft(r.id, { sortOrder: e.target.value })}
                       inputMode="numeric"
@@ -170,7 +210,7 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
                   </div>
                   <div className="md:col-span-3">
                     <Select value={r.kind} onValueChange={(v) => setDraft(r.id, { kind: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="bg-black/30 border-primary/30"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Sticker">Sticker</SelectItem>
                         <SelectItem value="UserVote">Votar num utilizador</SelectItem>
@@ -181,7 +221,7 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
                     <Switch checked={r.isActive} onCheckedChange={(v) => setDraft(r.id, { isActive: v })} />
                   </div>
                   <div className="md:col-span-1 flex justify-end">
-                    <Button size="sm" onClick={() => save(r.id)} disabled={loading}>
+                    <Button size="sm" className="canhoes-tap" onClick={() => save(r.id)} disabled={loading}>
                       Guardar
                     </Button>
                   </div>
@@ -195,9 +235,9 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="canhoes-glass border-primary/30">
         <CardHeader className="pb-2">
-          <div className="font-semibold">Histórico de propostas</div>
+          <div className="font-semibold canhoes-title text-xl">Histórico de propostas</div>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="text-sm">
@@ -214,11 +254,11 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
           </div>
 
           <div className="grid gap-2">
-            {categoryProposals.slice(0, 30).map((p) => (
-              <div key={p.id} className="rounded-lg border p-3">
+            {categoryProposalsList.slice(0, 30).map((p) => (
+              <div key={p.id} className="rounded-lg border border-primary/25 bg-black/25 p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div className="font-medium">{p.name}</div>
-                  <Badge variant={p.status === "approved" ? "default" : p.status === "rejected" ? "destructive" : "secondary"}>
+                  <Badge variant={statusBadgeVariant(p.status)}>
                     {p.status}
                   </Badge>
                 </div>

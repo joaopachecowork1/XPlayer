@@ -95,7 +95,12 @@ export function CanhoesStickerSubmitModule() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg sm:text-xl font-semibold text-jungle-100 inline-flex items-center gap-2"><Cigarette className="h-5 w-5 text-orange-300" />Sticker do Ano</h1>
+        <h1
+          className="canhoes-title inline-flex items-center gap-2"
+          style={{ fontSize: "17px" }}
+        >
+          <Cigarette className="h-5 w-5" style={{ color: "#ff8c00" }} />Sticker do Ano
+        </h1>
         {state && (
           <Badge variant="outline">
             Fase: {state.phase === "nominations" ? "Nomeações" : state.phase}

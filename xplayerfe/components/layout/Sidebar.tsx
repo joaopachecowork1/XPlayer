@@ -66,9 +66,15 @@ type SidebarProps = {
   className?: string;
 };
 
-export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode = "desktop", className }: SidebarProps) {
+export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode = "desktop", className }: Readonly<SidebarProps>) {
   const pathname = usePathname();
   const { user } = useAuth();
+  let widthClass = "w-64";
+  if (mode === "mobile") {
+    widthClass = "w-full";
+  } else if (collapsed) {
+    widthClass = "w-16";
+  }
 
   const isAdmin = !!user?.isAdmin;
   const items = useMemo(() => {
@@ -81,8 +87,8 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
 
   return (
     <aside className={cn(
-      "border-r border-border/50 bg-sidebar transition-all duration-300",
-      mode === "mobile" ? "w-full" : (collapsed ? "w-16" : "w-64"),
+      "border-r border-jungle-400/20 bg-[linear-gradient(180deg,rgba(8,18,13,0.96)_0%,rgba(5,11,8,0.98)_100%)] backdrop-blur-md transition-all duration-300",
+      widthClass,
       className
     )}>
       <div className="flex flex-col h-full">
@@ -132,13 +138,13 @@ export default function Sidebar({ collapsed, onCollapsedChange, onNavigate, mode
                       "transition-all duration-150",
                       collapsed && "justify-center px-0",
                       isActive
-                        ? "bg-primary/15 text-primary font-semibold hover:bg-primary/20"
-                        : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+                            ? "canhoes-chip text-jungle-100 font-semibold shadow-[0_0_18px_rgba(65,255,134,0.14)]"
+                            : "text-jungle-300/80 hover:text-jungle-100 hover:bg-jungle-800/55",
                     )}
                   >
                     <Icon className={cn(
                       "h-4.5 w-4.5 flex-shrink-0",
-                      isActive ? "text-primary" : "text-muted-foreground"
+                          isActive ? "text-jungle-100" : "text-jungle-400/85"
                     )} strokeWidth={isActive ? 2.5 : 1.8} />
                     {!collapsed && <span className="text-sm">{item.label}</span>}
                     {/* Active dot for collapsed mode */}

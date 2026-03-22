@@ -63,22 +63,23 @@ const SessionContext = createContext<Store | null>(null);
 
 function migrateLegacyIfNeeded(userId: string | undefined) {
   // Best-effort: if old unscoped keys exist and scoped keys are empty, move data.
-  if (typeof window === "undefined") return;
+  if (globalThis.window === undefined) return;
   const aKey = scopedKey(userId, "activeSession");
   const hKey = scopedKey(userId, "sessionHistory");
   const bKey = scopedKey(userId, "backlog");
+  const storage = globalThis.localStorage;
 
-  if (!window.localStorage.getItem(aKey) && window.localStorage.getItem(LEGACY_KEYS.active)) {
-    window.localStorage.setItem(aKey, window.localStorage.getItem(LEGACY_KEYS.active) as string);
-    window.localStorage.removeItem(LEGACY_KEYS.active);
+  if (!storage.getItem(aKey) && storage.getItem(LEGACY_KEYS.active)) {
+    storage.setItem(aKey, storage.getItem(LEGACY_KEYS.active) as string);
+    storage.removeItem(LEGACY_KEYS.active);
   }
-  if (!window.localStorage.getItem(hKey) && window.localStorage.getItem(LEGACY_KEYS.history)) {
-    window.localStorage.setItem(hKey, window.localStorage.getItem(LEGACY_KEYS.history) as string);
-    window.localStorage.removeItem(LEGACY_KEYS.history);
+  if (!storage.getItem(hKey) && storage.getItem(LEGACY_KEYS.history)) {
+    storage.setItem(hKey, storage.getItem(LEGACY_KEYS.history) as string);
+    storage.removeItem(LEGACY_KEYS.history);
   }
-  if (!window.localStorage.getItem(bKey) && window.localStorage.getItem(LEGACY_KEYS.backlog)) {
-    window.localStorage.setItem(bKey, window.localStorage.getItem(LEGACY_KEYS.backlog) as string);
-    window.localStorage.removeItem(LEGACY_KEYS.backlog);
+  if (!storage.getItem(bKey) && storage.getItem(LEGACY_KEYS.backlog)) {
+    storage.setItem(bKey, storage.getItem(LEGACY_KEYS.backlog) as string);
+    storage.removeItem(LEGACY_KEYS.backlog);
   }
 }
 
@@ -99,6 +100,10 @@ function buildCompletedSession(active: Session, elapsedSeconds: number, userId?:
 }
 
 function toSession(dto: SessionDto): Session {
+  let status = SessionStatus.COMPLETED;
+  if (dto.status === "ACTIVE") status = SessionStatus.ACTIVE;
+  if (dto.status === "PAUSED") status = SessionStatus.PAUSED;
+
   return {
     id: dto.id,
     userId: dto.userId,
@@ -108,12 +113,7 @@ function toSession(dto: SessionDto): Session {
     released: dto.released ?? undefined,
     score: dto.score ?? undefined,
     platform: dto.platform ?? undefined,
-    status:
-      dto.status === "ACTIVE"
-        ? SessionStatus.ACTIVE
-        : dto.status === "PAUSED"
-          ? SessionStatus.PAUSED
-          : SessionStatus.COMPLETED,
+    status,
     startTime: Date.parse(dto.startedAt),
     endTime: dto.endedAt ? Date.parse(dto.endedAt) : undefined,
     duration: dto.durationSeconds ?? 0,
@@ -138,6 +138,61 @@ function toBacklog(dto: BacklogGameDto): BacklogGame {
   };
 }
 
+function upsertBacklogMetadata(
+  prev: BacklogGame[],
+  payload: StartSessionPayload,
+  startedAt: number
+): BacklogGame[] {
+  const existing = prev.find((g) => g.gameId === payload.gameId);
+  if (existing) {
+    return prev.map((g) => {
+      if (g.gameId === payload.gameId) {
+        return {
+          ...g,
+          gameName: payload.gameName ?? g.gameName,
+          coverUrl: payload.coverUrl ?? g.coverUrl,
+          released: payload.released ?? g.released,
+          score: payload.score ?? g.score,
+        };
+      }
+      return g;
+    });
+  }
+
+  return [
+    {
+      gameId: payload.gameId,
+      gameName: payload.gameName,
+      addedAt: startedAt,
+      sessionsCount: 1,
+      totalPlaySeconds: 0,
+      totalXP: 0,
+      coverUrl: payload.coverUrl ?? undefined,
+      released: payload.released ?? undefined,
+      score: payload.score ?? undefined,
+    },
+    ...prev,
+  ];
+}
+
+function applyCompletedSessionToBacklog(prev: BacklogGame[], completed: Session, endedAt: number): BacklogGame[] {
+  const idx = prev.findIndex((g) => g.gameId === completed.gameId);
+  if (idx === -1) return prev;
+
+  const item = prev[idx];
+  const updated: BacklogGame = {
+    ...item,
+    gameName: completed.gameName ?? item.gameName,
+    lastPlayedAt: endedAt,
+    totalPlaySeconds: (item.totalPlaySeconds ?? 0) + (completed.duration ?? 0),
+    totalXP: (item.totalXP ?? 0) + (completed.xpEarned ?? 0),
+  };
+
+  const next = [...prev];
+  next[idx] = updated;
+  return next;
+}
+
 function useSessionStore(userId: string | undefined): Store {
   // Hydrate (client-only)
   const [activeSession, setActiveSession] = useState<Session | null>(null);
@@ -147,6 +202,17 @@ function useSessionStore(userId: string | undefined): Store {
   // Once we successfully fetch from backend, we treat it as the source of truth.
   // We keep localStorage as a fallback for the *active session* only.
   const [backendReady, setBackendReady] = useState(false);
+
+  const reloadFromBackend = async (opts?: { includeActive?: boolean }) => {
+    const includeActive = opts?.includeActive ?? false;
+    let activeDto: SessionDto | null | undefined;
+    const [b, s] = await Promise.all([backlogRepo.list(), sessionRepo.list()]);
+    if (includeActive) activeDto = await sessionRepo.getActive();
+    setBacklog(b.map(toBacklog));
+    setHistory(s.map(toSession));
+    if (includeActive && activeDto) setActiveSession(toSession(activeDto));
+    setBackendReady(true);
+  };
 
   // Hydration + optional migration
   useEffect(() => {
@@ -164,11 +230,7 @@ function useSessionStore(userId: string | undefined): Store {
 
     const load = async () => {
       try {
-        const [b, s, a] = await Promise.all([
-          backlogRepo.list(),
-          sessionRepo.list(),
-          sessionRepo.getActive(),
-        ]);
+        const [b, s, a] = await Promise.all([backlogRepo.list(), sessionRepo.list(), sessionRepo.getActive()]);
 
         if (cancelled) return;
         setBacklog(b.map(toBacklog));
@@ -207,8 +269,8 @@ function useSessionStore(userId: string | undefined): Store {
 
   // UI tick: for display only (truth is timestamps).
   useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
+    const id = globalThis.setInterval(() => setNow(Date.now()), 1000);
+    return () => globalThis.clearInterval(id);
   }, []);
 
   const isActive = activeSession?.status === SessionStatus.ACTIVE;
@@ -255,36 +317,7 @@ function useSessionStore(userId: string | undefined): Store {
 
     setActiveSession(s);
 
-    setBacklog((prev) => {
-      const existing = prev.find((g) => g.gameId === payload.gameId);
-      if (existing) {
-        // Keep metadata fresh if we have it now.
-        return prev.map((g) =>
-          g.gameId !== payload.gameId
-            ? g
-            : {
-                ...g,
-                gameName: payload.gameName ?? g.gameName,
-                coverUrl: payload.coverUrl ?? g.coverUrl,
-                released: payload.released ?? g.released,
-                score: payload.score ?? g.score,
-              }
-        );
-      }
-
-      const item: BacklogGame = {
-        gameId: payload.gameId,
-        gameName: payload.gameName,
-        addedAt: startedAt,
-        sessionsCount: 1,
-        totalPlaySeconds: 0,
-        totalXP: 0,
-        coverUrl: payload.coverUrl ?? undefined,
-        released: payload.released ?? undefined,
-        score: payload.score ?? undefined,
-      };
-      return [item, ...prev];
-    });
+    setBacklog((prev) => upsertBacklogMetadata(prev, payload, startedAt));
 
     // Persist to backend (best-effort). UI stays responsive even if the call fails.
     try {
@@ -300,21 +333,20 @@ function useSessionStore(userId: string | undefined): Store {
       // Backend becomes the source of truth once available.
       setBackendReady(true);
       setActiveSession(toSession(created));
-      // Refresh backlog in the background to keep aggregates aligned.
-      backlogRepo.list().then((b) => setBacklog(b.map(toBacklog))).catch(() => {});
+      // Refresh aggregates from backend in the background.
+      reloadFromBackend().catch(() => {});
     } catch {
       // If backend fails, we keep local session running.
-      // TODO(back-end): once stable, consider showing a subtle "offline" badge.
     }
   };
 
   const pauseSession = () => {
-    if (!activeSession || activeSession.status !== SessionStatus.ACTIVE) return;
+    if (activeSession?.status !== SessionStatus.ACTIVE) return;
     setActiveSession({ ...activeSession, status: SessionStatus.PAUSED, pausedAt: Date.now() });
   };
 
   const resumeSession = () => {
-    if (!activeSession || activeSession.status !== SessionStatus.PAUSED) return;
+    if (activeSession?.status !== SessionStatus.PAUSED) return;
     const pausedAt = activeSession.pausedAt ?? Date.now();
     const pausedMs = Math.max(0, Date.now() - pausedAt);
     setActiveSession({
@@ -333,23 +365,7 @@ function useSessionStore(userId: string | undefined): Store {
 
     setActiveSession(null);
     setHistory((prev) => [completed, ...prev]);
-
-    setBacklog((prev) => {
-      const idx = prev.findIndex((g) => g.gameId === completed.gameId);
-      if (idx === -1) return prev;
-
-      const item = prev[idx];
-      const updated: BacklogGame = {
-        ...item,
-        gameName: completed.gameName ?? item.gameName,
-        lastPlayedAt: endedAt,
-        totalPlaySeconds: (item.totalPlaySeconds ?? 0) + (completed.duration ?? 0),
-        totalXP: (item.totalXP ?? 0) + (completed.xpEarned ?? 0),
-      };
-      const next = [...prev];
-      next[idx] = updated;
-      return next;
-    });
+    setBacklog((prev) => applyCompletedSessionToBacklog(prev, completed, endedAt));
 
     // Persist stop to backend (best-effort). Backend is the source of truth when available.
     try {
@@ -358,11 +374,8 @@ function useSessionStore(userId: string | undefined): Store {
         endedAt: new Date(endedAt).toISOString(),
         pausedSeconds: pausedSeconds > 0 ? pausedSeconds : null,
       });
-      // Optional: refresh lists from backend to keep totals perfectly aligned.
-      const [b, s] = await Promise.all([backlogRepo.list(), sessionRepo.list()]);
-      setBacklog(b.map(toBacklog));
-      setHistory(s.map(toSession));
-      setBackendReady(true);
+      // Refresh lists from backend to keep totals perfectly aligned.
+      await reloadFromBackend();
     } catch {
       // ignore
     }

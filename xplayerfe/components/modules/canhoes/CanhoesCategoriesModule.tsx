@@ -75,15 +75,23 @@ export function CanhoesCategoriesModule() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="text-base sm:text-lg font-semibold flex items-center gap-2 text-jungle-100">
-          <Flame className="h-4 w-4 text-orange-300" /> Categorias
+        <div
+          className="canhoes-title flex items-center gap-2"
+          style={{ fontSize: "17px" }}
+        >
+          <Flame className="h-4 w-4" style={{ color: "#ff8c00" }} /> Categorias
         </div>
         {state ? <Badge variant="outline">Fase: {state.phase}</Badge> : null}
       </div>
 
       <Card className="canhoes-glass rounded-2xl">
         <CardHeader className="pb-1.5">
-          <CardTitle className="text-base flex items-center gap-2"><Trophy className="h-4 w-4 text-jungle-200" />Propor categoria</CardTitle>
+          <CardTitle
+            className="canhoes-label text-sm flex items-center gap-2"
+            style={{ color: "rgba(0,255,68,0.80)" }}
+          >
+            <Trophy className="h-4 w-4" style={{ color: "#ffe135" }} />Propor categoria
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid gap-2.5 sm:grid-cols-2">

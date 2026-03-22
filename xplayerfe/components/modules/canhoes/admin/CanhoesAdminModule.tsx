@@ -34,6 +34,32 @@ type VoteAuditRow = {
   updatedAtUtc: string;
 };
 
+type ProposalsPayload<T> =
+  | T[]
+  | {
+      pending?: T[];
+      approved?: T[];
+      rejected?: T[];
+    }
+  | null
+  | undefined;
+
+function normalizeProposals<T>(payload: ProposalsPayload<T>): T[] {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== "object") return [];
+
+  const grouped = payload as { pending?: T[]; approved?: T[]; rejected?: T[] };
+  return [
+    ...(Array.isArray(grouped.pending) ? grouped.pending : []),
+    ...(Array.isArray(grouped.approved) ? grouped.approved : []),
+    ...(Array.isArray(grouped.rejected) ? grouped.rejected : []),
+  ];
+}
+
+const EMPTY_PENDING = { nominees: [], categoryProposals: [], measureProposals: [] };
+const EMPTY_HISTORY = { categoryProposals: [], measureProposals: [] };
+const EMPTY_VOTES = { votes: [] };
+
 const safe = async <T,>(p: Promise<T>, fallback: T): Promise<T> => {
   try {
     return await p;
@@ -63,25 +89,25 @@ export default function CanhoesAdminModule() {
     setLoading(true);
     try {
       const [st, cats, pend, votesResp, hist] = await Promise.all([
-        safe<CanhoesStateDto | null>(
-          canhoesRepo.getState(),
-          null as unknown as CanhoesStateDto
-        ),
+        safe<CanhoesStateDto | null>(canhoesRepo.getState(), null),
         safe<AwardCategoryDto[]>(
           canhoesRepo.adminGetAllCategories(),
           [] as AwardCategoryDto[]
         ),
         safe<{ nominees: NomineeDto[]; categoryProposals: CategoryProposalDto[]; measureProposals: MeasureProposalDto[] }>(
           canhoesRepo.adminPending(),
-          { nominees: [], categoryProposals: [], measureProposals: [] }
+          EMPTY_PENDING
         ),
         safe<{ votes: VoteAuditRow[] }>(
           canhoesRepo.adminVotes(),
-          { votes: [] }
+          EMPTY_VOTES
         ),
-        safe<{ categoryProposals: CategoryProposalDto[]; measureProposals: MeasureProposalDto[] }>(
+        safe<{
+          categoryProposals: ProposalsPayload<CategoryProposalDto>;
+          measureProposals: ProposalsPayload<MeasureProposalDto>;
+        }>(
           canhoesRepo.adminProposalsHistory(),
-          { categoryProposals: [], measureProposals: [] }
+          EMPTY_HISTORY
         ),
       ]);
 
@@ -91,8 +117,8 @@ export default function CanhoesAdminModule() {
       setPendingCats(pend.categoryProposals ?? []);
       setPendingMeasures(pend.measureProposals ?? []);
       setVotes(votesResp.votes ?? []);
-      setAllCategoryProposals(hist.categoryProposals ?? []);
-      setAllMeasureProposals(hist.measureProposals ?? []);
+      setAllCategoryProposals(normalizeProposals(hist.categoryProposals));
+      setAllMeasureProposals(normalizeProposals(hist.measureProposals));
     } catch (err) {
       console.error("Admin load error:", err);
       toast.error("Erro ao carregar dados");
