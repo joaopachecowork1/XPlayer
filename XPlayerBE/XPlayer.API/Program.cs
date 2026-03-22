@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using XPlayer.Api;
 using XPlayer.Api.Auth;
 using XPlayer.Api.Data;
 using XPlayer.Api.Middleware;
@@ -50,13 +51,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddCors(opt =>
-{
-    opt.AddPolicy("dev", p =>
-        p.AllowAnyHeader()
-         .AllowAnyMethod()
-         .AllowAnyOrigin());
-});
+builder.Services.AddFrontendCors(builder.Configuration);
 
 var app = builder.Build();
 
@@ -67,7 +62,7 @@ if (string.IsNullOrWhiteSpace(app.Environment.WebRootPath))
     app.Environment.WebRootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
 }
 
-app.UseCors("dev");
+app.UseFrontendCors();
 
 // Global error handling – must be first in the middleware pipeline.
 app.UseMiddleware<ErrorHandlingMiddleware>();
