@@ -21,6 +21,7 @@ export function GameList({ games, onSelect }: GameListProps) {
           onClick={() => onSelect(game)}
           className="w-full flex items-start gap-3 p-3 hover:bg-accent transition-colors text-left border-b last:border-b-0"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={game.background_image || "https://via.placeholder.com/80x60?text=No+Image"}
             alt={game.name}

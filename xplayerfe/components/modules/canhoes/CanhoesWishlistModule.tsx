@@ -152,6 +152,7 @@ export function CanhoesWishlistModule() {
                       <div key={it.id} className="canhoes-chip flex gap-3 rounded-xl p-2">
                         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted flex items-center justify-center">
                           {it.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={`${XPLAYER_API_URL}${it.imageUrl}`}
                               alt={it.title}

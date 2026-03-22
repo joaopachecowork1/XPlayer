@@ -73,6 +73,7 @@ export function MediaCarousel({
               aspectCls
             )}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={absMediaUrl(u)}
               alt="post media"

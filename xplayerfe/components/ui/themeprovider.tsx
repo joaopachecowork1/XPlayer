@@ -121,7 +121,7 @@ export function useTheme() {
     return {
       theme: "system" as Theme,
       resolvedTheme: "light" as Exclude<Theme, "system">,
-      setTheme: (_: Theme) => {},
+      setTheme: () => {},
     }
   }
   return ctx

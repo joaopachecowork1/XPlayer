@@ -116,7 +116,8 @@ export function CategoriesAdmin({ categories, categoryProposals, measureProposal
       });
       toast.success("Categoria atualizada");
       setDrafts((p) => {
-        const { [id]: _removed, ...rest } = p;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [id]: _, ...rest } = p;
         return rest;
       });
       onUpdate();

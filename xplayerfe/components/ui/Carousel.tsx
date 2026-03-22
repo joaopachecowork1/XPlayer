@@ -14,6 +14,7 @@ export default function Carousel({ items }: { items: Media[] }) {
         style={{ scrollBehavior: 'smooth' }}
       >
         {items.map((m) => (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             key={String(m.id)}
             src={m.url}

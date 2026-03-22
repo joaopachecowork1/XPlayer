@@ -16,12 +16,6 @@ const NAV_ITEMS = [
 /**
  * Thumb-friendly bottom navigation for mobile screens.
  * Hidden on md+ (desktop uses the sidebar).
- *
- * Design notes:
- * - 56px height + safe-area padding
- * - 44px minimum tap target per item
- * - Active item gets emerald glow indicator
- * - Subtle backdrop-blur for depth
  */
 export function BottomNav() {
   const pathname = usePathname() ?? "";
@@ -31,13 +25,13 @@ export function BottomNav() {
       aria-label="Navegação principal"
       className={cn(
         "fixed bottom-0 inset-x-0 z-40",
-        "md:hidden", // desktop uses sidebar
-        "border-t border-border/50",
-        "bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/80",
+        "md:hidden",
+        "border-t border-border/40",
+        "bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/85",
         "pb-safe",
       )}
     >
-      <ul className="flex h-14 items-stretch">
+      <ul className="flex h-16 items-stretch">
         {NAV_ITEMS.map(({ id, label, href, icon: Icon }) => {
           const isActive =
             pathname === href ||
@@ -48,31 +42,41 @@ export function BottomNav() {
               <Link
                 href={href}
                 className={cn(
-                  "relative flex h-full flex-col items-center justify-center gap-0.5 px-1",
-                  "transition-all duration-150 ease-out",
-                  "tap-scale", // press scale from globals.css
+                  "relative flex h-full flex-col items-center justify-center gap-1 px-1",
+                  "transition-all duration-200 ease-out",
+                  "tap-scale",
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground",
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
-                {/* Active indicator dot */}
+                {/* Active pill indicator */}
                 {isActive && (
                   <span
-                    className="absolute top-1 h-0.5 w-5 rounded-full bg-primary animate-nav-indicator"
+                    className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full bg-primary animate-nav-indicator origin-center"
                     aria-hidden="true"
                   />
                 )}
 
-                <Icon
-                  className={cn(
-                    "h-5 w-5 transition-transform duration-150",
-                    isActive && "scale-110",
-                  )}
-                  strokeWidth={isActive ? 2.5 : 1.8}
-                />
-                <span className="text-[10px] font-medium leading-none">{label}</span>
+                <div className={cn(
+                  "relative flex items-center justify-center rounded-xl transition-all duration-200",
+                  isActive
+                    ? "bg-primary/12 w-12 h-7"
+                    : "w-10 h-7",
+                )}>
+                  <Icon
+                    className={cn(
+                      "transition-all duration-200",
+                      isActive ? "h-[22px] w-[22px]" : "h-[20px] w-[20px]",
+                    )}
+                    strokeWidth={isActive ? 2.5 : 1.8}
+                  />
+                </div>
+                <span className={cn(
+                  "text-[10px] leading-none transition-all duration-200",
+                  isActive ? "font-semibold" : "font-medium",
+                )}>{label}</span>
               </Link>
             </li>
           );

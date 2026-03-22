@@ -20,6 +20,7 @@ export function SelectedGameCard({ game }: SelectedGameCardProps) {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={game.background_image || "https://via.placeholder.com/100x75?text=No+Image"}
             alt={game.name}

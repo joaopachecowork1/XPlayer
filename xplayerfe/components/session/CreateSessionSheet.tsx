@@ -77,7 +77,7 @@ export function CreateSessionSheet({ open, onOpenChange, onStart, disabled, pres
 
     // No preset: normal search mode.
     setLockedSelection(false);
-  }, [open, presetGame]);
+  }, [open, presetGame, lockedSelection]);
 
   useEffect(() => {
     if (!open) return;

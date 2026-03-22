@@ -7,6 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Keep jungle/moss for Canhões theme compatibility
         jungle: {
           50:  "#f0fdf4",
           100: "#dcfce7",
@@ -48,8 +49,8 @@ module.exports = {
           to:   { opacity: "1", transform: "translateY(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 8px oklch(0.72 0.19 152 / 20%)" },
-          "50%":       { boxShadow: "0 0 20px oklch(0.72 0.19 152 / 45%)" },
+          "0%, 100%": { boxShadow: "0 0 8px oklch(0.68 0.22 280 / 20%)" },
+          "50%":       { boxShadow: "0 0 20px oklch(0.68 0.22 280 / 50%)" },
         },
         "ambient-float": {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -62,6 +63,10 @@ module.exports = {
         "nav-indicator": {
           from: { transform: "scaleX(0)" },
           to:   { transform: "scaleX(1)" },
+        },
+        "stagger-in": {
+          from: { opacity: "0", transform: "translateY(12px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
         },
         "canhoes-float": {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -80,6 +85,7 @@ module.exports = {
         "ambient-float":   "ambient-float 3s ease-in-out infinite",
         "xp-count":        "xp-count 0.3s cubic-bezier(0.34,1.56,0.64,1)",
         "nav-indicator":   "nav-indicator 0.2s ease-out",
+        "stagger-in":      "stagger-in 0.25s ease-out both",
         "canhoes-float":   "canhoes-float 3s ease-in-out infinite",
         "canhoes-pulse":   "canhoes-pulse 2.6s ease-in-out infinite",
       },

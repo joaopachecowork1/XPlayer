@@ -12,13 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { Cigarette, ImageOff, Upload } from "lucide-react";
 import { toast } from "sonner";
 
-const UNCATEGORIZED_VALUE = "__uncategorized__";
-
-const PHASE_LABELS: Record<string, string> = {
-  nominations: "nomeações",
-  voting: "votação",
-  gala: "gala",
-};
 
 // Sentinel for "no category selected yet" — Radix UI Select does NOT
 // accept value="" so we use a non-empty placeholder value instead.
@@ -280,6 +273,7 @@ export function CanhoesNomineesModule() {
                         style={{ background: "rgba(0,20,10,0.8)", border: "1px solid rgba(0,255,68,0.15)" }}
                       >
                         {n.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={`${XPLAYER_API_URL}${n.imageUrl}`}
                             alt={n.title}
