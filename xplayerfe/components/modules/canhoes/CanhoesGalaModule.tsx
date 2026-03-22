@@ -60,6 +60,7 @@ export function CanhoesGalaModule() {
                       <div key={n.nomineeId} className="flex items-center gap-3 rounded-lg border p-2">
                         <div className="h-12 w-12 overflow-hidden rounded-md bg-muted flex items-center justify-center">
                           {n.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={`${XPLAYER_API_URL}${n.imageUrl}`}
                               alt={n.title}

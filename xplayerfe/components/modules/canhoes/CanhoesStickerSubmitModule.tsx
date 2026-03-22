@@ -179,6 +179,7 @@ export function CanhoesStickerSubmitModule() {
             {withImage.map((n) => (
               <Card key={n.id} className="overflow-hidden">
                 <div className="aspect-square bg-muted flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`${XPLAYER_API_URL}${n.imageUrl}`}
                     alt={n.title}

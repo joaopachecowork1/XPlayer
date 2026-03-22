@@ -52,92 +52,92 @@
 ───────────────────────────────────────── */
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.97 0.01 152);
-  --foreground: oklch(0.15 0.04 152);
+  --background: oklch(0.97 0.005 265);
+  --foreground: oklch(0.15 0.02 265);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.04 152);
+  --card-foreground: oklch(0.15 0.02 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.04 152);
-  --primary: oklch(0.55 0.19 152);
-  --primary-foreground: oklch(0.98 0.005 152);
-  --secondary: oklch(0.92 0.03 152);
-  --secondary-foreground: oklch(0.2 0.05 152);
-  --muted: oklch(0.93 0.02 152);
-  --muted-foreground: oklch(0.5 0.06 152);
-  --accent: oklch(0.92 0.03 152);
-  --accent-foreground: oklch(0.2 0.05 152);
+  --popover-foreground: oklch(0.15 0.02 265);
+  --primary: oklch(0.58 0.22 280);
+  --primary-foreground: oklch(0.98 0.005 280);
+  --secondary: oklch(0.92 0.01 265);
+  --secondary-foreground: oklch(0.2 0.03 265);
+  --muted: oklch(0.93 0.008 265);
+  --muted-foreground: oklch(0.5 0.04 265);
+  --accent: oklch(0.92 0.01 265);
+  --accent-foreground: oklch(0.2 0.03 265);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.04 152);
-  --input: oklch(0.88 0.04 152);
-  --ring: oklch(0.55 0.19 152);
+  --border: oklch(0.88 0.01 265);
+  --input: oklch(0.88 0.01 265);
+  --ring: oklch(0.58 0.22 280);
   --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.55 0.19 152);
-  --chart-3: oklch(0.398 0.07 152);
-  --chart-4: oklch(0.72 0.16 152);
+  --chart-2: oklch(0.58 0.22 280);
+  --chart-3: oklch(0.5 0.15 265);
+  --chart-4: oklch(0.72 0.18 280);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.94 0.025 152);
-  --sidebar-foreground: oklch(0.15 0.04 152);
-  --sidebar-primary: oklch(0.55 0.19 152);
-  --sidebar-primary-foreground: oklch(0.98 0.005 152);
-  --sidebar-accent: oklch(0.88 0.04 152);
-  --sidebar-accent-foreground: oklch(0.2 0.05 152);
-  --sidebar-border: oklch(0.85 0.04 152);
-  --sidebar-ring: oklch(0.55 0.19 152);
+  --sidebar: oklch(0.94 0.008 265);
+  --sidebar-foreground: oklch(0.15 0.02 265);
+  --sidebar-primary: oklch(0.58 0.22 280);
+  --sidebar-primary-foreground: oklch(0.98 0.005 280);
+  --sidebar-accent: oklch(0.88 0.01 265);
+  --sidebar-accent-foreground: oklch(0.2 0.03 265);
+  --sidebar-border: oklch(0.85 0.01 265);
+  --sidebar-ring: oklch(0.58 0.22 280);
 }
 
 /* ─────────────────────────────────────────
-   DARK — Hollow Knight / deep jungle theme
-   Atmospheric, earthy greens + soft emerald glow
+   DARK — Modern 2025 slate/indigo theme
+   Deep blue-black with vibrant violet accent
 ───────────────────────────────────────── */
 .dark {
-  /* Deep forest backgrounds */
-  --background: oklch(0.11 0.025 152);       /* #0b1a14 — very dark jungle */
-  --foreground: oklch(0.96 0.01 240);        /* ~#f1f5f9 */
+  /* Deep blue-black backgrounds */
+  --background: oklch(0.09 0.018 265);
+  --foreground: oklch(0.93 0.01 265);
 
   /* Card surfaces — slightly elevated */
-  --card: oklch(0.15 0.03 152);             /* #0f2119 */
-  --card-foreground: oklch(0.96 0.01 240);
+  --card: oklch(0.13 0.022 265);
+  --card-foreground: oklch(0.93 0.01 265);
 
-  --popover: oklch(0.17 0.035 152);
-  --popover-foreground: oklch(0.96 0.01 240);
+  --popover: oklch(0.15 0.025 265);
+  --popover-foreground: oklch(0.93 0.01 265);
 
-  /* Emerald primary — the soul glow */
-  --primary: oklch(0.72 0.19 152);           /* emerald-400 */
-  --primary-foreground: oklch(0.1 0.025 152);
+  /* Vibrant violet/indigo primary */
+  --primary: oklch(0.68 0.22 280);
+  --primary-foreground: oklch(0.98 0.005 280);
 
-  /* Muted moss tones */
-  --secondary: oklch(0.2 0.04 152);
-  --secondary-foreground: oklch(0.96 0.01 240);
-  --muted: oklch(0.18 0.03 152);
-  --muted-foreground: oklch(0.72 0.03 240);  /* ~#94A3B8 */
+  /* Muted slate tones */
+  --secondary: oklch(0.19 0.02 265);
+  --secondary-foreground: oklch(0.88 0.01 265);
+  --muted: oklch(0.17 0.018 265);
+  --muted-foreground: oklch(0.55 0.04 265);
 
-  /* Accent — slightly brighter moss */
-  --accent: oklch(0.22 0.045 152);
-  --accent-foreground: oklch(0.96 0.01 240);
+  /* Accent — slightly brighter slate */
+  --accent: oklch(0.21 0.025 265);
+  --accent-foreground: oklch(0.88 0.01 265);
 
   --destructive: oklch(0.65 0.22 25);
 
-  /* Subtle emerald-tinted borders */
-  --border: oklch(0.72 0.19 152 / 16%);
-  --input: oklch(0.72 0.19 152 / 12%);
-  --ring: oklch(0.72 0.19 152 / 60%);
+  /* Subtle violet-tinted borders */
+  --border: oklch(0.68 0.22 280 / 15%);
+  --input: oklch(0.68 0.22 280 / 10%);
+  --ring: oklch(0.68 0.22 280 / 60%);
 
   /* Charts */
-  --chart-1: oklch(0.72 0.19 152);
-  --chart-2: oklch(0.62 0.17 170);
+  --chart-1: oklch(0.68 0.22 280);
+  --chart-2: oklch(0.62 0.18 260);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
   /* Sidebar — same depth as cards */
-  --sidebar: oklch(0.14 0.03 152);
-  --sidebar-foreground: oklch(0.96 0.01 240);
-  --sidebar-primary: oklch(0.72 0.19 152);
-  --sidebar-primary-foreground: oklch(0.1 0.025 152);
-  --sidebar-accent: oklch(0.2 0.04 152);
-  --sidebar-accent-foreground: oklch(0.96 0.01 240);
-  --sidebar-border: oklch(0.72 0.19 152 / 12%);
-  --sidebar-ring: oklch(0.72 0.19 152 / 40%);
+  --sidebar: oklch(0.12 0.02 265);
+  --sidebar-foreground: oklch(0.88 0.01 265);
+  --sidebar-primary: oklch(0.68 0.22 280);
+  --sidebar-primary-foreground: oklch(0.98 0.005 280);
+  --sidebar-accent: oklch(0.19 0.02 265);
+  --sidebar-accent-foreground: oklch(0.88 0.01 265);
+  --sidebar-border: oklch(0.68 0.22 280 / 12%);
+  --sidebar-ring: oklch(0.68 0.22 280 / 40%);
 }
 
 /* ─────────────────────────────────────────
@@ -145,14 +145,12 @@
    Neon green jungle game-UI theme.
 ───────────────────────────────────────── */
 .dark [data-theme="canhoes"] {
-  /* Deeper, more neon green primary */
   --primary: oklch(0.75 0.22 152);
   --primary-foreground: oklch(0.10 0.025 152);
   --ring: oklch(0.75 0.22 152 / 60%);
   --sidebar-primary: oklch(0.75 0.22 152);
   --sidebar-primary-foreground: oklch(0.10 0.025 152);
   --chart-4: oklch(0.75 0.22 152);
-  /* Deeper background — near-black jungle */
   --background: oklch(0.08 0.02 152);
   --card: oklch(0.11 0.025 152);
   --border: oklch(0.75 0.22 152 / 18%);
@@ -195,13 +193,13 @@
     @apply transition-transform duration-100 ease-out active:scale-[0.97];
   }
   .glow-primary {
-    box-shadow: 0 0 12px oklch(0.72 0.19 152 / 35%);
+    box-shadow: 0 0 12px oklch(0.68 0.22 280 / 40%);
   }
   .glow-primary-sm {
-    box-shadow: 0 0 14px oklch(0.72 0.19 152 / 25%);
+    box-shadow: 0 0 14px oklch(0.68 0.22 280 / 28%);
   }
   .glow-primary-lg {
-    box-shadow: 0 0 28px oklch(0.72 0.19 152 / 25%), 0 0 8px oklch(0.72 0.19 152 / 40%);
+    box-shadow: 0 0 28px oklch(0.68 0.22 280 / 30%), 0 0 8px oklch(0.68 0.22 280 / 45%);
   }
   /* Safe-area bottom padding for bottom nav on notched phones */
   .pb-safe {
@@ -210,22 +208,33 @@
   .mb-safe {
     margin-bottom: max(0px, env(safe-area-inset-bottom));
   }
+  /* Stagger animation delays for list items */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.10s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.20s; }
+  .stagger-5 { animation-delay: 0.25s; }
+
+  /* Glassmorphism utility for modern cards */
+  .glass {
+    background: oklch(0.14 0.025 265 / 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.68 0.22 280 / 0.18);
+  }
 
   /* ══════════════════════════════════════════
      CANHOES CUSTOM UTILITIES
      Mobile-first Instagram-like design system
-     IMPROVED VISIBILITY: Better contrast & readability
   ══════════════════════════════════════════ */
-  
-  /* Glassmorphism effect for cards — lighter & more visible */
+
   .canhoes-glass {
     background-color: rgba(15, 36, 21, 0.5);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1.5px solid oklch(0.72 0.19 152 / 0.35);
   }
-  
-  /* Elevated pill/badge component with glow */
+
   .canhoes-chip {
     background-color: rgba(20, 45, 25, 0.65);
     backdrop-filter: blur(6px);
@@ -233,23 +242,19 @@
     border: 1px solid oklch(0.72 0.19 152 / 0.4);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(126, 255, 183, 0.1);
   }
-  
-  /* Mobile tap feedback with smooth scale transition */
+
   .canhoes-tap {
     @apply transition-transform duration-100 ease-out active:scale-95;
   }
-  
-  /* Floating animation for prominent CTAs */
+
   .canhoes-float {
     animation: canhoes-float 3s ease-in-out infinite;
   }
-  
-  /* Pulsing glow effect for floating action button */
+
   .canhoes-pulse {
     animation: canhoes-pulse 2.5s ease-in-out infinite;
   }
 
-  /* Yellow neon title style used in headers and card titles */
   .canhoes-title {
     font-family: 'Fredoka One', cursive;
     color: #ffe135;
@@ -257,7 +262,6 @@
     letter-spacing: 0.01em;
   }
 
-  /* Neon green border style for buttons and highlighted elements */
   .canhoes-neon-border {
     border: 1.5px solid rgba(0, 255, 68, 0.5);
     box-shadow: 0 0 10px rgba(0, 255, 68, 0.2);
@@ -280,8 +284,8 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px oklch(0.72 0.19 152 / 20%); }
-  50%       { box-shadow: 0 0 20px oklch(0.72 0.19 152 / 45%); }
+  0%, 100% { box-shadow: 0 0 8px oklch(0.68 0.22 280 / 20%); }
+  50%       { box-shadow: 0 0 20px oklch(0.68 0.22 280 / 50%); }
 }
 @keyframes ambient-float {
   0%, 100% { transform: translateY(0px); }
@@ -294,6 +298,10 @@
 @keyframes nav-indicator {
   from { transform: scaleX(0); }
   to   { transform: scaleX(1); }
+}
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes canhoes-float {
   0%, 100% { transform: translateY(0px); }

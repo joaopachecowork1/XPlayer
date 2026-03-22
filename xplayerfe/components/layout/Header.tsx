@@ -62,7 +62,7 @@ export function Header({ title = "", onMenuClick }: HeaderProps) {
           ) : (
             <div className="flex items-center gap-2">
               <div
-                className="h-7 w-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center md:hidden glow-primary"
+                className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center md:hidden glow-primary"
               >
                 <span className="text-[10px] font-black text-white leading-none">X</span>
               </div>
@@ -82,7 +82,7 @@ export function Header({ title = "", onMenuClick }: HeaderProps) {
                 aria-label="Menu do utilizador"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+                  <AvatarFallback className="bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-xs font-bold">
                     {initials}
                   </AvatarFallback>
                 </Avatar>

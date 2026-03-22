@@ -149,6 +149,11 @@ export const canhoesRepo = {
   // ADMIN - Pending Approvals
   // ==========================================
 
+  adminGetAllNominees: (status?: string) =>
+    xplayerFetch<T.NomineeDto[]>(
+      `/canhoes/admin/nominees${status ? `?status=${encodeURIComponent(status)}` : ""}`
+    ),
+
   adminPending: () => xplayerFetch<T.PendingAdminDto>("/canhoes/admin/pending"),
 
   approveNominee: (id: string) =>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
 import { useAuth } from "@/hooks/useAuth";
 import type { SecretSantaMeDto, WishlistItemDto } from "@/lib/api/types";
@@ -19,12 +19,11 @@ export function CanhoesSecretSantaModule() {
   const [drawing, setDrawing] = useState(false);
   const [eventCode, setEventCode] = useState<string>(() => `canhoes${new Date().getFullYear()}`);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     try {
       const data = await canhoesRepo.getSecretSantaMe(eventCode);
       setMe(data);
-      // Load the wishlist and filter for the assigned receiver
       const allItems = await canhoesRepo.getWishlist();
       setWishlist(allItems.filter((it) => it.userId === data.receiver.id));
     } catch {
@@ -33,9 +32,9 @@ export function CanhoesSecretSantaModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventCode]);
 
-  useEffect(() => { void refresh(); }, [eventCode]);
+  useEffect(() => { void refresh(); }, [refresh]);
 
   const onDraw = async () => {
     setDrawing(true);
@@ -130,6 +129,7 @@ export function CanhoesSecretSantaModule() {
                 <div key={it.id} className="flex gap-3 rounded-xl border p-3">
                   <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted flex items-center justify-center">
                     {it.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={`${XPLAYER_API_URL}${it.imageUrl}`}
                         alt={it.title}

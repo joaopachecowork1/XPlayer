@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
 import type { AwardCategoryDto, CanhoesStateDto, NomineeDto, VoteDto, PublicUserDto, UserVoteDto } from "@/lib/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -164,6 +163,7 @@ export function CanhoesVotingModule() {
                         >
                           <div className="h-12 w-12 overflow-hidden rounded-md bg-background/60 border border-jungle-400/30">
                             {n.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={`/api/proxy${n.imageUrl}`}
                                 alt={n.title}
