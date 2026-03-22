@@ -20,7 +20,7 @@ const client = new QueryClient({
 
 export default function AppProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <SessionProvider>
+    <SessionProvider basePath="/api/auth">
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <QueryClientProvider client={client}>
           <AuthProvider>

@@ -63,6 +63,14 @@ module.exports = {
           from: { transform: "scaleX(0)" },
           to:   { transform: "scaleX(1)" },
         },
+        "canhoes-float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%":       { transform: "translateY(-6px)" },
+        },
+        "canhoes-pulse": {
+          "0%, 100%": { boxShadow: "0 0 12px oklch(0.72 0.19 152 / 25%)" },
+          "50%":       { boxShadow: "0 0 28px oklch(0.72 0.19 152 / 45%), 0 0 8px oklch(0.72 0.19 152 / 30%)" },
+        },
       },
       animation: {
         "fade-in":         "fade-in 0.18s ease-out",
@@ -72,6 +80,8 @@ module.exports = {
         "ambient-float":   "ambient-float 3s ease-in-out infinite",
         "xp-count":        "xp-count 0.3s cubic-bezier(0.34,1.56,0.64,1)",
         "nav-indicator":   "nav-indicator 0.2s ease-out",
+        "canhoes-float":   "canhoes-float 3s ease-in-out infinite",
+        "canhoes-pulse":   "canhoes-pulse 2.6s ease-in-out infinite",
       },
     },
   },
