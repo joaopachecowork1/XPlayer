@@ -7,9 +7,10 @@ const backend =
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const path = params.path.join("/");
+  const { path: pathSegments } = await params;
+  const path = pathSegments.join("/");
   const url = `${backend}/uploads/${path}`;
 
   const res = await fetch(url, {
