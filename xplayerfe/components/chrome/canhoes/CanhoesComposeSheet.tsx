@@ -265,15 +265,22 @@ export function CanhoesComposeSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-2xl bg-gradient-to-b from-jungle-950 to-moss-950 border-t border-jungle-700/30">
+      <SheetContent
+        side="bottom"
+        className="rounded-t-2xl border-t"
+        style={{
+          background: "linear-gradient(145deg, #0d1f12, #091508)",
+          borderColor: "#2aaa44",
+        }}
+      >
         <SheetHeader className="pb-2">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-8 rounded-full bg-jungle-700/40 border border-jungle-600/30 flex items-center justify-center">
-              <Leaf className="w-4 h-4 text-jungle-300" />
+            <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,255,68,0.12)", border: "1px solid rgba(0,255,68,0.3)" }}>
+              <Leaf className="w-4 h-4" style={{ color: "#00ff44" }} />
             </span>
-            <SheetTitle className="text-jungle-100 text-base">Novo Post</SheetTitle>
+            <SheetTitle style={{ fontFamily: "'Fredoka One', cursive", color: "#ffe135", fontSize: "18px" }}>Novo Post</SheetTitle>
           </div>
-          <div className="h-px bg-gradient-to-r from-transparent via-jungle-700/40 to-transparent mt-1" />
+          <div className="h-px mt-1" style={{ background: "linear-gradient(90deg, transparent, #00ff4430, transparent)" }} />
         </SheetHeader>
 
         {isAuthed ? (
@@ -282,13 +289,21 @@ export function CanhoesComposeSheet({
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="O que está a acontecer?"
-              className="min-h-[88px] sm:min-h-[100px] bg-jungle-900/40 border-jungle-700/30 text-jungle-50 placeholder:text-jungle-600/70 focus-visible:ring-jungle-600/50 resize-none rounded-xl"
+              className="min-h-[88px] sm:min-h-[100px] resize-none rounded-xl focus-visible:ring-0"
+              style={{
+                background: "#091508",
+                border: "1.5px solid #2aaa44",
+                color: "#c8f5c8",
+                fontFamily: "'Nunito', sans-serif",
+                fontWeight: 700,
+                fontSize: "14px",
+              }}
               autoFocus
             />
 
             {files.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] text-jungle-400/80">
+                <div className="flex items-center justify-between text-[11px]" style={{ color: "#7abf7a" }}>
                   <span className="inline-flex items-center gap-1">
                     <GripHorizontal className="h-3.5 w-3.5" />
                     Ordem das fotos no post
@@ -298,7 +313,7 @@ export function CanhoesComposeSheet({
 
                 <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2">
                 {files.map((f, idx) => (
-                    <div key={`${f.name}-${f.size}-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden border border-jungle-700/30 bg-black/10">
+                    <div key={`${f.name}-${f.size}-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden border bg-black/10" style={{ borderColor: "#2aaa44" }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={previewUrls[idx]} className="h-full w-full object-cover" alt={f.name} loading="lazy" decoding="async" />
                       <div className="absolute left-1 top-1 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
@@ -338,8 +353,8 @@ export function CanhoesComposeSheet({
             )}
 
             {submitting && files.length > 0 && (
-              <div className="space-y-1.5 rounded-xl border border-jungle-700/30 bg-jungle-900/30 p-3">
-                <div className="flex items-center justify-between text-xs text-jungle-300">
+              <div className="space-y-1.5 rounded-xl p-3" style={{ border: "1px solid #2aaa44", background: "#091508" }}>
+                <div className="flex items-center justify-between text-xs" style={{ color: "#7abf7a" }}>
                   <span>{uploadLabel || "A enviar..."}</span>
                   <span>{uploadProgress}%</span>
                 </div>
@@ -348,21 +363,35 @@ export function CanhoesComposeSheet({
             )}
 
             {pollOn && (
-              <div className="bg-jungle-900/30 rounded-xl border border-jungle-700/25 p-3 space-y-2">
-                <div className="flex items-center gap-2 text-jungle-300 text-sm font-medium">
+              <div className="rounded-xl p-3 space-y-2" style={{ background: "#091508", border: "1.5px solid #2aaa44" }}>
+                <div className="flex items-center gap-2 text-sm font-medium" style={{ color: "#7abf7a" }}>
                   <BarChart3 className="w-4 h-4" /> Votação
                 </div>
                 <Textarea
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
                   placeholder="Pergunta da votação..."
-                  className="min-h-[56px] bg-jungle-900/40 border-jungle-700/30 text-jungle-100 placeholder:text-jungle-600/70 resize-none rounded-xl text-sm"
+                  className="min-h-[56px] resize-none rounded-xl text-sm focus-visible:ring-0"
+                  style={{
+                    background: "#091508",
+                    border: "1.5px solid #2aaa44",
+                    color: "#c8f5c8",
+                    fontFamily: "'Nunito', sans-serif",
+                    fontWeight: 700,
+                  }}
                 />
                 <div className="space-y-2">
                   {pollOptions.map((opt, idx) => (
                     <div key={`poll-${idx}-${opt.length}`} className="flex gap-2">
                       <input
-                        className="flex-1 h-9 rounded-lg border border-jungle-700/30 bg-jungle-900/40 px-3 text-sm text-jungle-100 placeholder:text-jungle-600/70 focus:outline-none focus:ring-1 focus:ring-jungle-600/50"
+                        className="flex-1 h-9 rounded-lg px-3 text-sm focus:outline-none"
+                        style={{
+                          background: "#091508",
+                          border: "1.5px solid #2aaa44",
+                          color: "#c8f5c8",
+                          fontFamily: "'Nunito', sans-serif",
+                          fontWeight: 700,
+                        }}
                         value={opt}
                         onChange={(e) => updatePollOption(idx, e.target.value)}
                         placeholder={`Opção ${idx + 1}`}
@@ -371,7 +400,8 @@ export function CanhoesComposeSheet({
                         <button
                           type="button"
                           onClick={() => removePollOption(idx)}
-                          className="w-9 h-9 rounded-lg border border-jungle-700/25 flex items-center justify-center text-jungle-600 hover:text-red-400 hover:border-red-500/30 transition-all"
+                          className="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
+                          style={{ border: "1.5px solid #2aaa44", color: "#7abf7a" }}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -382,7 +412,8 @@ export function CanhoesComposeSheet({
                     <button
                       type="button"
                       onClick={addPollOption}
-                      className="flex items-center gap-1.5 text-xs text-jungle-500 hover:text-jungle-300 transition-colors"
+                      className="flex items-center gap-1.5 text-xs transition-colors"
+                      style={{ color: "#7abf7a" }}
                     >
                       <PlusCircle className="w-3.5 h-3.5" /> Adicionar opção
                     </button>
@@ -399,15 +430,17 @@ export function CanhoesComposeSheet({
                   title="Imagens"
                   disabled={submitting || files.length >= MAX_MEDIA_FILES}
                   className={cn(
-                    "canhoes-tap relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border transition-all disabled:cursor-not-allowed disabled:opacity-50",
-                    files.length > 0
-                      ? "bg-jungle-700/50 border-jungle-500/50 text-jungle-300"
-                      : "border-jungle-700/30 text-jungle-500 hover:bg-jungle-800/50 hover:text-jungle-300"
+                    "canhoes-tap relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all disabled:cursor-not-allowed disabled:opacity-50",
                   )}
+                  style={{
+                    border: "1.5px solid #2aaa44",
+                    background: files.length > 0 ? "rgba(0,255,68,0.12)" : "transparent",
+                    color: files.length > 0 ? "#00ff44" : "#7abf7a",
+                  }}
                 >
                   <ImagePlus className="w-4 h-4" />
                   {files.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-jungle-500 text-[9px] font-bold text-white flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[9px] font-bold text-white flex items-center justify-center" style={{ background: "#00cc44" }}>
                       {files.length}
                     </span>
                   )}
@@ -419,11 +452,13 @@ export function CanhoesComposeSheet({
                   title="Votação"
                   disabled={submitting}
                   className={cn(
-                    "canhoes-tap w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border transition-all disabled:cursor-not-allowed disabled:opacity-50",
-                    pollOn
-                      ? "bg-jungle-700/50 border-jungle-500/50 text-jungle-300"
-                      : "border-jungle-700/30 text-jungle-500 hover:bg-jungle-800/50 hover:text-jungle-300"
+                    "canhoes-tap w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all disabled:cursor-not-allowed disabled:opacity-50",
                   )}
+                  style={{
+                    border: "1.5px solid #2aaa44",
+                    background: pollOn ? "rgba(0,255,68,0.12)" : "transparent",
+                    color: pollOn ? "#00ff44" : "#7abf7a",
+                  }}
                 >
                   <BarChart3 className="w-4 h-4" />
                 </button>
@@ -432,7 +467,15 @@ export function CanhoesComposeSheet({
               <Button
                 onClick={onCreate}
                 disabled={submitting || !text.trim()}
-                className="canhoes-tap min-w-[102px] h-9 sm:min-w-[118px] sm:h-10 bg-jungle-600 hover:bg-jungle-500 text-white border-0 rounded-xl px-4 sm:px-5 gap-2 transition-all disabled:opacity-40 shadow-md shadow-jungle-900/40"
+                className="canhoes-tap min-w-[102px] h-9 sm:min-w-[118px] sm:h-10 rounded-full px-4 sm:px-5 gap-2 transition-all disabled:opacity-40"
+                style={{
+                  background: "linear-gradient(135deg, #00dd44 0%, #009933 50%, #007722 100%)",
+                  border: "1.5px solid #00ff44",
+                  color: "#ffffff",
+                  fontFamily: "'Fredoka One', cursive",
+                  fontSize: "15px",
+                  boxShadow: "0 4px 20px #00ff4455",
+                }}
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 Publicar
@@ -441,8 +484,17 @@ export function CanhoesComposeSheet({
           </div>
         ) : (
           <div className="p-4 pt-0 space-y-3">
-            <div className="text-sm text-jungle-400/80">Para publicar, inicia sessão.</div>
-            <Button onClick={() => signIn("google")} className="w-full bg-jungle-600 hover:bg-jungle-500 text-white border-0 rounded-xl">
+            <div className="text-sm" style={{ color: "#7abf7a" }}>Para publicar, inicia sessão.</div>
+            <Button
+              onClick={() => signIn("google")}
+              className="w-full rounded-xl"
+              style={{
+                background: "linear-gradient(135deg, #00dd44 0%, #009933 100%)",
+                border: "1.5px solid #00ff44",
+                color: "#ffffff",
+                fontFamily: "'Fredoka One', cursive",
+              }}
+            >
               Entrar com Google
             </Button>
           </div>

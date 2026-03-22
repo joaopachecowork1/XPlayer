@@ -116,17 +116,27 @@ export function CanhoesVotingModule() {
           className="canhoes-title inline-flex items-center gap-2"
           style={{ fontSize: "17px" }}
         >
-          <Trophy className="h-5 w-5" style={{ color: "#ffe135" }} />Votação
+          <Trophy className="h-5 w-5" style={{ color: "#ffe135", filter: "drop-shadow(0 0 6px #ffe135)" }} />
+          <span style={{ fontFamily: "'Fredoka One', cursive", color: "#ffe135", textShadow: "0 0 14px #ffe13560" }}>Votação</span>
         </h1>
         {state && (
-          <Badge variant="outline">
+          <Badge
+            variant="outline"
+            style={{
+              border: "1px solid #2aaa44",
+              color: state.phase === "voting" ? "#00ff44" : "#7abf7a",
+              background: "rgba(0,255,68,0.08)",
+              fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700,
+            }}
+          >
             {state.phase === "voting" ? "Votações abertas" : "Votações fechadas"}
           </Badge>
         )}
       </div>
 
       {loading ? (
-        <div className="text-sm text-muted-foreground">A carregar...</div>
+        <div className="text-sm" style={{ color: "#7abf7a" }}>A carregar...</div>
       ) : (
         <div className="space-y-3">
           {categories.map((cat) => {
@@ -139,7 +149,10 @@ export function CanhoesVotingModule() {
               return (
                 <Card key={cat.id} className="canhoes-glass rounded-2xl">
                   <CardHeader className="pb-1.5">
-                    <CardTitle className="text-base inline-flex items-center gap-2"><Cigarette className="h-4 w-4 text-orange-300" />{cat.name}</CardTitle>
+                    <CardTitle className="text-base inline-flex items-center gap-2">
+                      <Cigarette className="h-4 w-4" style={{ color: "#ff9422" }} />
+                      <span style={{ fontFamily: "'Fredoka One', cursive", color: "#ffe135" }}>{cat.name}</span>
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     {list.map((n) => {
@@ -157,12 +170,16 @@ export function CanhoesVotingModule() {
                           onClick={() => void castVote(cat.id, n.id)}
                           disabled={!isVoting || Boolean(saving)}
                           className={cn(
-                            "canhoes-tap flex items-center gap-2.5 rounded-xl border p-2 text-left transition hover:bg-primary/10",
-                            isSelected ? "border-jungle-300 bg-jungle-500/20" : "border-jungle-400/30 hover:border-jungle-300",
+                            "canhoes-tap flex items-center gap-2.5 rounded-xl p-2 text-left transition",
                             (!isVoting || Boolean(saving)) && "opacity-50 cursor-not-allowed"
                           )}
+                          style={{
+                            border: isSelected ? "2px solid #00ff44" : "1.5px solid #2aaa44",
+                            background: isSelected ? "rgba(0,255,68,0.12)" : "rgba(0,255,68,0.04)",
+                            boxShadow: isSelected ? "0 0 12px #00ff4430" : "none",
+                          }}
                         >
-                          <div className="h-12 w-12 overflow-hidden rounded-md bg-background/60 border border-jungle-400/30">
+                          <div className="h-12 w-12 overflow-hidden rounded-md" style={{ background: "rgba(0,0,0,0.4)", border: "1px solid #2aaa44" }}>
                             {n.imageUrl ? (
                               <img
                                 src={`/api/proxy${n.imageUrl}`}
@@ -173,19 +190,25 @@ export function CanhoesVotingModule() {
                             ) : null}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium text-jungle-100">{n.title}</div>
-                            {isSelected && <div className="text-xs text-jungle-300">✓ O teu voto</div>}
+                            <div className="truncate font-medium" style={{ color: "#c8f5c8", fontFamily: "'Nunito', sans-serif", fontWeight: 800 }}>{n.title}</div>
+                            {isSelected && <div className="text-xs" style={{ color: "#00ff44" }}>✓ O teu voto</div>}
                           </div>
-                          <span className={cn(
-                            "px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap",
-                            isSelected ? "bg-jungle-500/60 text-jungle-100" : "bg-jungle-400/20 text-jungle-200"
-                          )}>
+                          <span
+                            className="px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap"
+                            style={{
+                              background: isSelected ? "rgba(0,255,68,0.2)" : "rgba(42,170,68,0.15)",
+                              color: isSelected ? "#00ff44" : "#7abf7a",
+                              border: `1px solid ${isSelected ? "#00ff44" : "#2aaa44"}`,
+                              fontFamily: "'Nunito', sans-serif",
+                              fontWeight: 800,
+                            }}
+                          >
                             {voteCta}
                           </span>
                         </button>
                       );
                     })}
-                    <div className="text-xs text-muted-foreground">Podes alterar o voto até a fase de votação fechar.</div>
+                    <div className="text-xs" style={{ color: "#7abf7a", fontFamily: "'Nunito', sans-serif" }}>Podes alterar o voto até a fase de votação fechar.</div>
                   </CardContent>
                 </Card>
               );
@@ -196,7 +219,10 @@ export function CanhoesVotingModule() {
             return (
               <Card key={cat.id} className="canhoes-glass rounded-2xl">
                 <CardHeader className="pb-1.5">
-                  <CardTitle className="text-base inline-flex items-center gap-2"><Flame className="h-4 w-4 text-orange-300" />{cat.name}</CardTitle>
+                  <CardTitle className="text-base inline-flex items-center gap-2">
+                    <Flame className="h-4 w-4" style={{ color: "#ff9422" }} />
+                    <span style={{ fontFamily: "'Fredoka One', cursive", color: "#ffe135" }}>{cat.name}</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-2">
                   {users.map((u) => {
@@ -214,25 +240,35 @@ export function CanhoesVotingModule() {
                         onClick={() => void castUserVote(cat.id, u.id)}
                         disabled={!isVoting || Boolean(saving)}
                         className={cn(
-                          "canhoes-tap flex items-center justify-between gap-2.5 rounded-xl border p-2.5 text-left transition hover:bg-magenta-500/10",
-                          isSelected ? "border-magenta-400 bg-magenta-500/15" : "border-magenta-400/30 hover:border-magenta-400",
+                          "canhoes-tap flex items-center justify-between gap-2.5 rounded-xl p-2.5 text-left transition",
                           (!isVoting || Boolean(saving)) && "opacity-50 cursor-not-allowed"
                         )}
+                        style={{
+                          border: isSelected ? "2px solid #c44dff" : "1.5px solid #2aaa44",
+                          background: isSelected ? "rgba(196,77,255,0.10)" : "rgba(0,255,68,0.04)",
+                          boxShadow: isSelected ? "0 0 12px rgba(196,77,255,0.3)" : "none",
+                        }}
                       >
                         <div className="min-w-0">
-                          <div className="truncate font-medium text-jungle-100">{u.displayName ?? u.email}</div>
-                          <div className="text-xs text-jungle-300/80 truncate">{u.email}</div>
+                          <div className="truncate font-medium" style={{ color: "#c8f5c8", fontFamily: "'Nunito', sans-serif", fontWeight: 800 }}>{u.displayName ?? u.email}</div>
+                          <div className="text-xs truncate" style={{ color: "#7abf7a", fontFamily: "'Nunito', sans-serif" }}>{u.email}</div>
                         </div>
-                        <span className={cn(
-                          "px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap",
-                          isSelected ? "bg-magenta-500/60 text-magenta-100" : "bg-magenta-400/20 text-magenta-200"
-                        )}>
+                        <span
+                          className="px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap"
+                          style={{
+                            background: isSelected ? "rgba(196,77,255,0.2)" : "rgba(42,170,68,0.15)",
+                            color: isSelected ? "#c44dff" : "#7abf7a",
+                            border: `1px solid ${isSelected ? "#c44dff" : "#2aaa44"}`,
+                            fontFamily: "'Nunito', sans-serif",
+                            fontWeight: 800,
+                          }}
+                        >
                           {voteCta}
                         </span>
                       </button>
                     );
                   })}
-                  <div className="text-xs text-muted-foreground">Voto anónimo (admins podem ver auditoria).</div>
+                  <div className="text-xs" style={{ color: "#7abf7a", fontFamily: "'Nunito', sans-serif" }}>Voto anónimo (admins podem ver auditoria).</div>
                 </CardContent>
               </Card>
             );

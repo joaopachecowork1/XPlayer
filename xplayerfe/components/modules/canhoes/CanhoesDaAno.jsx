@@ -107,10 +107,10 @@ const KEYFRAMES = `
     100% { transform: scale(1); }
   }
   .canhao-card {
-    background: linear-gradient(145deg, #0f2018, #0a1510);
-    border: 2px solid #1a6a2a;
-    border-radius: 16px;
-    box-shadow: 0 0 0 1px #00ff4420, 0 0 20px #00aa3340, inset 0 1px 0 #ffffff08;
+    background: linear-gradient(145deg, #0d1f12, #091508);
+    border: 2px solid #2aaa44;
+    border-radius: 18px;
+    box-shadow: 0 0 0 1px #00ff4415, 0 0 24px #00882230, inset 0 1px 0 #00ff4410, 0 4px 16px rgba(0,0,0,0.6);
     animation: glowPulse 4s ease-in-out infinite;
   }
   .smoke-particle {
@@ -204,7 +204,7 @@ function Avatar({ user, size = 44 }) {
           position: "absolute",
           bottom: -3,
           right: -3,
-          background: "#0a1510",
+          background: "#091508",
           border: `1px solid ${getLevelColor(user.level)}`,
           borderRadius: 99,
           fontSize: Math.max(8, Math.round(size * 0.2)),
@@ -268,10 +268,10 @@ function Input({ placeholder, value, onChange, style = {} }) {
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={{
-        background: "#0a1a10",
-        border: `1.5px solid ${focused ? "#00ff44" : "#2a6a3a"}`,
+        background: "#091508",
+        border: `1.5px solid ${focused ? "#00ff44" : "#2aaa44"}`,
         borderRadius: 12,
-        color: "#e0ffe0",
+        color: "#c8f5c8",
         padding: "12px 16px",
         fontFamily: "'Nunito', sans-serif",
         fontWeight: 700,
@@ -344,7 +344,7 @@ function FeedScreen({ onVote }) {
         </div>
         <div style={{ position: "relative" }}>
           <button
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#4a7a4a" }}
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#7abf7a" }}
           >
             🔔
           </button>
@@ -395,22 +395,23 @@ function FeedScreen({ onVote }) {
                   >
                     {user.name}
                   </div>
-                  <div
-                    style={{
-                      fontFamily: "'Nunito', sans-serif",
-                      fontSize: 11,
-                      color: "#4a7a4a",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    {getLevelEmoji(user.level)} Nível {getLevelLabel(user.level)} ⭐
-                  </div>
+              <span
+                style={{
+                  fontFamily: "'Nunito', sans-serif",
+                  fontWeight: 700,
+                  color: "#7abf7a",
+                  fontSize: 11,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                {getLevelEmoji(user.level)} Nível {getLevelLabel(user.level)} ⭐
+              </span>
                 </div>
               </div>
               <button
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#4a7a4a", fontSize: 18 }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#7abf7a", fontSize: 18 }}
               >
                 ⋯
               </button>
@@ -420,8 +421,8 @@ function FeedScreen({ onVote }) {
             <div
               style={{
                 fontFamily: "'Nunito', sans-serif",
-                fontWeight: 900,
-                color: "#e0ffe0",
+                fontWeight: 800,
+                color: "#ffffff",
                 fontSize: 15,
                 marginBottom: 10,
               }}
@@ -564,9 +565,9 @@ function CriarScreen({ onBack }) {
           onClick={addOption}
           style={{
             background: "transparent",
-            border: "1.5px dashed #2a6a3a",
+            border: "1.5px dashed #2aaa44",
             borderRadius: 12,
-            color: "#4a7a4a",
+            color: "#7abf7a",
             padding: "10px 16px",
             fontFamily: "'Nunito', sans-serif",
             fontWeight: 700,
@@ -590,7 +591,7 @@ function CriarScreen({ onBack }) {
             alignItems: "center",
             gap: 8,
             cursor: "pointer",
-            border: "1.5px dashed #2a6a3a",
+            border: "1.5px dashed #2aaa44",
           }}
         >
           <span style={{ fontSize: 40 }}>☁️</span>
@@ -598,7 +599,7 @@ function CriarScreen({ onBack }) {
             style={{
               fontFamily: "'Nunito', sans-serif",
               fontWeight: 700,
-              color: "#4a7a4a",
+              color: "#7abf7a",
               fontSize: 14,
             }}
           >
@@ -635,7 +636,7 @@ function CriarScreen({ onBack }) {
             <div
               style={{
                 fontFamily: "'Fredoka One', cursive",
-                color: "#4a7a4a",
+                color: "#7abf7a",
                 fontSize: 11,
                 marginBottom: 8,
                 textTransform: "uppercase",
@@ -650,7 +651,7 @@ function CriarScreen({ onBack }) {
                 <div style={{ fontFamily: "'Fredoka One', cursive", color: user.color, fontSize: 13 }}>
                   {user.name}
                 </div>
-                <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11, color: "#4a7a4a" }}>
+                <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11, color: "#7abf7a" }}>
                   {getLevelEmoji(user.level)} Nível {getLevelLabel(user.level)}
                 </div>
               </div>
@@ -659,7 +660,7 @@ function CriarScreen({ onBack }) {
               style={{
                 fontFamily: "'Nunito', sans-serif",
                 fontWeight: 900,
-                color: "#e0ffe0",
+                color: "#c8f5c8",
                 fontSize: 14,
                 marginBottom: 8,
               }}
@@ -687,11 +688,11 @@ function CriarScreen({ onBack }) {
                 <div
                   key={i}
                   style={{
-                    background: "#0f2018",
-                    border: "1px solid #1a6a2a",
+                    background: "#0d1f12",
+                    border: "1px solid #2aaa44",
                     borderRadius: 8,
                     padding: "6px 12px",
-                    color: "#e0ffe0",
+                    color: "#c8f5c8",
                     fontFamily: "'Nunito', sans-serif",
                     fontWeight: 700,
                     fontSize: 13,
@@ -769,7 +770,7 @@ function VoteScreen({ postId, onBack }) {
             <div style={{ fontFamily: "'Fredoka One', cursive", color: user.color, fontSize: 14 }}>
               {user.name}
             </div>
-            <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11, color: "#4a7a4a" }}>
+            <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11, color: "#7abf7a" }}>
               {getLevelEmoji(user.level)} Nível {getLevelLabel(user.level)}
             </div>
           </div>
@@ -778,7 +779,7 @@ function VoteScreen({ postId, onBack }) {
           style={{
             fontFamily: "'Nunito', sans-serif",
             fontWeight: 900,
-            color: "#e0ffe0",
+            color: "#c8f5c8",
             fontSize: 15,
             marginBottom: 8,
           }}
@@ -789,7 +790,7 @@ function VoteScreen({ postId, onBack }) {
           style={{
             fontFamily: "'Nunito', sans-serif",
             fontWeight: 700,
-            color: "#4a7a4a",
+            color: "#7abf7a",
             fontSize: 12,
           }}
         >
@@ -879,7 +880,7 @@ function VoteScreen({ postId, onBack }) {
           <div
             style={{
               fontFamily: "'Fredoka One', cursive",
-              color: "#4a7a4a",
+              color: "#7abf7a",
               fontSize: 12,
               marginBottom: 10,
               textTransform: "uppercase",
@@ -909,7 +910,7 @@ function VoteScreen({ postId, onBack }) {
               <div
                 style={{
                   height: 8,
-                  background: "#0a1510",
+                  background: "#091508",
                   borderRadius: 99,
                   overflow: "hidden",
                   border: `1px solid ${s.color}30`,
@@ -1041,7 +1042,7 @@ function RankingScreen() {
                 style={{
                   fontFamily: "'Nunito', sans-serif",
                   fontWeight: 700,
-                  color: "#4a7a4a",
+                  color: "#7abf7a",
                   fontSize: 10,
                   textAlign: "center",
                 }}
@@ -1091,7 +1092,7 @@ function RankingScreen() {
               <span
                 style={{
                   fontFamily: "'Fredoka One', cursive",
-                  color: "#4a7a4a",
+                  color: "#7abf7a",
                   fontSize: 14,
                   width: 20,
                   textAlign: "center",
@@ -1115,7 +1116,7 @@ function RankingScreen() {
                   style={{
                     fontFamily: "'Nunito', sans-serif",
                     fontWeight: 700,
-                    color: "#4a7a4a",
+                    color: "#7abf7a",
                     fontSize: 11,
                   }}
                 >
@@ -1202,10 +1203,10 @@ function ForumScreen() {
           placeholder="Escreve o teu papo..."
           style={{
             flex: 1,
-            background: "#0a1a10",
-            border: "1.5px solid #2a6a3a",
+            background: "#091508",
+            border: "1.5px solid #2aaa44",
             borderRadius: 12,
-            color: "#e0ffe0",
+            color: "#c8f5c8",
             padding: "10px 14px",
             fontFamily: "'Nunito', sans-serif",
             fontWeight: 700,
@@ -1271,7 +1272,7 @@ function ForumScreen() {
                       style={{
                         fontFamily: "'Nunito', sans-serif",
                         fontWeight: 700,
-                        color: "#4a7a4a",
+                        color: "#7abf7a",
                         fontSize: 11,
                       }}
                     >
@@ -1282,7 +1283,7 @@ function ForumScreen() {
                     style={{
                       fontFamily: "'Nunito', sans-serif",
                       fontWeight: 700,
-                      color: "#e0ffe0",
+                      color: "#c8f5c8",
                       fontSize: 14,
                       marginBottom: 8,
                       wordBreak: "break-word",
@@ -1335,7 +1336,7 @@ function ForumScreen() {
                       style={{
                         fontFamily: "'Nunito', sans-serif",
                         fontWeight: 700,
-                        color: "#4a7a4a",
+                        color: "#7abf7a",
                         fontSize: 12,
                       }}
                     >
@@ -1347,12 +1348,12 @@ function ForumScreen() {
                       style={{
                         marginTop: 10,
                         padding: 10,
-                        background: "#0a1510",
+                        background: "#091508",
                         borderRadius: 10,
-                        border: "1px solid #1a6a2a",
+                        border: "1px solid #2aaa44",
                         fontFamily: "'Nunito', sans-serif",
                         fontWeight: 700,
-                        color: "#4a7a4a",
+                        color: "#7abf7a",
                         fontSize: 13,
                         animation: "fadeIn 0.2s ease",
                       }}
@@ -1470,7 +1471,7 @@ function AdminScreen({ isAdmin, setIsAdmin }) {
             style={{
               fontFamily: "'Nunito', sans-serif",
               fontWeight: 700,
-              color: "#4a7a4a",
+              color: "#7abf7a",
               fontSize: 14,
               lineHeight: 1.5,
             }}
@@ -1481,7 +1482,7 @@ function AdminScreen({ isAdmin, setIsAdmin }) {
             style={{
               fontFamily: "'Nunito', sans-serif",
               fontWeight: 700,
-              color: "#4a7a4a",
+              color: "#7abf7a",
               fontSize: 12,
               marginTop: 4,
             }}
@@ -1521,7 +1522,7 @@ function AdminScreen({ isAdmin, setIsAdmin }) {
                   style={{
                     fontFamily: "'Nunito', sans-serif",
                     fontWeight: 700,
-                    color: "#4a7a4a",
+                    color: "#7abf7a",
                     fontSize: 12,
                   }}
                 >
@@ -1547,7 +1548,7 @@ function AdminScreen({ isAdmin, setIsAdmin }) {
             <div
               style={{
                 fontFamily: "'Fredoka One', cursive",
-                color: "#4a7a4a",
+                color: "#7abf7a",
                 fontSize: 12,
                 marginBottom: 10,
                 textTransform: "uppercase",
@@ -1582,7 +1583,7 @@ function AdminScreen({ isAdmin, setIsAdmin }) {
                     style={{
                       fontFamily: "'Nunito', sans-serif",
                       fontWeight: 700,
-                      color: "#e0ffe0",
+                      color: "#c8f5c8",
                       fontSize: 13,
                     }}
                   >
@@ -1603,7 +1604,7 @@ function AdminScreen({ isAdmin, setIsAdmin }) {
                   style={{
                     fontFamily: "'Nunito', sans-serif",
                     fontWeight: 700,
-                    color: "#4a7a4a",
+                    color: "#7abf7a",
                     fontSize: 11,
                   }}
                 >
@@ -1680,7 +1681,7 @@ function StatusBar() {
         style={{
           fontFamily: "'Fredoka One', cursive",
           fontSize: 13,
-          color: "#4a7a4a",
+          color: "#7abf7a",
         }}
       >
         {time}
@@ -1697,8 +1698,8 @@ function StatusBar() {
         }}
       />
       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-        <span style={{ color: "#4a7a4a", fontSize: 11 }}>▲▲▲</span>
-        <span style={{ color: "#4a7a4a", fontSize: 11 }}>▮▮▮</span>
+        <span style={{ color: "#7abf7a", fontSize: 11 }}>▲▲▲</span>
+        <span style={{ color: "#7abf7a", fontSize: 11 }}>▮▮▮</span>
       </div>
     </div>
   );
@@ -1720,7 +1721,7 @@ function BottomNav({ active, onChange }) {
     <nav
       style={{
         height: 60,
-        background: "#0a1510",
+        background: "#091508",
         borderTop: "1px solid #00ff4420",
         display: "flex",
         alignItems: "stretch",

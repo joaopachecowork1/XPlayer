@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Flame, Leaf, Plus, Trophy, Shield } from "lucide-react";
+import { Leaf, Trophy, PlusCircle, MessageCircle, ShieldCheck } from "lucide-react";
 
 type Props = {
   pathname: string;
@@ -43,7 +43,7 @@ export function CanhoesBottomTabs({ pathname, onNavigate, onCompose }: Readonly<
           {/* Feed */}
           <Tab
             label="Feed"
-            icon={<Leaf className="h-5 w-5" />}
+            icon={<Leaf size={22} color={active(pathname, "/canhoes") ? "#00ff44" : "#4a8a4a"} style={{ filter: active(pathname, "/canhoes") ? "drop-shadow(0 0 6px #00ff44)" : "none" }} />}
             active={active(pathname, "/canhoes")}
             onClick={() => onNavigate("/canhoes")}
           />
@@ -51,7 +51,7 @@ export function CanhoesBottomTabs({ pathname, onNavigate, onCompose }: Readonly<
           {/* Ranking */}
           <Tab
             label="Ranking"
-            icon={<Trophy className="h-5 w-5" />}
+            icon={<Trophy size={22} color={active(pathname, "/canhoes/categorias") ? "#ffe135" : "#4a8a4a"} style={{ filter: active(pathname, "/canhoes/categorias") ? "drop-shadow(0 0 6px #ffe135)" : "none" }} />}
             active={active(pathname, "/canhoes/categorias")}
             onClick={() => onNavigate("/canhoes/categorias")}
           />
@@ -62,7 +62,7 @@ export function CanhoesBottomTabs({ pathname, onNavigate, onCompose }: Readonly<
           {/* Forum / Votação */}
           <Tab
             label="Forum"
-            icon={<Flame className="h-5 w-5" />}
+            icon={<MessageCircle size={22} color={active(pathname, "/canhoes/votacao") ? "#c44dff" : "#4a8a4a"} style={{ filter: active(pathname, "/canhoes/votacao") ? "drop-shadow(0 0 6px #c44dff)" : "none" }} />}
             active={active(pathname, "/canhoes/votacao")}
             onClick={() => onNavigate("/canhoes/votacao")}
           />
@@ -70,10 +70,9 @@ export function CanhoesBottomTabs({ pathname, onNavigate, onCompose }: Readonly<
           {/* Admin — always visible; page renders denial screen for non-admins */}
           <Tab
             label="Admin"
-            icon={<Shield className="h-5 w-5" />}
+            icon={<ShieldCheck size={22} color={active(pathname, "/canhoes/admin") ? "#00ff44" : "#4a8a4a"} style={{ filter: active(pathname, "/canhoes/admin") ? "drop-shadow(0 0 6px #00ff44)" : "none" }} />}
             active={active(pathname, "/canhoes/admin")}
             onClick={() => onNavigate("/canhoes/admin")}
-            adminStyle
           />
         </div>
       </div>
@@ -87,25 +86,17 @@ function Tab({
   icon,
   active: isActive,
   onClick,
-  adminStyle = false,
 }: Readonly<{
   label: string;
   icon: React.ReactNode;
   active: boolean;
   onClick: () => void;
-  adminStyle?: boolean;
 }>) {
-  // Admin tab uses a slightly different palette (yellow-gold when active, muted amber when idle).
-  const activeColor  = adminStyle ? "#ffe135" : "#00ff44";
-  const idleColor    = adminStyle ? "rgba(255,225,53,0.35)" : "rgba(0,255,68,0.35)";
-  const glowColor    = adminStyle ? "rgba(255,225,53,0.5)"  : "rgba(0,255,68,0.5)";
-
   return (
     <button
       onClick={onClick}
       style={{
-        color: isActive ? activeColor : idleColor,
-        filter: isActive ? `drop-shadow(0 0 6px ${glowColor})` : "none",
+        color: isActive ? "#00ff44" : "#4a8a4a",
         transition: "color 0.15s ease, filter 0.15s ease, transform 0.1s ease",
       }}
       className={cn(
@@ -115,16 +106,15 @@ function Tab({
       aria-current={isActive ? "page" : undefined}
     >
       {icon}
-      <span className="font-semibold tracking-wide" style={{ fontFamily: "'Nunito', sans-serif" }}>
+      <span className="font-semibold tracking-wide" style={{ fontFamily: "'Nunito', sans-serif", color: isActive ? "inherit" : "#4a8a4a" }}>
         {label}
       </span>
-      {/* Active indicator bar */}
       {isActive && (
         <span
           className="h-0.5 w-5 rounded-full"
           style={{
-            background: activeColor,
-            boxShadow: `0 0 6px ${glowColor}`,
+            background: "#00ff44",
+            boxShadow: "0 0 6px #00ff4480",
             animation: "canhoes-ambient-float 2.5s ease-in-out infinite",
           }}
         />
@@ -133,22 +123,22 @@ function Tab({
   );
 }
 
-/** Centre compose button — elevated orange pill */
+/** Centre compose button — green neon pill */
 function ComposeButton({ onClick }: Readonly<{ onClick: () => void }>) {
   return (
     <button
       onClick={onClick}
       className="canhoes-tap mx-auto -mt-5 sm:-mt-6 h-11 w-11 sm:h-12 sm:w-12 rounded-full flex items-center justify-center"
       style={{
-        background: "radial-gradient(circle at 30% 25%, #ffd18e 0%, #f59c45 45%, #dd6f2f 100%)",
-        border: "1.5px solid rgba(255,209,142,0.40)",
-        boxShadow: "0 6px 22px rgba(221,111,47,0.50), 0 0 28px rgba(245,156,69,0.30)",
-        color: "#20150e",
+        background: "linear-gradient(135deg, #00dd44 0%, #009933 100%)",
+        border: "1.5px solid #00ff44",
+        boxShadow: "0 0 20px #00ff4460, 0 4px 16px rgba(0,0,0,0.4)",
+        color: "#ffffff",
       }}
       aria-label="Criar post"
       title="Criar post"
     >
-      <Plus className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
+      <PlusCircle size={24} strokeWidth={2} />
     </button>
   );
 }

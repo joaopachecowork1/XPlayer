@@ -9,7 +9,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Shield, RefreshCw } from "lucide-react";
+import { Shield, RefreshCw, Users, FileText, CheckCircle2, TrendingUp, Clock, ChevronRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -139,13 +139,25 @@ export default function CanhoesAdminModule() {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="canhoes-title text-lg flex items-center gap-2">
-          <Shield className="h-4 w-4" /> Admin — Canhões
+        <div className="flex items-center gap-2" style={{ fontFamily: "'Fredoka One', cursive", fontSize: "18px", color: "#c8f5c8" }}>
+          <ShieldCheck className="h-5 w-5" style={{ color: "#00ff44", filter: "drop-shadow(0 0 6px #00ff44)" }} />
+          Admin — Canhões
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="border-primary/40 text-primary">Admin</Badge>
-          <Button variant="ghost" size="sm" onClick={loadData} disabled={loading}
-            className="text-primary/70 hover:text-primary hover:bg-primary/10">
+          <Badge
+            variant="outline"
+            style={{ border: "1px solid #2aaa44", color: "#00ff44", background: "rgba(0,255,68,0.08)", fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}
+          >
+            Admin
+          </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={loadData}
+            disabled={loading}
+            style={{ color: "#7abf7a" }}
+            className="hover:bg-transparent"
+          >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
         </div>
@@ -153,21 +165,35 @@ export default function CanhoesAdminModule() {
 
       {/* Tabs */}
       <Tabs defaultValue="pending">
-        <TabsList className="grid w-full grid-cols-4 bg-black/30 border border-primary/20">
-          <TabsTrigger value="pending">
+        <TabsList
+          className="grid w-full grid-cols-4"
+          style={{ background: "rgba(0,0,0,0.4)", border: "1px solid #2aaa44" }}
+        >
+          <TabsTrigger
+            value="pending"
+            style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700, color: "#c8f5c8" }}
+          >
             Pendentes
             {totalPending > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge
+                variant="secondary"
+                className="ml-2"
+                style={{ background: "#00ff4420", color: "#00ff44", border: "1px solid #2aaa44" }}
+              >
                 {totalPending}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="state">Estado</TabsTrigger>
-          <TabsTrigger value="categories">Categorias</TabsTrigger>
-          <TabsTrigger value="audit">
+          <TabsTrigger value="state" style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700, color: "#c8f5c8" }}>Estado</TabsTrigger>
+          <TabsTrigger value="categories" style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700, color: "#c8f5c8" }}>Categorias</TabsTrigger>
+          <TabsTrigger value="audit" style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700, color: "#c8f5c8" }}>
             Auditoria
             {votes.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge
+                variant="secondary"
+                className="ml-2"
+                style={{ background: "#00ff4420", color: "#00ff44", border: "1px solid #2aaa44" }}
+              >
                 {votes.length}
               </Badge>
             )}

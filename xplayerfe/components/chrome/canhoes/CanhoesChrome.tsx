@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Leaf, Bell, Menu } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -128,21 +129,29 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
       >
         <div className="h-12 px-3 sm:h-13 sm:px-4 flex items-center justify-between gap-2">
           {/* App name + section */}
-          <div className="min-w-0 flex flex-col">
-            <span
-              className="canhoes-title text-base leading-tight truncate"
-              style={{ fontSize: "16px" }}
-            >
-              🌿 Canhões do Ano
-            </span>
-            {title !== "Feed" && (
+          <div className="min-w-0 flex items-center gap-2">
+            <Leaf size={18} color="#00ff44" style={{ filter: 'drop-shadow(0 0 8px #00ff44)', flexShrink: 0 }} />
+            <div className="min-w-0 flex flex-col">
               <span
-                className="text-[10px] leading-none mt-0.5 truncate"
-                style={{ color: "rgba(0,255,68,0.55)", fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}
+                style={{
+                  fontFamily: "'Fredoka One', cursive",
+                  fontSize: "18px",
+                  color: "#ffffff",
+                  textShadow: "0 0 20px #00ff4460, 0 0 40px #00ff4430",
+                  letterSpacing: "0.5px",
+                  lineHeight: 1.2,
+                }}
               >
-                {title}
+                Canhões do Ano
               </span>
-            )}
+              {title !== "Feed" && (
+                <span
+                  style={{ color: "#7abf7a", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: "11px" }}
+                >
+                  {title}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Header actions */}
@@ -156,6 +165,16 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
               title={currentBg.label}
             >
               🎨
+            </button>
+
+            {/* Bell notification button */}
+            <button
+              className="canhoes-tap h-8 w-8 flex items-center justify-center rounded-xl"
+              style={{ color: "rgba(0,255,68,0.55)" }}
+              aria-label="Notificações"
+              title="Notificações"
+            >
+              <Bell size={16} />
             </button>
 
             {isLogged && (
@@ -172,18 +191,17 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
 
             {/* "Mais" menu trigger */}
             <button
-              className="canhoes-tap h-8 px-3 flex items-center justify-center rounded-xl text-sm font-bold"
+              className="canhoes-tap h-8 w-8 flex items-center justify-center rounded-xl"
               style={{
                 background: "rgba(0,255,68,0.08)",
                 border: "1px solid rgba(0,255,68,0.18)",
                 color: "rgba(0,255,68,0.80)",
-                fontFamily: "'Nunito', sans-serif",
               }}
               onClick={() => setMoreOpen(true)}
               aria-label="Mais"
               title={user?.email ?? "Mais"}
             >
-              ☰
+              <Menu size={16} color="rgba(0,255,68,0.80)" />
             </button>
           </div>
         </div>

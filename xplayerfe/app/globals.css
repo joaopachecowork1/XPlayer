@@ -1,5 +1,5 @@
 /* ── Google Fonts: Fredoka One (display) + Nunito (body) ─────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -162,6 +162,28 @@
   --input: oklch(0.75 0.22 152 / 12%);
   --muted: oklch(0.18 0.03 152);
   --muted-foreground: oklch(0.62 0.07 152);
+
+  /* ═══ CANHÕES DESIGN SYSTEM v3.0 ═══ */
+  --canhoes-bg:           #0a0f0a;
+  --canhoes-bg-card:      #0d1f12;
+  --canhoes-bg-card-2:    #112518;
+  --canhoes-bg-input:     #091508;
+  --canhoes-text-h1:      #ffffff;
+  --canhoes-text-h2:      #ffe135;
+  --canhoes-text-body:    #c8f5c8;
+  --canhoes-text-muted:   #7abf7a;
+  --canhoes-text-dim:     #4a8a4a;
+  --canhoes-neon-green:   #00ff44;
+  --canhoes-neon-yellow:  #ffe135;
+  --canhoes-neon-purple:  #c44dff;
+  --canhoes-neon-pink:    #ff3d85;
+  --canhoes-neon-orange:  #ff9422;
+  --canhoes-border:       #2aaa44;
+  --canhoes-border-glow:  #00ff4440;
+  --canhoes-border-dim:   #1a5a28;
+  --canhoes-glow-sm:      0 0 10px #00ff4430;
+  --canhoes-glow-md:      0 0 20px #00ff4450;
+  --canhoes-glow-lg:      0 0 40px #00ff4465;
 }
 
 /* ─────────────────────────────────────────
@@ -195,12 +217,172 @@
      IMPROVED VISIBILITY: Better contrast & readability
   ══════════════════════════════════════════ */
   
-  /* Glassmorphism effect for cards — lighter & more visible */
+  /* Glassmorphism card — full design system */
   .canhoes-glass {
-    background-color: rgba(15, 36, 21, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1.5px solid oklch(0.72 0.19 152 / 0.35);
+    background: linear-gradient(145deg, #0d1f12 0%, #091508 100%);
+    border: 2px solid #2aaa44;
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 1px #00ff4415,
+      0 0 24px #00882230,
+      inset 0 1px 0 #00ff4410,
+      0 4px 16px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+  }
+  .canhoes-glass::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00ff4430, transparent);
+  }
+
+  /* Canhoes card with full design system */
+  .canhoes-card {
+    background: linear-gradient(145deg, #0d1f12 0%, #091508 100%);
+    border: 2px solid #2aaa44;
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 1px #00ff4415,
+      0 0 24px #00882230,
+      inset 0 1px 0 #00ff4410,
+      0 4px 16px rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .canhoes-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00ff4430, transparent);
+  }
+
+  /* Primary action button */
+  .canhoes-btn-primary {
+    background: linear-gradient(135deg, #00dd44 0%, #009933 50%, #007722 100%);
+    border: 1.5px solid #00ff44;
+    border-radius: 999px;
+    color: #ffffff;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    padding: 13px 24px;
+    width: 100%;
+    box-shadow: 0 4px 20px #00ff4455, 0 0 40px #00cc3325, inset 0 1px 0 #ffffff20;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+  }
+  .canhoes-btn-primary:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 12px #00ff4470;
+  }
+
+  /* Secondary/outline button */
+  .canhoes-btn-secondary {
+    background: transparent;
+    border: 1.5px dashed #2aaa44;
+    border-radius: 12px;
+    color: #7abf7a;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 10px 16px;
+    width: 100%;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .canhoes-btn-secondary:hover {
+    border-color: #00ff44;
+    color: #00ff44;
+    background: #00ff4408;
+  }
+
+  /* Reaction button */
+  .canhoes-btn-reaction {
+    background: #00ff4415;
+    border: 1px solid #00ff4440;
+    border-radius: 999px;
+    color: #00ff44;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 6px 14px;
+    box-shadow: 0 0 8px #00ff4420;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Input field */
+  .canhoes-input {
+    background: #091508;
+    border: 1.5px solid #2aaa44;
+    border-radius: 12px;
+    color: #c8f5c8;
+    font-size: 15px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    padding: 13px 16px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .canhoes-input:focus {
+    border-color: #00ff44;
+    box-shadow: 0 0 14px #00ff4430;
+  }
+  .canhoes-input::placeholder {
+    color: #4a8a4a;
+  }
+
+  /* Label above inputs */
+  .canhoes-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    color: #7abf7a;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* Body text */
+  .canhoes-body {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #c8f5c8;
+    line-height: 1.5;
+  }
+
+  /* Muted text */
+  .canhoes-muted {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #7abf7a;
+  }
+
+  /* Section header (H2) */
+  .canhoes-h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    color: #ffe135;
+    text-shadow: 0 0 14px #ffe13560;
+  }
+
+  /* Glow icon animation */
+  .canhoes-icon-glow {
+    filter: drop-shadow(0 0 6px currentColor);
   }
   
   /* Elevated pill/badge component with glow */
@@ -289,4 +471,23 @@
 @keyframes canhoes-ambient-float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-3px); }
+}
+@keyframes smokeFloat {
+  0%   { transform: translateY(0) scale(1); opacity: 0.4; }
+  50%  { transform: translateY(-25px) scale(1.4); opacity: 0.1; }
+  100% { transform: translateY(-50px) scale(1.8); opacity: 0; }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 16px #00ff4425; }
+  50%       { box-shadow: 0 0 32px #00ff4450; }
+}
+@keyframes voteSpring {
+  0%  { transform: scale(1); }
+  35% { transform: scale(1.25) rotate(-6deg); }
+  65% { transform: scale(0.94) rotate(3deg); }
+  100%{ transform: scale(1.04); }
+}
+@keyframes tabPulse {
+  0%, 100% { filter: drop-shadow(0 0 3px #00ff4450); }
+  50%       { filter: drop-shadow(0 0 8px #00ff44aa); }
 }
