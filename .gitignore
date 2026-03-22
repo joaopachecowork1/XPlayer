@@ -1,0 +1,10 @@
+# Monorepo runtime/generated artifacts
+XPlayerBE/XPlayer.API/wwwroot/uploads/
+XPlayerBE/**/bin/
+XPlayerBE/**/obj/
+XPlayerBE/**/artifacts/
+
+# Frontend generated artifacts
+xplayerfe/.next/
+xplayerfe/node_modules/
+xplayerfe/dev-output.log
