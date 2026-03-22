@@ -10,17 +10,7 @@ const nextConfig = {
     return [
       {
         source: "/uploads/:path*",
-        destination: `${backend}/uploads/:path*`,
-      },
-    ];
-  },
-  async headers() {
-    return [
-      {
-        source: "/uploads/:path*",
-        headers: [
-          { key: "ngrok-skip-browser-warning", value: "true" },
-        ],
+        destination: "/api/uploads/:path*",
       },
     ];
   },
