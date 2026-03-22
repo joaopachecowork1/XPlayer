@@ -787,6 +787,17 @@ public partial class CanhoesController : ControllerBase
         };
     }
 
+    [HttpGet("admin/nominees")]
+    public async Task<ActionResult<List<NomineeDto>>> AdminGetAllNominees([FromQuery] string? status, CancellationToken ct)
+    {
+        if (!IsAdmin()) return Forbid();
+        var q = _db.Nominees.AsNoTracking();
+        if (!string.IsNullOrWhiteSpace(status))
+            q = q.Where(n => n.Status == status);
+        var list = await q.OrderByDescending(n => n.CreatedAtUtc).ToListAsync(ct);
+        return list.Select(ToNomineeDto).ToList();
+    }
+
     [HttpPost("admin/nominees/{id}/approve")]
     public async Task<ActionResult<NomineeDto>> Approve([FromRoute] string id, CancellationToken ct)
     {

@@ -22,7 +22,7 @@ import type {
 } from "@/lib/api/types";
 
 import { EventStateCard } from "./components/EventStateCard";
-import { PendingNominees } from "./components/PendingNominees";
+import { NomineesAdmin } from "./components/NomineesAdmin";
 import { PendingProposals } from "./components/PendingProposals";
 import { VotesAudit } from "./components/VotesAudit";
 import { CategoriesAdmin } from "./components/CategoriesAdmin";
@@ -71,6 +71,7 @@ const safe = async <T,>(p: Promise<T>, fallback: T): Promise<T> => {
 export default function CanhoesAdminModule() {
   const [state, setState] = useState<CanhoesStateDto | null>(null);
   const [categories, setCategories] = useState<AwardCategoryDto[]>([]);
+  const [allNominees, setAllNominees] = useState<NomineeDto[]>([]);
   const [pendingNominees, setPendingNominees] = useState<NomineeDto[]>([]);
   const [pendingCats, setPendingCats] = useState<CategoryProposalDto[]>([]);
   const [pendingMeasures, setPendingMeasures] = useState<MeasureProposalDto[]>(
@@ -88,7 +89,7 @@ export default function CanhoesAdminModule() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [st, cats, pend, votesResp, hist] = await Promise.all([
+      const [st, cats, pend, allNoms, votesResp, hist] = await Promise.all([
         safe<CanhoesStateDto | null>(canhoesRepo.getState(), null),
         safe<AwardCategoryDto[]>(
           canhoesRepo.adminGetAllCategories(),
@@ -97,6 +98,10 @@ export default function CanhoesAdminModule() {
         safe<{ nominees: NomineeDto[]; categoryProposals: CategoryProposalDto[]; measureProposals: MeasureProposalDto[] }>(
           canhoesRepo.adminPending(),
           EMPTY_PENDING
+        ),
+        safe<NomineeDto[]>(
+          canhoesRepo.adminGetAllNominees(),
+          [] as NomineeDto[]
         ),
         safe<{ votes: VoteAuditRow[] }>(
           canhoesRepo.adminVotes(),
@@ -113,6 +118,7 @@ export default function CanhoesAdminModule() {
 
       setState(st);
       setCategories(cats);
+      setAllNominees(allNoms);
       setPendingNominees(pend.nominees ?? []);
       setPendingCats(pend.categoryProposals ?? []);
       setPendingMeasures(pend.measureProposals ?? []);
@@ -132,9 +138,6 @@ export default function CanhoesAdminModule() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const totalPending =
-    pendingNominees.length + pendingCats.length + pendingMeasures.length;
-
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -152,13 +155,21 @@ export default function CanhoesAdminModule() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="pending">
-        <TabsList className="grid w-full grid-cols-4 bg-black/30 border border-primary/20">
-          <TabsTrigger value="pending">
-            Pendentes
-            {totalPending > 0 && (
+      <Tabs defaultValue="nominees">
+        <TabsList className="grid w-full grid-cols-5 bg-black/30 border border-primary/20">
+          <TabsTrigger value="nominees">
+            Nomeações
+            {pendingNominees.length > 0 && (
               <Badge variant="secondary" className="ml-2">
-                {totalPending}
+                {pendingNominees.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="pending">
+            Propostas
+            {pendingCats.length + pendingMeasures.length > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {pendingCats.length + pendingMeasures.length}
               </Badge>
             )}
           </TabsTrigger>
@@ -174,14 +185,16 @@ export default function CanhoesAdminModule() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="space-y-3">
-          <PendingNominees
-            nominees={pendingNominees}
+        <TabsContent value="nominees" className="space-y-3">
+          <NomineesAdmin
+            nominees={allNominees}
             categories={categories}
             loading={loading}
             onUpdate={loadData}
           />
+        </TabsContent>
 
+        <TabsContent value="pending" className="space-y-3">
           <PendingProposals
             categoryProposals={pendingCats}
             measureProposals={pendingMeasures}
