@@ -162,6 +162,19 @@ BEGIN
   CREATE INDEX IX_HubPostReactions_PostId ON HubPostReactions(PostId);
 END
 
+IF OBJECT_ID('dbo.HubPostCommentReactions', 'U') IS NULL
+BEGIN
+  CREATE TABLE HubPostCommentReactions (
+    Id NVARCHAR(64) NOT NULL PRIMARY KEY,
+    CommentId NVARCHAR(64) NOT NULL,
+    UserId UNIQUEIDENTIFIER NOT NULL,
+    Emoji NVARCHAR(16) NOT NULL,
+    CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT UQ_HubPostCommentReactions UNIQUE(CommentId, UserId, Emoji)
+  );
+  CREATE INDEX IX_HubPostCommentReactions_CommentId ON HubPostCommentReactions(CommentId);
+END
+
 -- Optional polls (single choice)
 IF OBJECT_ID('dbo.HubPostPolls', 'U') IS NULL
 BEGIN

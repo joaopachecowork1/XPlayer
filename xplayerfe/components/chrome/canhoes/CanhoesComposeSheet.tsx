@@ -320,7 +320,7 @@ export function CanhoesComposeSheet({
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="O que está a acontecer?"
-              className="min-h-[88px] sm:min-h-[100px] bg-jungle-900/40 border-jungle-700/30 text-jungle-50 placeholder:text-jungle-600/70 focus-visible:ring-jungle-600/50 resize-none rounded-xl"
+              className="min-h-[88px] sm:min-h-[100px] bg-jungle-900/40 border-jungle-700/30 text-jungle-50 placeholder:text-jungle-300/85 focus-visible:ring-jungle-600/50 resize-none rounded-xl"
               autoFocus
             />
 
@@ -394,13 +394,13 @@ export function CanhoesComposeSheet({
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
                   placeholder="Pergunta da votação..."
-                  className="min-h-[56px] bg-jungle-900/40 border-jungle-700/30 text-jungle-100 placeholder:text-jungle-600/70 resize-none rounded-xl text-sm"
+                  className="min-h-[56px] bg-jungle-900/40 border-jungle-700/30 text-jungle-100 placeholder:text-jungle-300/85 resize-none rounded-xl text-sm"
                 />
                 <div className="space-y-2">
                   {pollOptions.map((opt, idx) => (
                     <div key={`poll-${idx}-${opt.length}`} className="flex gap-2">
                       <input
-                        className="flex-1 h-9 rounded-lg border border-jungle-700/30 bg-jungle-900/40 px-3 text-sm text-jungle-100 placeholder:text-jungle-600/70 focus:outline-none focus:ring-1 focus:ring-jungle-600/50"
+                        className="flex-1 h-9 rounded-lg border border-jungle-700/30 bg-jungle-900/40 px-3 text-sm text-jungle-100 placeholder:text-jungle-300/85 focus:outline-none focus:ring-1 focus:ring-jungle-600/50"
                         value={opt}
                         onChange={(e) => updatePollOption(idx, e.target.value)}
                         placeholder={`Opção ${idx + 1}`}

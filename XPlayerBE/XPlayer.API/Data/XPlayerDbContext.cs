@@ -31,6 +31,7 @@ public class XPlayerDbContext : DbContext
     public DbSet<HubPostLikeEntity> HubPostLikes => Set<HubPostLikeEntity>();
     public DbSet<HubPostCommentEntity> HubPostComments => Set<HubPostCommentEntity>();
     public DbSet<HubPostReactionEntity> HubPostReactions => Set<HubPostReactionEntity>();
+    public DbSet<HubPostCommentReactionEntity> HubPostCommentReactions => Set<HubPostCommentReactionEntity>();
 
     public DbSet<HubPostPollEntity> HubPostPolls => Set<HubPostPollEntity>();
     public DbSet<HubPostPollOptionEntity> HubPostPollOptions => Set<HubPostPollOptionEntity>();
@@ -139,6 +140,16 @@ public class XPlayerDbContext : DbContext
             e.Property(x => x.Emoji).HasMaxLength(16);
             e.HasIndex(x => new { x.PostId, x.UserId, x.Emoji }).IsUnique();
             e.HasIndex(x => x.PostId);
+        });
+
+        modelBuilder.Entity<HubPostCommentReactionEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasMaxLength(64);
+            e.Property(x => x.CommentId).HasMaxLength(64);
+            e.Property(x => x.Emoji).HasMaxLength(16);
+            e.HasIndex(x => new { x.CommentId, x.UserId, x.Emoji }).IsUnique();
+            e.HasIndex(x => x.CommentId);
         });
 
         modelBuilder.Entity<HubPostMediaEntity>(e =>

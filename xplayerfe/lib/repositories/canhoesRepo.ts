@@ -175,6 +175,20 @@ export const canhoesRepo = {
   adminRejectMeasureProposal: (id: string) =>
     xplayerFetch<T.MeasureProposalDto>(`/canhoes/admin/measures/${id}/reject`, { method: "POST" }),
 
+  adminListMeasureProposals: (status?: "pending" | "approved" | "rejected" | "all") =>
+    xplayerFetch<T.MeasureProposalDto[]>(
+      `/canhoes/admin/measures/proposals${status && status !== "all" ? `?status=${encodeURIComponent(status)}` : ""}`
+    ),
+
+  adminUpdateMeasureProposal: (id: string, payload: T.UpdateMeasureProposalRequest) =>
+    xplayerFetch<T.MeasureProposalDto>(`/canhoes/admin/measures/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
+
+  adminDeleteMeasureProposal: (id: string) =>
+    xplayerFetch<void>(`/canhoes/admin/measures/${id}`, { method: "DELETE" }),
+
   // ==========================================
   // ADMIN - Categories & State
   // ==========================================
@@ -220,8 +234,12 @@ export const canhoesRepo = {
 
   adminProposalsHistory: () =>
     xplayerFetch<{
-      categoryProposals: T.CategoryProposalDto[];
-      measureProposals: T.MeasureProposalDto[];
+      categoryProposals:
+        | T.CategoryProposalDto[]
+        | { pending?: T.CategoryProposalDto[]; approved?: T.CategoryProposalDto[]; rejected?: T.CategoryProposalDto[] };
+      measureProposals:
+        | T.MeasureProposalDto[]
+        | { pending?: T.MeasureProposalDto[]; approved?: T.MeasureProposalDto[]; rejected?: T.MeasureProposalDto[] };
     }>("/canhoes/admin/proposals"),
 };
 

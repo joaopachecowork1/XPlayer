@@ -59,6 +59,7 @@ function normalizeProposals<T>(payload: ProposalsPayload<T>): T[] {
 const EMPTY_PENDING = { nominees: [], categoryProposals: [], measureProposals: [] };
 const EMPTY_HISTORY = { categoryProposals: [], measureProposals: [] };
 const EMPTY_VOTES = { votes: [] };
+const EMPTY_MEASURES: MeasureProposalDto[] = [];
 
 const safe = async <T,>(p: Promise<T>, fallback: T): Promise<T> => {
   try {
@@ -88,7 +89,7 @@ export default function CanhoesAdminModule() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [st, cats, pend, votesResp, hist] = await Promise.all([
+      const [st, cats, pend, votesResp, hist, measuresAll] = await Promise.all([
         safe<CanhoesStateDto | null>(canhoesRepo.getState(), null),
         safe<AwardCategoryDto[]>(
           canhoesRepo.adminGetAllCategories(),
@@ -109,16 +110,26 @@ export default function CanhoesAdminModule() {
           canhoesRepo.adminProposalsHistory(),
           EMPTY_HISTORY
         ),
+        safe<MeasureProposalDto[]>(
+          canhoesRepo.adminListMeasureProposals(),
+          EMPTY_MEASURES
+        ),
       ]);
 
       setState(st);
       setCategories(cats);
       setPendingNominees(pend.nominees ?? []);
       setPendingCats(pend.categoryProposals ?? []);
-      setPendingMeasures(pend.measureProposals ?? []);
+      setPendingMeasures((pend.measureProposals ?? []).filter((proposal) => proposal.status === "pending"));
       setVotes(votesResp.votes ?? []);
       setAllCategoryProposals(normalizeProposals(hist.categoryProposals));
-      setAllMeasureProposals(normalizeProposals(hist.measureProposals));
+      let fallbackMeasures: MeasureProposalDto[];
+      if (hist.measureProposals && !Array.isArray(hist.measureProposals)) {
+        fallbackMeasures = normalizeProposals(hist.measureProposals);
+      } else {
+        fallbackMeasures = hist.measureProposals as MeasureProposalDto[];
+      }
+      setAllMeasureProposals((measuresAll?.length ?? 0) > 0 ? measuresAll : fallbackMeasures);
     } catch (err) {
       console.error("Admin load error:", err);
       toast.error("Erro ao carregar dados");
@@ -184,7 +195,7 @@ export default function CanhoesAdminModule() {
 
           <PendingProposals
             categoryProposals={pendingCats}
-            measureProposals={pendingMeasures}
+            measureProposalsAll={allMeasureProposals}
             loading={loading}
             onUpdate={loadData}
           />

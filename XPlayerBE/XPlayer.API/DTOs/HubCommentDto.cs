@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace XPlayer.Api.DTOs;
 
@@ -8,5 +9,7 @@ public sealed record HubCommentDto(
     Guid UserId,
     string UserName,
     string Text,
-    DateTime CreatedAtUtc
+    DateTime CreatedAtUtc,
+    Dictionary<string, int> ReactionCounts,
+    List<string> MyReactions
 );

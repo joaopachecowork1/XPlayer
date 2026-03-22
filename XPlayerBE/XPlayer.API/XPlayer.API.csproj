@@ -20,4 +20,8 @@
 	  <ProjectReference Include="..\XPlayer.Infrastructure\XPlayer.Infrastructure.csproj" />
 	  <ProjectReference Include="..\XPlayer.BL\XPlayer.BL.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs" />
+  </ItemGroup>
 </Project>

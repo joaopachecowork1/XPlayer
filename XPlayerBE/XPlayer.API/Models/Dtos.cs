@@ -112,6 +112,8 @@ public record MeasureProposalDto(string Id, string Text, string Status, DateTime
 
 public record CreateMeasureProposalRequest(string Text);
 
+public record UpdateMeasureProposalRequest(string? Text, string? Status);
+
 public record PendingAdminDto(
     List<NomineeDto> Nominees,
     List<CategoryProposalDto> CategoryProposals,

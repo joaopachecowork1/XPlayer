@@ -17,4 +17,8 @@
     <ProjectReference Include="..\XPlayer.Domain\XPlayer.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs" />
+  </ItemGroup>
+
 </Project>

@@ -126,6 +126,11 @@ export type CreateMeasureProposalRequest = {
   text: string;
 };
 
+export type UpdateMeasureProposalRequest = {
+  text?: string | null;
+  status?: "pending" | "approved" | "rejected" | null;
+};
+
 export type PendingAdminDto = {
   nominees: NomineeDto[];
   categoryProposals: CategoryProposalDto[];
@@ -248,6 +253,8 @@ export type HubCommentDto = {
   userName: string;
   text: string;
   createdAtUtc: string;
+  reactionCounts: Record<string, number>;
+  myReactions: string[];
 };
 
 export type CreateHubPostRequest = {

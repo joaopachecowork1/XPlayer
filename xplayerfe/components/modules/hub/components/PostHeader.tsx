@@ -64,12 +64,12 @@ export function PostHeader({
 
         <div className="min-w-0">
           <div
-            className="text-[13px] sm:text-sm font-semibold truncate"
-            style={{ color, fontFamily: "'Fredoka One', 'Nunito', system-ui" }}
+            className="text-[13px] sm:text-sm font-extrabold truncate text-white"
+            style={{ fontFamily: "var(--font-app), 'Segoe UI', system-ui" }}
           >
             {authorName}
           </div>
-          <div className="text-xs text-muted-foreground">{formatDateTime(createdAtUtc)}</div>
+          <div className="text-xs text-slate-400">{formatDateTime(createdAtUtc)}</div>
         </div>
 
         {isPinned && (

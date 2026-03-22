@@ -310,11 +310,20 @@ public sealed class HubController : ControllerBase
     public async Task<ActionResult<List<HubCommentDto>>> GetComments([FromRoute] string postId, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(postId)) return BadRequest();
+        var userId = HttpContext.GetUserId();
 
         var comments = await _db.HubPostComments
             .AsNoTracking()
             .Where(x => x.PostId == postId)
             .OrderBy(x => x.CreatedAtUtc)
+            .ToListAsync(ct);
+
+        var commentIds = comments.Select(c => c.Id).ToList();
+
+        var reactions = await _db.HubPostCommentReactions
+            .AsNoTracking()
+            .Where(x => commentIds.Contains(x.CommentId))
+            .Select(x => new { x.CommentId, x.UserId, x.Emoji })
             .ToListAsync(ct);
 
         var userIds = comments.Select(c => c.UserId).Distinct().ToList();
@@ -330,7 +339,18 @@ public sealed class HubController : ControllerBase
             c.UserId,
             users.TryGetValue(c.UserId, out var n) ? n : "Unknown",
             c.Text,
-            c.CreatedAtUtc
+            c.CreatedAtUtc,
+            reactions
+                .Where(r => r.CommentId == c.Id)
+                .GroupBy(r => r.Emoji)
+                .ToDictionary(g => g.Key, g => g.Count()),
+            userId == Guid.Empty
+                ? new List<string>()
+                : reactions
+                    .Where(r => r.CommentId == c.Id && r.UserId == userId)
+                    .Select(r => r.Emoji)
+                    .Distinct()
+                    .ToList()
         )).ToList();
 
         return Ok(dtos);
@@ -369,8 +389,54 @@ public sealed class HubController : ControllerBase
             comment.UserId,
             me ?? "Unknown",
             comment.Text,
-            comment.CreatedAtUtc
+            comment.CreatedAtUtc,
+            new Dictionary<string, int>(),
+            new List<string>()
         ));
+    }
+
+    [HttpPost("posts/{postId}/comments/{commentId}/reactions")]
+    public async Task<ActionResult<object>> ToggleCommentReaction(
+        [FromRoute] string postId,
+        [FromRoute] string commentId,
+        [FromBody] ToggleReactionRequest req,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(postId)) return BadRequest("postId is required.");
+        if (string.IsNullOrWhiteSpace(commentId)) return BadRequest("commentId is required.");
+
+        var userId = HttpContext.GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        var comment = await _db.HubPostComments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == commentId && x.PostId == postId, ct);
+        if (comment is null) return NotFound();
+
+        var emoji = string.IsNullOrWhiteSpace(req.Emoji) ? "❤️" : req.Emoji.Trim();
+        if (emoji.Length > 16) emoji = emoji.Substring(0, 16);
+
+        var existing = await _db.HubPostCommentReactions
+            .SingleOrDefaultAsync(x => x.CommentId == commentId && x.UserId == userId && x.Emoji == emoji, ct);
+
+        var active = existing is null;
+        if (existing is null)
+        {
+            _db.HubPostCommentReactions.Add(new HubPostCommentReactionEntity
+            {
+                CommentId = commentId,
+                UserId = userId,
+                Emoji = emoji,
+                CreatedAtUtc = DateTime.UtcNow
+            });
+        }
+        else
+        {
+            _db.HubPostCommentReactions.Remove(existing);
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { emoji, active });
     }
 
 
@@ -580,9 +646,12 @@ public sealed class HubController : ControllerBase
         // delete children explicitly (no FKs declared)
         var likes = _db.HubPostLikes.Where(x => x.PostId == postId);
         var comments = _db.HubPostComments.Where(x => x.PostId == postId);
+        var commentIds = _db.HubPostComments.Where(x => x.PostId == postId).Select(x => x.Id);
         var reactions = _db.HubPostReactions.Where(x => x.PostId == postId);
+        var commentReactions = _db.HubPostCommentReactions.Where(x => commentIds.Contains(x.CommentId));
 
         _db.HubPostLikes.RemoveRange(likes);
+        _db.HubPostCommentReactions.RemoveRange(commentReactions);
         _db.HubPostComments.RemoveRange(comments);
         _db.HubPostReactions.RemoveRange(reactions);
         _db.HubPosts.Remove(post);
@@ -599,6 +668,8 @@ public sealed class HubController : ControllerBase
         var c = await _db.HubPostComments.SingleOrDefaultAsync(x => x.Id == commentId, ct);
         if (c is null) return NotFound();
 
+        var commentReactions = _db.HubPostCommentReactions.Where(x => x.CommentId == commentId);
+        _db.HubPostCommentReactions.RemoveRange(commentReactions);
         _db.HubPostComments.Remove(c);
         await _db.SaveChangesAsync(ct);
         return Ok();

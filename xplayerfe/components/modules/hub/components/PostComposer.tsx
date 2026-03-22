@@ -152,7 +152,7 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="O que está a acontecer?"
-            className="min-h-[120px] bg-jungle-900/40 border-jungle-700/30 text-jungle-50 placeholder:text-jungle-600/70 focus-visible:ring-jungle-600/50 focus-visible:border-jungle-600/60 resize-none rounded-xl transition-colors"
+            className="min-h-[120px] bg-jungle-900/40 border-jungle-700/30 text-jungle-50 placeholder:text-jungle-300/85 focus-visible:ring-jungle-600/50 focus-visible:border-jungle-600/60 resize-none rounded-xl transition-colors"
             autoFocus
           />
 
@@ -200,13 +200,13 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
                 value={pollQuestion}
                 onChange={(e) => setPollQuestion(e.target.value)}
                 placeholder="Pergunta da votação..."
-                className="min-h-[60px] bg-jungle-900/40 border-jungle-700/30 text-jungle-100 placeholder:text-jungle-600/70 focus-visible:ring-jungle-600/50 resize-none rounded-xl text-sm"
+                className="min-h-[60px] bg-jungle-900/40 border-jungle-700/30 text-jungle-100 placeholder:text-jungle-300/85 focus-visible:ring-jungle-600/50 resize-none rounded-xl text-sm"
               />
               <div className="space-y-2">
                 {pollOptions.map((opt, idx) => (
                   <div key={idx} className="flex gap-2">
                     <input
-                      className="flex-1 h-9 rounded-lg border border-jungle-700/30 bg-jungle-900/40 px-3 text-sm text-jungle-100 placeholder:text-jungle-600/70 focus:outline-none focus:ring-1 focus:ring-jungle-600/50 focus:border-jungle-600/50 transition-colors"
+                      className="flex-1 h-9 rounded-lg border border-jungle-700/30 bg-jungle-900/40 px-3 text-sm text-jungle-100 placeholder:text-jungle-300/85 focus:outline-none focus:ring-1 focus:ring-jungle-600/50 focus:border-jungle-600/50 transition-colors"
                       value={opt}
                       onChange={(e) => updatePollOption(idx, e.target.value)}
                       placeholder={`Opção ${idx + 1}`}

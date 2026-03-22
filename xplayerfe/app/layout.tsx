@@ -1,6 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import AppProviders from "@/components/providers/AppProviders";
 import "./globals.css";
+
+const appFont = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-app",
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   title: "XPlayer",
@@ -16,17 +24,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt" className="dark" suppressHydrationWarning>
-      <head>
-        {/* Canhões display font — loaded here for SSR; globals.css imports as fallback */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap"
-          rel="stylesheet"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className={`${appFont.variable} min-h-screen bg-background text-foreground antialiased`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

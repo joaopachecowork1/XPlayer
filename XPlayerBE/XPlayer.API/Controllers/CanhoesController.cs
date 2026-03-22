@@ -28,7 +28,7 @@ public partial class CanhoesController : ControllerBase
         ProposalsByStatus<CategoryProposalDto> CategoryProposals,
         ProposalsByStatus<MeasureProposalDto> MeasureProposals
     );
-    public sealed record ProposalsByStatus<T>(IEnumerable<T> Approved, IEnumerable<T> Rejected);
+    public sealed record ProposalsByStatus<T>(IEnumerable<T> Pending, IEnumerable<T> Approved, IEnumerable<T> Rejected);
 
     // 2) When approving/rejecting proposals, optionally record the admin user as handler
     //    (add columns ModeratedByUserId, ModeratedAtUtc to CategoryProposalEntity/MeasureProposalEntity if desired)
@@ -38,6 +38,11 @@ public partial class CanhoesController : ControllerBase
     public async Task<ActionResult<AdminProposalsHistoryDto>> AdminProposals(CancellationToken ct)
     {
         if (!IsAdmin()) return Forbid();
+
+        var catsPending = await _db.CategoryProposals.AsNoTracking()
+            .Where(p => p.Status == "pending")
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .ToListAsync(ct);
 
         var catsApproved = await _db.CategoryProposals.AsNoTracking()
             .Where(p => p.Status == "approved")
@@ -54,6 +59,11 @@ public partial class CanhoesController : ControllerBase
             .OrderByDescending(p => p.CreatedAtUtc)
             .ToListAsync(ct);
 
+        var measPending = await _db.MeasureProposals.AsNoTracking()
+            .Where(p => p.Status == "pending")
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .ToListAsync(ct);
+
         var measRejected = await _db.MeasureProposals.AsNoTracking()
             .Where(p => p.Status == "rejected")
             .OrderByDescending(p => p.CreatedAtUtc)
@@ -61,9 +71,11 @@ public partial class CanhoesController : ControllerBase
 
         var dto = new AdminProposalsHistoryDto(
             new ProposalsByStatus<CategoryProposalDto>(
+                catsPending.Select(ToCategoryProposalDto),
                 catsApproved.Select(ToCategoryProposalDto),
                 catsRejected.Select(ToCategoryProposalDto)),
             new ProposalsByStatus<MeasureProposalDto>(
+                measPending.Select(ToMeasureProposalDto),
                 measApproved.Select(ToMeasureProposalDto),
                 measRejected.Select(ToMeasureProposalDto))
         );
@@ -762,6 +774,76 @@ public partial class CanhoesController : ControllerBase
         _db.Measures.Add(m);
         await _db.SaveChangesAsync(ct);
         return new GalaMeasureDto(m.Id, m.Text, m.IsActive, new DateTimeOffset(m.CreatedAtUtc, TimeSpan.Zero));
+    }
+
+    [HttpGet("admin/measures/proposals")]
+    public async Task<ActionResult<List<MeasureProposalDto>>> AdminListMeasureProposals(
+        [FromQuery] string? status,
+        CancellationToken ct)
+    {
+        if (!IsAdmin()) return Forbid();
+
+        var normalized = string.IsNullOrWhiteSpace(status)
+            ? "all"
+            : status.Trim().ToLowerInvariant();
+
+        IQueryable<MeasureProposalEntity> q = _db.MeasureProposals.AsNoTracking();
+        if (normalized is "pending" or "approved" or "rejected")
+        {
+            q = q.Where(p => p.Status == normalized);
+        }
+
+        var list = await q
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .ToListAsync(ct);
+
+        return Ok(list.Select(ToMeasureProposalDto).ToList());
+    }
+
+    [HttpPatch("admin/measures/{id}")]
+    [HttpPut("admin/measures/{id}")]
+    public async Task<ActionResult<MeasureProposalDto>> AdminUpdateMeasureProposal(
+        [FromRoute] string id,
+        [FromBody] UpdateMeasureProposalRequest req,
+        CancellationToken ct)
+    {
+        if (!IsAdmin()) return Forbid();
+        if (string.IsNullOrWhiteSpace(id)) return BadRequest("id is required.");
+
+        var p = await _db.MeasureProposals.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (p is null) return NotFound();
+
+        if (!string.IsNullOrWhiteSpace(req.Text))
+        {
+            p.Text = req.Text.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(req.Status))
+        {
+            var statusValue = req.Status.Trim().ToLowerInvariant();
+            if (statusValue is not ("pending" or "approved" or "rejected"))
+            {
+                return BadRequest("Invalid status. Use pending, approved or rejected.");
+            }
+            p.Status = statusValue;
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return Ok(ToMeasureProposalDto(p));
+    }
+
+    [HttpDelete("admin/measures/{id}")]
+    public async Task<IActionResult> AdminDeleteMeasureProposal([FromRoute] string id, CancellationToken ct)
+    {
+        if (!IsAdmin()) return Forbid();
+        if (string.IsNullOrWhiteSpace(id)) return BadRequest("id is required.");
+
+        var p = await _db.MeasureProposals.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (p is null) return NotFound();
+
+        _db.MeasureProposals.Remove(p);
+        await _db.SaveChangesAsync(ct);
+        return NoContent();
     }
 
     [HttpPost("admin/measures/{id}/reject")]

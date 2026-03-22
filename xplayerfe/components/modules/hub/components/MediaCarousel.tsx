@@ -23,6 +23,12 @@ export function MediaCarousel({
 }>) {
   const media = useMemo(() => (urls ?? []).filter(Boolean), [urls]);
   const ref = useRef<HTMLDivElement | null>(null);
+  const touchState = useRef({
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    horizontalDrag: false,
+  });
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -51,17 +57,61 @@ export function MediaCarousel({
   const aspectCls =
     aspect === "portrait" ? "aspect-[4/5]" : "aspect-square";
 
+  const onTouchStart: React.TouchEventHandler<HTMLDivElement> = (event) => {
+    const el = ref.current;
+    const touch = event.touches[0];
+    if (!el || !touch) return;
+
+    touchState.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startScrollLeft: el.scrollLeft,
+      horizontalDrag: false,
+    };
+  };
+
+  const onTouchMove: React.TouchEventHandler<HTMLDivElement> = (event) => {
+    const el = ref.current;
+    const touch = event.touches[0];
+    if (!el || !touch) return;
+
+    const dx = touch.clientX - touchState.current.startX;
+    const dy = touch.clientY - touchState.current.startY;
+
+    // Only hijack when gesture is clearly horizontal.
+    if (!touchState.current.horizontalDrag) {
+      if (Math.abs(dx) <= Math.abs(dy)) {
+        return;
+      }
+      if (Math.abs(dx) < 8) {
+        return;
+      }
+      touchState.current.horizontalDrag = true;
+    }
+
+    event.preventDefault();
+    el.scrollLeft = touchState.current.startScrollLeft - dx;
+  };
+
+  const onTouchEnd: React.TouchEventHandler<HTMLDivElement> = () => {
+    touchState.current.horizontalDrag = false;
+  };
+
   return (
     <div className={cn("w-full", className)}>
       <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-black/15">
         <div
           ref={ref}
           onScroll={onScroll}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
           className={cn(
             "relative w-full overflow-x-auto",
             "snap-x snap-mandatory",
-            "flex scrollbar-none touch-pan-x"
+            "flex scrollbar-none touch-pan-y"
           )}
+          style={{ touchAction: "pan-y" }}
         >
           {media.map((u, i) => (
           <div

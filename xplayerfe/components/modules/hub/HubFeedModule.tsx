@@ -83,6 +83,35 @@ function applyOptimisticPollVote(posts: HubPostDto[], postId: string, optionId: 
   });
 }
 
+function updateCommentReactions(
+  commentsByPost: Record<string, HubCommentDto[]>,
+  postId: string,
+  commentId: string,
+  emoji: string
+) {
+  const list = commentsByPost[postId] ?? [];
+  return {
+    ...commentsByPost,
+    [postId]: list.map((comment) => {
+      if (comment.id !== commentId) return comment;
+
+      const mine = new Set(comment.myReactions ?? []);
+      const wasActive = mine.has(emoji);
+      if (wasActive) mine.delete(emoji);
+      else mine.add(emoji);
+
+      const nextCounts = { ...comment.reactionCounts };
+      nextCounts[emoji] = Math.max(0, (nextCounts[emoji] ?? 0) + (wasActive ? -1 : 1));
+
+      return {
+        ...comment,
+        myReactions: Array.from(mine),
+        reactionCounts: nextCounts,
+      };
+    }),
+  };
+}
+
 export function HubFeedModule({
   variant = "instagram",
   showComposer = true,
@@ -94,7 +123,7 @@ export function HubFeedModule({
   showComposer?: boolean;
 }>) {
   const { data: session, status } = useSession();
-  const { user } = useAuth();
+  useAuth();
 
   // useIsAdmin() reads from AuthContext (which calls /api/me to get DB isAdmin).
   // This is correct — session?.user?.isAdmin is always false for Google OAuth
@@ -289,6 +318,23 @@ export function HubFeedModule({
     }
   };
 
+  const toggleCommentReaction = async (postId: string, commentId: string, emoji: string) => {
+    setComments((prev) => updateCommentReactions(prev, postId, commentId, emoji));
+
+    try {
+      await hubRepo.toggleCommentReaction(postId, commentId, emoji);
+    } catch (e) {
+      console.error(e);
+      toast.error("Erro ao atualizar reação do comentário");
+      try {
+        const list = await hubRepo.getComments(postId);
+        setComments((prev) => ({ ...prev, [postId]: (list ?? []).filter(Boolean) }));
+      } catch {
+        // ignore refresh failure, optimistic UI already reverted by next reload
+      }
+    }
+  };
+
   const adminPin = async (postId: string) => {
     try {
       const r = await hubRepo.adminTogglePin(postId);
@@ -384,6 +430,7 @@ export function HubFeedModule({
                         draft={commentDrafts[p.id] ?? ""}
                         onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
                         onSubmit={() => void addComment(p.id)}
+                        onToggleReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
                       />
                     )}
                   </div>
@@ -514,6 +561,7 @@ export function HubFeedModule({
                           draft={commentDrafts[p.id] ?? ""}
                           onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
                           onSubmit={() => void addComment(p.id)}
+                          onToggleReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
                         />
                       </div>
                     )}
@@ -579,6 +627,7 @@ export function HubFeedModule({
                     draft={commentDrafts[p.id] ?? ""}
                     onDraftChange={(v) => setCommentDrafts((d) => ({ ...d, [p.id]: v }))}
                     onSubmit={() => void addComment(p.id)}
+                    onToggleReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
                   />
                 )}
               </CardContent>
