@@ -9,10 +9,6 @@ public class XPlayerDbContext : DbContext
 
     public DbSet<UserEntity> Users => Set<UserEntity>();
 
-    public DbSet<GameEntity> Games => Set<GameEntity>();
-    public DbSet<SessionEntity> Sessions => Set<SessionEntity>();
-    public DbSet<BacklogItemEntity> Backlog => Set<BacklogItemEntity>();
-
     // Canhões do Ano
     public DbSet<AwardCategoryEntity> AwardCategories => Set<AwardCategoryEntity>();
     public DbSet<NomineeEntity> Nominees => Set<NomineeEntity>();
@@ -26,7 +22,7 @@ public class XPlayerDbContext : DbContext
     public DbSet<SecretSantaAssignmentEntity> SecretSantaAssignments => Set<SecretSantaAssignmentEntity>();
     public DbSet<CanhoesEventStateEntity> CanhoesEventState => Set<CanhoesEventStateEntity>();
 
-    // Hub / Feed
+    // Hub / Feed (used by Canhões feed page)
     public DbSet<HubPostEntity> HubPosts => Set<HubPostEntity>();
     public DbSet<HubPostLikeEntity> HubPostLikes => Set<HubPostLikeEntity>();
     public DbSet<HubPostCommentEntity> HubPostComments => Set<HubPostCommentEntity>();
@@ -49,19 +45,6 @@ public class XPlayerDbContext : DbContext
 
         modelBuilder.Entity<UserEntity>()
             .HasIndex(x => x.Email)
-            .IsUnique();
-
-        modelBuilder.Entity<GameEntity>()
-            .HasKey(x => x.Id);
-
-        modelBuilder.Entity<SessionEntity>()
-            .HasIndex(x => new { x.UserId, x.Status });
-
-        modelBuilder.Entity<SessionEntity>()
-            .HasIndex(x => new { x.UserId, x.GameId });
-
-        modelBuilder.Entity<BacklogItemEntity>()
-            .HasIndex(x => new { x.UserId, x.GameId })
             .IsUnique();
 
         modelBuilder.Entity<AwardCategoryEntity>()

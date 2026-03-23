@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CanhoesBottomTabs } from "./CanhoesBottomTabs";
 import { CanhoesMoreSheet } from "./CanhoesMoreSheet";
 import { CanhoesComposeSheet } from "./CanhoesComposeSheet";
+import { SmokeOverlay } from "@/components/animations";
 
 // Available background presets – simpler, more visible design
 const BG_PRESETS = [
@@ -113,8 +114,8 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
         }}
       />
 
-      {/* ── Layer 2: smoke particle orbs ── */}
-      <SmokeLayer />
+      {/* ── Layer 2: canvas smoke particles (organic, bege, 60fps) ── */}
+      <SmokeOverlay />
 
       {/* ── Header ── */}
       <header
@@ -224,46 +225,6 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
         onOpenChange={setComposeOpen}
         onDone={() => setComposeOpen(false)}
       />
-    </div>
-  );
-}
-
-// ─── SmokeLayer — 5 animated radial-gradient orbs ─────────────────────────
-//
-// Pure CSS animation, no runtime randomness after mount so it's SSR-safe.
-// Positions are hardcoded so they distribute across the viewport edges.
-
-type SmokeOrbLeft  = { size: number; bottom: number; left: number;  delay: number; duration: number };
-type SmokeOrbRight = { size: number; bottom: number; right: number; delay: number; duration: number };
-type SmokeOrb = SmokeOrbLeft | SmokeOrbRight;
-
-const SMOKE_ORBS: readonly SmokeOrb[] = [
-  { size: 24, bottom: 80,  left: 8,   delay: 0,   duration: 4   },
-  { size: 18, bottom: 140, left: 22,  delay: 0.9, duration: 5   },
-  { size: 28, bottom: 60,  right: 12, delay: 1.8, duration: 4.5 },
-  { size: 20, bottom: 200, right: 28, delay: 2.6, duration: 6   },
-  { size: 16, bottom: 300, left: 40,  delay: 3.5, duration: 5.5 },
-];
-
-function SmokeLayer() {
-  return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-      {SMOKE_ORBS.map((orb, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: orb.size,
-            height: orb.size,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(0,200,80,0.14) 0%, transparent 70%)",
-            animation: `canhoes-smoke-rise ${orb.duration}s ease-in-out ${orb.delay}s infinite`,
-            bottom: orb.bottom,
-            ...("left"  in orb ? { left:  orb.left  } : {}),
-            ...("right" in orb ? { right: orb.right } : {}),
-          }}
-        />
-      ))}
     </div>
   );
 }

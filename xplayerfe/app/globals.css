@@ -141,6 +141,23 @@
 }
 
 /* ─────────────────────────────────────────
+   Canhões do Ano — design token palette
+   Taverna de Inverno: dark, warm, mysterious
+───────────────────────────────────────── */
+:root {
+  --color-bg-deep:        #0d1a0f;
+  --color-bg-surface:     #142418;
+  --color-bg-elevated:    #1e3322;
+  --color-accent-green:   #2d6a4f;
+  --color-accent-bright:  #52b788;
+  --color-beige-light:    #f5ebe0;
+  --color-beige-warm:     #e9d8a6;
+  --color-beige-muted:    #c9b99a;
+  --color-smoke:          rgba(245, 235, 224, 0.06);
+  --color-gold-glow:      rgba(233, 216, 166, 0.15);
+}
+
+/* ─────────────────────────────────────────
    Canhões do Ano — festive override
    Neon green jungle game-UI theme.
 ───────────────────────────────────────── */
@@ -157,6 +174,17 @@
   --input: oklch(0.75 0.22 152 / 12%);
   --muted: oklch(0.18 0.03 152);
   --muted-foreground: oklch(0.72 0.03 240);
+}
+
+/* ═══════════════════════════════════════════
+   CANHOES TYPOGRAPHY
+   Taverna de Inverno — Cinzel titles,
+   Crimson Pro body, JetBrains Mono tech
+═══════════════════════════════════════════ */
+[data-theme="canhoes"] {
+  --font-display:  'Cinzel', 'Playfair Display', Georgia, serif;
+  --font-body:     'Crimson Pro', 'EB Garamond', Georgia, serif;
+  --font-mono:     'JetBrains Mono', 'Fira Code', monospace;
 }
 
 @layer base {
@@ -256,10 +284,10 @@
   }
 
   .canhoes-title {
-    font-family: 'Fredoka One', cursive;
-    color: #ffe135;
-    text-shadow: 0 0 14px rgba(255, 225, 53, 0.45);
-    letter-spacing: 0.01em;
+    font-family: var(--font-display, 'Cinzel', 'Playfair Display', serif);
+    color: var(--color-beige-warm, #e9d8a6);
+    text-shadow: 0 0 14px var(--color-gold-glow, rgba(233, 216, 166, 0.35));
+    letter-spacing: 0.04em;
   }
 
   .canhoes-neon-border {
@@ -319,4 +347,60 @@
 @keyframes canhoes-ambient-float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-3px); }
+}
+
+/* ─────────────────────────────────────────
+   Card entrance animation (viewport-triggered via .card-enter class)
+───────────────────────────────────────── */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-enter {
+  animation: card-enter 0.35s ease-out both;
+}
+
+/* ─────────────────────────────────────────
+   Button shimmer on hover
+───────────────────────────────────────── */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+
+.btn-shimmer:hover::after {
+  transform: translateX(100%);
+}
+
+/* ─────────────────────────────────────────
+   Input green glow on focus (Canhões theme)
+───────────────────────────────────────── */
+[data-theme="canhoes"] input:focus,
+[data-theme="canhoes"] textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(82, 183, 136, 0.35), 0 0 12px rgba(82, 183, 136, 0.15);
+}
+
+/* ─────────────────────────────────────────
+   prefers-reduced-motion — disable all
+   animations for accessibility
+───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

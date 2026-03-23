@@ -1,50 +1,5 @@
 namespace XPlayer.Api.Models;
 
-public record SessionDto(
-    Guid Id,
-    Guid UserId,
-    string GameId,
-    string GameName,
-    string? CoverUrl,
-    string? Released,
-    int? Score,
-    string? Platform,
-    DateTimeOffset StartedAt,
-    DateTimeOffset? EndedAt,
-    int? DurationSeconds,
-    int? XpEarned,
-    SessionStatus Status
-);
-
-public record BacklogGameDto(
-    Guid UserId,
-    string GameId,
-    string GameName,
-    string? CoverUrl,
-    string? Released,
-    int? Score,
-    int TotalPlaySeconds,
-    int TotalXp,
-    int SessionsCount,
-    DateTimeOffset? LastPlayedAt
-);
-
-public record StartSessionRequest(
-    string GameId,
-    string GameName,
-    string? CoverUrl,
-    string? Released,
-    string? Platform,
-    DateTimeOffset? StartedAt,
-    int? Score
-);
-
-public record StopSessionRequest(
-    DateTimeOffset? EndedAt,
-    /// <summary>Total seconds the session was paused. Used to compute net active play time.</summary>
-    int? PausedSeconds = null
-);
-
 // ------------------------------
 // Canhões do Ano (fun awards)
 // ------------------------------
