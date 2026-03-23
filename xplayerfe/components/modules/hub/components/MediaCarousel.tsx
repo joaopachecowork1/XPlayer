@@ -8,9 +8,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 /**
  * Mobile-first media carousel (Instagram-ish).
  * - Full width
- * - Swipe/scroll horizontally
+ * - Swipe/scroll horizontally (only when gesture is clearly horizontal)
  * - Snap paging
  * - Dots indicator
+ *
+ * touch-action: pan-y allows the browser to handle vertical scroll natively.
+ * A manual touch handler kicks in only when |deltaX| > |deltaY|.
  */
 export function MediaCarousel({
   urls,
@@ -24,6 +27,8 @@ export function MediaCarousel({
   const media = useMemo(() => (urls ?? []).filter(Boolean), [urls]);
   const ref = useRef<HTMLDivElement | null>(null);
   const [index, setIndex] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const isDragging = useRef(false);
 
   useEffect(() => {
     setIndex(0);
@@ -48,8 +53,38 @@ export function MediaCarousel({
     el.scrollTo({ left: clamped * el.clientWidth, behavior: "smooth" });
   };
 
-  const aspectCls =
-    aspect === "portrait" ? "aspect-[4/5]" : "aspect-square";
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+    isDragging.current = false;
+  };
+
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - touchStart.current.x);
+    const dy = Math.abs(t.clientY - touchStart.current.y);
+    // Only take over scroll when gesture is clearly horizontal
+    if (dx > dy && dx > 8) {
+      isDragging.current = true;
+      e.stopPropagation();
+    }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current || !isDragging.current) {
+      touchStart.current = null;
+      return;
+    }
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.current.x;
+    touchStart.current = null;
+    isDragging.current = false;
+    if (dx < -40) goTo(index + 1);
+    else if (dx > 40) goTo(index - 1);
+  };
+
+  const aspectCls = aspect === "portrait" ? "aspect-[4/5]" : "aspect-square";
 
   return (
     <div className={cn("w-full", className)}>
@@ -57,34 +92,38 @@ export function MediaCarousel({
         <div
           ref={ref}
           onScroll={onScroll}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          style={{ touchAction: "pan-y" }}
           className={cn(
             "relative w-full overflow-x-auto",
             "snap-x snap-mandatory",
-            "flex scrollbar-none touch-pan-x"
+            "flex scrollbar-none"
           )}
         >
           {media.map((u, i) => (
-          <div
-            key={u}
-            className={cn(
-              "min-w-full snap-center transition-transform duration-300 ease-out",
-              "bg-muted/20",
-              i === index ? "scale-[1.0]" : "scale-[0.985]",
-              aspectCls
-            )}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={absMediaUrl(u)}
-              alt="post media"
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-              draggable={false}
-              sizes="(max-width: 768px) 100vw, 768px"
-              className="h-full w-full object-cover"
-            />
-          </div>
+            <div
+              key={u}
+              className={cn(
+                "min-w-full snap-center transition-transform duration-300 ease-out",
+                "bg-muted/20",
+                i === index ? "scale-[1.0]" : "scale-[0.985]",
+                aspectCls
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={absMediaUrl(u)}
+                alt="post media"
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                draggable={false}
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="h-full w-full object-cover"
+              />
+            </div>
           ))}
         </div>
 

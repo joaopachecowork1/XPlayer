@@ -324,13 +324,38 @@ public sealed class HubController : ControllerBase
             .Select(u => new { u.Id, u.DisplayName, u.Email })
             .ToDictionaryAsync(x => x.Id, x => string.IsNullOrWhiteSpace(x.DisplayName) ? x.Email : x.DisplayName!, ct);
 
+        var commentIds = comments.Select(c => c.Id).ToList();
+        var currentUserId = HttpContext.GetUserId();
+
+        var commentReactions = await _db.HubPostCommentReactions
+            .AsNoTracking()
+            .Where(r => commentIds.Contains(r.CommentId))
+            .Select(r => new { r.CommentId, r.UserId, r.Emoji })
+            .ToListAsync(ct);
+
+        var reactionCountsByComment = commentReactions
+            .GroupBy(r => r.CommentId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.GroupBy(r => r.Emoji).ToDictionary(eg => eg.Key, eg => eg.Count())
+            );
+
+        var myReactionsByComment = currentUserId == Guid.Empty
+            ? new Dictionary<string, List<string>>()
+            : commentReactions
+                .Where(r => r.UserId == currentUserId)
+                .GroupBy(r => r.CommentId)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.Emoji).Distinct().ToList());
+
         var dtos = comments.Select(c => new HubCommentDto(
             c.Id,
             c.PostId,
             c.UserId,
             users.TryGetValue(c.UserId, out var n) ? n : "Unknown",
             c.Text,
-            c.CreatedAtUtc
+            c.CreatedAtUtc,
+            reactionCountsByComment.TryGetValue(c.Id, out var rc) ? rc : new Dictionary<string, int>(),
+            myReactionsByComment.TryGetValue(c.Id, out var mr) ? mr : new List<string>()
         )).ToList();
 
         return Ok(dtos);
@@ -369,12 +394,55 @@ public sealed class HubController : ControllerBase
             comment.UserId,
             me ?? "Unknown",
             comment.Text,
-            comment.CreatedAtUtc
+            comment.CreatedAtUtc,
+            new Dictionary<string, int>(),
+            new List<string>()
         ));
     }
 
+    [HttpPost("posts/{postId}/comments/{commentId}/reactions")]
+    public async Task<ActionResult<object>> ToggleCommentReaction(
+        [FromRoute] string postId,
+        [FromRoute] string commentId,
+        [FromBody] ToggleReactionRequest req,
+        CancellationToken ct = default)
+    {
+        var emoji = string.IsNullOrWhiteSpace(req.Emoji) ? "❤️" : req.Emoji.Trim();
+        if (emoji.Length > 16) return BadRequest("Emoji too long.");
 
-    [HttpPost("uploads")]
+        var userId = HttpContext.GetUserId();
+        if (userId == Guid.Empty) return Unauthorized();
+
+        var commentExists = await _db.HubPostComments.AnyAsync(x => x.Id == commentId && x.PostId == postId, ct);
+        if (!commentExists) return NotFound();
+
+        var existing = await _db.HubPostCommentReactions
+            .FirstOrDefaultAsync(r => r.CommentId == commentId && r.UserId == userId && r.Emoji == emoji, ct);
+
+        bool active;
+        if (existing is null)
+        {
+            _db.HubPostCommentReactions.Add(new HubPostCommentReactionEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                CommentId = commentId,
+                UserId = userId,
+                Emoji = emoji,
+                CreatedAtUtc = DateTime.UtcNow
+            });
+            active = true;
+        }
+        else
+        {
+            _db.HubPostCommentReactions.Remove(existing);
+            active = false;
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { emoji, active });
+    }
+
+
     [RequestSizeLimit(25_000_000)] // 25MB
     public async Task<ActionResult<List<string>>> Upload([FromForm] IFormFileCollection files, CancellationToken ct = default)
     {

@@ -248,6 +248,8 @@ export type HubCommentDto = {
   userName: string;
   text: string;
   createdAtUtc: string;
+  reactionCounts?: Record<string, number> | null;
+  myReactions?: string[] | null;
 };
 
 export type CreateHubPostRequest = {

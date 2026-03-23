@@ -70,6 +70,26 @@ public sealed class HubPostCommentEntity
 }
 
 
+public sealed class HubPostCommentReactionEntity
+{
+    [Key]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+
+    [Required]
+    public string CommentId { get; set; } = string.Empty;
+
+    [Required]
+    public Guid UserId { get; set; }
+
+    // Emoji / reaction key (e.g. "❤️", "🔥", "😂")
+    [Required]
+    [MaxLength(16)]
+    public string Emoji { get; set; } = "❤️";
+
+    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+}
+
+
 public sealed class HubPostReactionEntity
 {
     [Key]

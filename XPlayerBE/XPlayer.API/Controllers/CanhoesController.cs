@@ -775,6 +775,30 @@ public partial class CanhoesController : ControllerBase
         return ToMeasureProposalDto(p);
     }
 
+    [HttpPatch("admin/measures/{id}")]
+    [HttpPut("admin/measures/{id}")]
+    public async Task<ActionResult<MeasureProposalDto>> UpdateMeasureProposal([FromRoute] string id, [FromBody] UpdateMeasureProposalRequest req, CancellationToken ct)
+    {
+        if (!IsAdmin()) return Forbid();
+        var p = await _db.MeasureProposals.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (p is null) return NotFound();
+        if (string.IsNullOrWhiteSpace(req.Text)) return BadRequest("Text is required.");
+        p.Text = req.Text.Trim();
+        await _db.SaveChangesAsync(ct);
+        return ToMeasureProposalDto(p);
+    }
+
+    [HttpDelete("admin/measures/{id}")]
+    public async Task<ActionResult> DeleteMeasureProposal([FromRoute] string id, CancellationToken ct)
+    {
+        if (!IsAdmin()) return Forbid();
+        var p = await _db.MeasureProposals.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (p is null) return NotFound();
+        _db.MeasureProposals.Remove(p);
+        await _db.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
     [HttpGet("admin/votes")]
     public async Task<ActionResult<object>> AdminVotes(CancellationToken ct)
     {
