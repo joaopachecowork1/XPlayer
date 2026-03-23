@@ -7,7 +7,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Keep jungle/moss for Canhões theme compatibility
+        // Taverna de Inverno palette
+        taverna: {
+          deep:     "#0d1a0f",
+          surface:  "#142418",
+          elevated: "#1e3322",
+          accent:   "#2d6a4f",
+          bright:   "#52b788",
+        },
+        beige: {
+          light: "#f5ebe0",
+          warm:  "#e9d8a6",
+          muted: "#c9b99a",
+        },
+        // Keep jungle/moss for backward compatibility
         jungle: {
           50:  "#f0fdf4",
           100: "#dcfce7",
@@ -34,6 +47,11 @@ module.exports = {
           900: "#193b18",
           950: "#0a200b",
         },
+      },
+      fontFamily: {
+        display: ["Cinzel", "serif"],
+        body:    ["Crimson Pro", "serif"],
+        mono:    ["JetBrains Mono", "monospace"],
       },
       keyframes: {
         "fade-in": {
@@ -73,21 +91,36 @@ module.exports = {
           "50%":       { transform: "translateY(-6px)" },
         },
         "canhoes-pulse": {
-          "0%, 100%": { boxShadow: "0 0 12px oklch(0.72 0.19 152 / 25%)" },
-          "50%":       { boxShadow: "0 0 28px oklch(0.72 0.19 152 / 45%), 0 0 8px oklch(0.72 0.19 152 / 30%)" },
+          "0%, 100%": { boxShadow: "0 0 10px rgba(82, 183, 136, 0.20)" },
+          "50%":       { boxShadow: "0 0 24px rgba(82, 183, 136, 0.38), 0 0 8px rgba(82, 183, 136, 0.25)" },
+        },
+        "canhoes-card-enter": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        "canhoes-modal-enter": {
+          from: { opacity: "0", transform: "scale(0.95)" },
+          to:   { opacity: "1", transform: "scale(1)" },
+        },
+        "canhoes-letter-reveal": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        "fade-in":         "fade-in 0.18s ease-out",
-        "slide-up":        "slide-up 0.2s ease-out",
-        "slide-in-bottom": "slide-in-bottom 0.25s cubic-bezier(0.34,1.56,0.64,1)",
-        "glow-pulse":      "glow-pulse 2.5s ease-in-out infinite",
-        "ambient-float":   "ambient-float 3s ease-in-out infinite",
-        "xp-count":        "xp-count 0.3s cubic-bezier(0.34,1.56,0.64,1)",
-        "nav-indicator":   "nav-indicator 0.2s ease-out",
-        "stagger-in":      "stagger-in 0.25s ease-out both",
-        "canhoes-float":   "canhoes-float 3s ease-in-out infinite",
-        "canhoes-pulse":   "canhoes-pulse 2.6s ease-in-out infinite",
+        "fade-in":             "fade-in 0.18s ease-out",
+        "slide-up":            "slide-up 0.2s ease-out",
+        "slide-in-bottom":     "slide-in-bottom 0.25s cubic-bezier(0.34,1.56,0.64,1)",
+        "glow-pulse":          "glow-pulse 2.5s ease-in-out infinite",
+        "ambient-float":       "ambient-float 3s ease-in-out infinite",
+        "xp-count":            "xp-count 0.3s cubic-bezier(0.34,1.56,0.64,1)",
+        "nav-indicator":       "nav-indicator 0.2s ease-out",
+        "stagger-in":          "stagger-in 0.25s ease-out both",
+        "canhoes-float":       "canhoes-float 3s ease-in-out infinite",
+        "canhoes-pulse":       "canhoes-pulse 2.6s ease-in-out infinite",
+        "canhoes-card-enter":  "canhoes-card-enter 0.35s ease-out both",
+        "canhoes-modal-enter": "canhoes-modal-enter 0.22s cubic-bezier(0.34,1.56,0.64,1) both",
+        "canhoes-letter":      "canhoes-letter-reveal 0.3s ease-out both",
       },
     },
   },
