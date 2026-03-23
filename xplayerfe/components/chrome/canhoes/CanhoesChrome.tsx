@@ -7,22 +7,23 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 
 import { Button } from "@/components/ui/button";
+import { SmokeOverlay } from "@/components/animations/SmokeOverlay";
 import { CanhoesBottomTabs } from "./CanhoesBottomTabs";
 import { CanhoesMoreSheet } from "./CanhoesMoreSheet";
 
-// Available background presets – simpler, more visible design
+// Available background presets — taverna de inverno dark greens
 const BG_PRESETS = [
   {
     id: "musgo",
-    label: "Verde Musgo",
+    label: "Musgo Escuro",
     className:
-      "bg-[linear-gradient(135deg,#0f2415_0%,#162d1c_50%,#0d1a11_100%)]",
+      "bg-[linear-gradient(160deg,#0d1a0f_0%,#111f14_40%,#0a1510_100%)]",
   },
   {
     id: "noite-clara",
-    label: "Noite Clara",
+    label: "Noite Quente",
     className:
-      "bg-[linear-gradient(180deg,#1a2620_0%,#0f1f16_100%)]",
+      "bg-[linear-gradient(180deg,#142418_0%,#0d1a0f_100%)]",
   },
 ] as const;
 
@@ -98,28 +99,28 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
       data-theme="canhoes"
       className={cn("relative isolate min-h-[100svh] flex flex-col overflow-hidden", currentBg.className)}
     >
-      {/* ── Layer 1: atmospheric neon mist overlay ── */}
+      {/* ── Layer 1: atmospheric warm mist overlay ── */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           background: [
-            "radial-gradient(120% 60% at 50% 0%, rgba(0,255,68,0.06) 0%, transparent 55%)",
-            "radial-gradient(80% 40% at 20% 85%, rgba(255,140,0,0.08) 0%, transparent 70%)",
-            "radial-gradient(90% 45% at 85% 80%, rgba(0,200,80,0.10) 0%, transparent 74%)",
+            "radial-gradient(120% 60% at 50% 0%, rgba(82,183,136,0.06) 0%, transparent 55%)",
+            "radial-gradient(80% 40% at 20% 85%, rgba(233,216,166,0.07) 0%, transparent 70%)",
+            "radial-gradient(90% 45% at 85% 80%, rgba(45,106,79,0.10) 0%, transparent 74%)",
           ].join(","),
         }}
       />
 
-      {/* ── Layer 2: smoke particle orbs ── */}
-      <SmokeLayer />
+      {/* ── Layer 2: canvas smoke overlay (beige/white particles) ── */}
+      <SmokeOverlay />
 
       {/* ── Header ── */}
       <header
         className="sticky top-0 z-30"
         style={{
-          background: "linear-gradient(180deg, rgba(6,14,9,0.92) 0%, rgba(6,14,9,0.80) 100%)",
-          borderBottom: "1px solid rgba(0,255,68,0.14)",
+          background: "linear-gradient(180deg, rgba(13,26,15,0.94) 0%, rgba(13,26,15,0.82) 100%)",
+          borderBottom: "1px solid rgba(82,183,136,0.16)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
         }}
@@ -131,12 +132,12 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
               className="canhoes-title text-base leading-tight truncate"
               style={{ fontSize: "16px" }}
             >
-              🌿 Canhões do Ano
+              🕯️ Canhões do Ano
             </span>
             {title !== "Nomeações" && (
               <span
                 className="text-[10px] leading-none mt-0.5 truncate"
-                style={{ color: "rgba(0,255,68,0.55)", fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}
+                style={{ color: "rgba(82,183,136,0.65)", fontFamily: "'Crimson Pro', serif", fontWeight: 600 }}
               >
                 {title}
               </span>
@@ -149,7 +150,7 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
             <button
               onClick={cycleBackground}
               className="canhoes-tap h-8 w-8 flex items-center justify-center rounded-xl text-base"
-              style={{ color: "rgba(0,255,68,0.55)" }}
+              style={{ color: "rgba(233,216,166,0.50)" }}
               aria-label={`Fundo: ${currentBg.label}`}
               title={currentBg.label}
             >
@@ -162,7 +163,7 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
                 size="sm"
                 onClick={() => logout()}
                 className="h-8 px-2 text-xs"
-                style={{ color: "rgba(0,255,68,0.55)" }}
+                style={{ color: "rgba(201,185,154,0.65)", fontFamily: "'Crimson Pro', serif" }}
               >
                 Sair
               </Button>
@@ -170,12 +171,12 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
 
             {/* "Mais" menu trigger */}
             <button
-              className="canhoes-tap h-8 px-3 flex items-center justify-center rounded-xl text-sm font-bold"
+              className="canhoes-tap canhoes-btn-shine h-8 px-3 flex items-center justify-center rounded-xl text-sm font-bold"
               style={{
-                background: "rgba(0,255,68,0.08)",
-                border: "1px solid rgba(0,255,68,0.18)",
-                color: "rgba(0,255,68,0.80)",
-                fontFamily: "'Nunito', sans-serif",
+                background: "rgba(82,183,136,0.10)",
+                border: "1px solid rgba(82,183,136,0.22)",
+                color: "rgba(233,216,166,0.85)",
+                fontFamily: "'Crimson Pro', serif",
               }}
               onClick={() => setMoreOpen(true)}
               aria-label="Mais"
@@ -209,46 +210,6 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
           router.push(href);
         }}
       />
-    </div>
-  );
-}
-
-// ─── SmokeLayer — 5 animated radial-gradient orbs ─────────────────────────
-//
-// Pure CSS animation, no runtime randomness after mount so it's SSR-safe.
-// Positions are hardcoded so they distribute across the viewport edges.
-
-type SmokeOrbLeft  = { size: number; bottom: number; left: number;  delay: number; duration: number };
-type SmokeOrbRight = { size: number; bottom: number; right: number; delay: number; duration: number };
-type SmokeOrb = SmokeOrbLeft | SmokeOrbRight;
-
-const SMOKE_ORBS: readonly SmokeOrb[] = [
-  { size: 24, bottom: 80,  left: 8,   delay: 0,   duration: 4   },
-  { size: 18, bottom: 140, left: 22,  delay: 0.9, duration: 5   },
-  { size: 28, bottom: 60,  right: 12, delay: 1.8, duration: 4.5 },
-  { size: 20, bottom: 200, right: 28, delay: 2.6, duration: 6   },
-  { size: 16, bottom: 300, left: 40,  delay: 3.5, duration: 5.5 },
-];
-
-function SmokeLayer() {
-  return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-      {SMOKE_ORBS.map((orb, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: orb.size,
-            height: orb.size,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(0,200,80,0.14) 0%, transparent 70%)",
-            animation: `canhoes-smoke-rise ${orb.duration}s ease-in-out ${orb.delay}s infinite`,
-            bottom: orb.bottom,
-            ...("left"  in orb ? { left:  orb.left  } : {}),
-            ...("right" in orb ? { right: orb.right } : {}),
-          }}
-        />
-      ))}
     </div>
   );
 }

@@ -1,5 +1,5 @@
-/* ── Google Fonts: Fredoka One (display) + Nunito (body) ─────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap');
+/* ── Google Fonts: Cinzel (display) + Crimson Pro (body) ────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -144,22 +144,66 @@
 }
 
 /* ─────────────────────────────────────────
-   Canhões do Ano — festive override
-   Neon green jungle game-UI theme.
+   Canhões do Ano — Taverna de Inverno
+   Dark forest + warm beige palette.
+   "Como uma taverna mágica de inverno —
+    sombria, quente, misteriosa."
 ───────────────────────────────────────── */
+
+/* Design palette CSS variables (always available) */
+:root {
+  --color-bg-deep:        #0d1a0f;
+  --color-bg-surface:     #142418;
+  --color-bg-elevated:    #1e3322;
+  --color-accent-green:   #2d6a4f;
+  --color-accent-bright:  #52b788;
+  --color-beige-light:    #f5ebe0;
+  --color-beige-warm:     #e9d8a6;
+  --color-beige-muted:    #c9b99a;
+  --color-smoke:          rgba(245, 235, 224, 0.06);
+  --color-gold-glow:      rgba(233, 216, 166, 0.15);
+}
+
 .dark [data-theme="canhoes"] {
-  --primary: oklch(0.75 0.22 152);
-  --primary-foreground: oklch(0.10 0.025 152);
-  --ring: oklch(0.75 0.22 152 / 60%);
-  --sidebar-primary: oklch(0.75 0.22 152);
-  --sidebar-primary-foreground: oklch(0.10 0.025 152);
-  --chart-4: oklch(0.75 0.22 152);
-  --background: oklch(0.08 0.02 152);
-  --card: oklch(0.11 0.025 152);
-  --border: oklch(0.75 0.22 152 / 18%);
-  --input: oklch(0.75 0.22 152 / 12%);
-  --muted: oklch(0.18 0.03 152);
-  --muted-foreground: oklch(0.62 0.07 152);
+  /* Bright moss green as primary CTA */
+  --primary: oklch(0.65 0.13 152);
+  --primary-foreground: oklch(0.10 0.025 145);
+
+  /* Ring / focus glow in soft green */
+  --ring: oklch(0.65 0.13 152 / 50%);
+
+  /* Sidebar tokens */
+  --sidebar-primary: oklch(0.65 0.13 152);
+  --sidebar-primary-foreground: oklch(0.10 0.025 145);
+
+  /* Deep forest backgrounds */
+  --background: oklch(0.10 0.022 145);
+  --card: oklch(0.13 0.028 145);
+  --popover: oklch(0.15 0.030 145);
+  --popover-foreground: oklch(0.93 0.025 70);
+
+  /* Beige text tones */
+  --foreground: oklch(0.93 0.025 70);
+  --card-foreground: oklch(0.93 0.025 70);
+
+  /* Muted surfaces */
+  --muted: oklch(0.17 0.030 145);
+  --muted-foreground: oklch(0.73 0.040 72);
+
+  /* Accent — slightly elevated surface */
+  --accent: oklch(0.19 0.035 145);
+  --accent-foreground: oklch(0.88 0.030 70);
+
+  /* Subtle borders in moss green */
+  --border: oklch(0.65 0.13 152 / 20%);
+  --input: oklch(0.65 0.13 152 / 12%);
+
+  /* Chart palette */
+  --chart-1: oklch(0.65 0.13 152);
+  --chart-2: oklch(0.86 0.065 80);
+  --chart-3: oklch(0.76 0.045 75);
+  --chart-4: oklch(0.50 0.10 152);
+  --chart-5: oklch(0.73 0.040 72);
 }
 
 /* ─────────────────────────────────────────
@@ -203,46 +247,98 @@
 
   /* ══════════════════════════════════════════
      CANHOES CUSTOM UTILITIES
-     Mobile-first Instagram-like design system
+     Mobile-first taverna de inverno design system
   ══════════════════════════════════════════ */
 
+  /* Glassmorphism: dark forest card */
   .canhoes-glass {
-    background-color: rgba(15, 36, 21, 0.5);
+    background-color: rgba(20, 36, 24, 0.60);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(82, 183, 136, 0.22);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(245, 235, 224, 0.04);
+  }
+
+  /* Interactive chip element */
+  .canhoes-chip {
+    background-color: rgba(30, 51, 34, 0.65);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1.5px solid oklch(0.72 0.19 152 / 0.35);
+    border: 1px solid rgba(82, 183, 136, 0.28);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(245, 235, 224, 0.06);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .canhoes-chip:hover {
+    background-color: rgba(30, 51, 34, 0.80);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30), inset 0 1px 2px rgba(245, 235, 224, 0.08);
   }
 
-  .canhoes-chip {
-    background-color: rgba(20, 45, 25, 0.65);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid oklch(0.72 0.19 152 / 0.4);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(126, 255, 183, 0.1);
-  }
-
+  /* Press feedback */
   .canhoes-tap {
     @apply transition-transform duration-100 ease-out active:scale-95;
   }
 
+  /* Float animation helper */
   .canhoes-float {
     animation: canhoes-float 3s ease-in-out infinite;
   }
 
+  /* Pulse glow animation helper */
   .canhoes-pulse {
     animation: canhoes-pulse 2.5s ease-in-out infinite;
   }
 
+  /* Title: warm beige-gold, Cinzel serif */
   .canhoes-title {
-    font-family: 'Fredoka One', cursive;
-    color: #ffe135;
-    text-shadow: 0 0 14px rgba(255, 225, 53, 0.45);
-    letter-spacing: 0.01em;
+    font-family: 'Cinzel', serif;
+    color: var(--color-beige-warm, #e9d8a6);
+    text-shadow: 0 0 18px rgba(233, 216, 166, 0.35), 0 0 6px rgba(233, 216, 166, 0.20);
+    letter-spacing: 0.04em;
   }
 
+  /* Subtle moss-green border glow */
   .canhoes-neon-border {
-    border: 1.5px solid rgba(0, 255, 68, 0.5);
-    box-shadow: 0 0 10px rgba(0, 255, 68, 0.2);
+    border: 1.5px solid rgba(82, 183, 136, 0.45);
+    box-shadow: 0 0 10px rgba(82, 183, 136, 0.18);
+  }
+
+  /* ── Button shine effect (horizontal gloss on hover) ── */
+  .canhoes-btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .canhoes-btn-shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 55%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(245, 235, 224, 0.14), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.45s ease;
+    pointer-events: none;
+  }
+  .canhoes-btn-shine:hover::after {
+    left: 150%;
+  }
+
+  /* ── Input focus glow ── */
+  .canhoes-input-glow:focus,
+  .canhoes-input-glow:focus-within {
+    outline: none;
+    border-color: rgba(82, 183, 136, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.14), 0 0 12px rgba(82, 183, 136, 0.12);
+  }
+
+  /* ── Card entrance: slides up + fades in ── */
+  .canhoes-card-enter {
+    animation: canhoes-card-enter 0.35s ease-out both;
+  }
+
+  /* ── Modal / bottom sheet scale-in ── */
+  .canhoes-modal-enter {
+    animation: canhoes-modal-enter 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 }
 
@@ -286,15 +382,53 @@
   50%       { transform: translateY(-6px); }
 }
 @keyframes canhoes-pulse {
-  0%, 100% { box-shadow: 0 0 12px oklch(0.72 0.19 152 / 25%); }
-  50%       { box-shadow: 0 0 28px oklch(0.72 0.19 152 / 45%), 0 0 8px oklch(0.72 0.19 152 / 30%); }
+  0%, 100% { box-shadow: 0 0 10px rgba(82, 183, 136, 0.20); }
+  50%       { box-shadow: 0 0 24px rgba(82, 183, 136, 0.38), 0 0 8px rgba(82, 183, 136, 0.25); }
 }
+/* Smoke: beige/white translucent particles rising slowly */
 @keyframes canhoes-smoke-rise {
-  0%   { transform: translateY(0) scale(0.8); opacity: 0.5; }
-  60%  { transform: translateY(-50px) scale(1.8); opacity: 0.12; }
-  100% { transform: translateY(-90px) scale(2.5); opacity: 0; }
+  0%   { transform: translateY(0) translateX(0) scale(0.7);  opacity: 0.06; }
+  40%  { transform: translateY(-40px) translateX(6px) scale(1.4); opacity: 0.04; }
+  70%  { transform: translateY(-70px) translateX(-4px) scale(2.0); opacity: 0.025; }
+  100% { transform: translateY(-100px) translateX(8px) scale(2.6); opacity: 0; }
 }
 @keyframes canhoes-ambient-float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-3px); }
+}
+/* Card entrance: slides 20px up + fades in */
+@keyframes canhoes-card-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Modal/sheet: scale from 0.95 + fade */
+@keyframes canhoes-modal-enter {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+/* Hero letter reveal */
+@keyframes canhoes-letter-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Gradient background shift */
+@keyframes canhoes-bg-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* ─────────────────────────────────────────
+   ACCESSIBILITY: reduced-motion
+   All animations pause when the user
+   prefers reduced motion.
+───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

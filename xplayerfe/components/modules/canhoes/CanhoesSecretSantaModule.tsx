@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
 import { useAuth } from "@/hooks/useAuth";
 import type { SecretSantaMeDto, WishlistItemDto } from "@/lib/api/types";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Gift, ImageOff, Link as LinkIcon, Shuffle, User } from "lucide-react";
 import { XPLAYER_API_URL } from "@/lib/api/xplayerClient";
+import { CannonBlast } from "@/components/animations/CannonBlast";
 
 export function CanhoesSecretSantaModule() {
   const { user } = useAuth();
@@ -18,11 +19,18 @@ export function CanhoesSecretSantaModule() {
   const [loading, setLoading] = useState(true);
   const [drawing, setDrawing] = useState(false);
   const [eventCode, setEventCode] = useState<string>(() => `canhoes${new Date().getFullYear()}`);
+  const [cannonTrigger, setCannonTrigger] = useState(0);
+  const prevMeRef = useRef<SecretSantaMeDto | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
       const data = await canhoesRepo.getSecretSantaMe(eventCode);
+      /* Fire cannon only when the receiver is revealed for the first time */
+      if (data && !prevMeRef.current) {
+        setCannonTrigger((n) => n + 1);
+      }
+      prevMeRef.current = data;
       setMe(data);
       const allItems = await canhoesRepo.getWishlist();
       setWishlist(allItems.filter((it) => it.userId === data.receiver.id));
@@ -41,6 +49,8 @@ export function CanhoesSecretSantaModule() {
     try {
       await canhoesRepo.adminDrawSecretSanta({ eventCode });
       await refresh();
+      /* Fire cannon when admin triggers the draw */
+      setCannonTrigger((n) => n + 1);
     } finally {
       setDrawing(false);
     }
@@ -48,6 +58,9 @@ export function CanhoesSecretSantaModule() {
 
   return (
     <div className="space-y-4">
+      {/* Cannon blast animation — fires on reveal */}
+      <CannonBlast trigger={cannonTrigger} />
+
       <div className="flex items-center justify-between gap-2">
         <div>
           <div className="text-xl font-semibold flex items-center gap-2">
@@ -93,7 +106,7 @@ export function CanhoesSecretSantaModule() {
               A carregar...
             </div>
           ) : me ? (
-            <div className="flex items-center gap-3 rounded-xl border p-3">
+            <div className="flex items-center gap-3 rounded-xl border p-3 animate-[canhoes-card-enter_0.35s_ease-out]">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 <User className="h-5 w-5 text-primary" />
               </div>

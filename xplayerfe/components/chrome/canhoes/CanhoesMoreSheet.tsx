@@ -24,10 +24,10 @@ export function CanhoesMoreSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="rounded-t-2xl"
+        className="rounded-t-2xl canhoes-modal-enter"
         style={{
-          background: "linear-gradient(180deg, rgba(9,22,15,0.98) 0%, rgba(5,10,7,0.99) 100%)",
-          borderTop: "1px solid rgba(0,255,68,0.18)",
+          background: "linear-gradient(180deg, rgba(20,36,24,0.98) 0%, rgba(13,26,15,0.99) 100%)",
+          borderTop: "1px solid rgba(82,183,136,0.20)",
           paddingBottom: "env(safe-area-inset-bottom, 16px)",
         }}
       >
@@ -36,7 +36,7 @@ export function CanhoesMoreSheet({
             className="canhoes-title text-left"
             style={{ fontSize: "18px" }}
           >
-            Mais 🌿
+            Mais 🕯️
           </SheetTitle>
         </SheetHeader>
 
@@ -51,16 +51,17 @@ export function CanhoesMoreSheet({
         </div>
 
         {/* Admin — always present; page shows "Acesso Negado" for non-admins */}
-        <Separator style={{ borderColor: "rgba(0,255,68,0.10)" }} />
+        <Separator style={{ borderColor: "rgba(82,183,136,0.12)" }} />
         <div className="p-3 pb-0 sm:p-4 sm:pb-0">
           <button
-            className="canhoes-tap w-full h-10 flex items-center justify-center gap-2 rounded-xl font-bold text-sm"
+            className="canhoes-tap canhoes-btn-shine w-full h-10 flex items-center justify-center gap-2 rounded-xl font-bold text-sm"
             style={{
-              background: "linear-gradient(90deg, rgba(255,225,53,0.12), rgba(255,225,53,0.06))",
-              border: "1px solid rgba(255,225,53,0.28)",
-              color: "#ffe135",
-              fontFamily: "'Nunito', sans-serif",
-              fontWeight: 900,
+              background: "linear-gradient(90deg, rgba(233,216,166,0.10), rgba(233,216,166,0.06))",
+              border: "1px solid rgba(233,216,166,0.25)",
+              color: "#e9d8a6",
+              fontFamily: "'Cinzel', serif",
+              fontWeight: 600,
+              letterSpacing: "0.04em",
             }}
             onClick={() => onNavigate("/canhoes/admin")}
           >
@@ -84,8 +85,8 @@ function Item({
   return (
     <button
       onClick={onClick}
-      className="canhoes-chip canhoes-tap flex items-center gap-2 rounded-xl px-3 py-3 text-[13px] sm:text-sm transition-all hover:brightness-110"
-      style={{ color: "rgba(224,255,224,0.90)", fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}
+      className="canhoes-chip canhoes-tap canhoes-btn-shine flex items-center gap-2 rounded-xl px-3 py-3 text-[13px] sm:text-sm transition-all"
+      style={{ color: "rgba(245,235,224,0.85)", fontFamily: "'Crimson Pro', serif", fontWeight: 600 }}
     >
       {icon}
       <span className="font-semibold truncate">{label}</span>
