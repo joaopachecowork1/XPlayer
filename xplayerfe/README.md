@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project — **Canhões do Ano**, a micro social network + voting platform.
 
 ## Getting Started
 
@@ -16,24 +16,85 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧪 Mock Mode (Offline Development)
 
-## Learn More
+You can run the entire app without a backend or Google OAuth using **Mock Mode**.
 
-To learn more about Next.js, take a look at the following resources:
+### Activate
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env.local` file in the `xplayerfe/` directory:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# .env.local
+NEXT_PUBLIC_MOCK_AUTH=true
+```
 
-## Deploy on Vercel
+Or pass it inline:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+NEXT_PUBLIC_MOCK_AUTH=true npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### What Mock Mode does
+
+| Feature | Behaviour |
+|---------|-----------|
+| Authentication | Injects a `Dev Admin` user with `isAdmin: true` — no Google login required |
+| Login page | Never shown — the app goes straight to the feed |
+| Admin panel | Fully accessible and pre-populated with demo data |
+| API calls | Intercepted and returned as static fixtures (no backend needed) |
+| Dev banner | A 🧪 DEV MODE badge appears in the bottom-left corner |
+
+> ⚠️ Mock mode is **hard-guarded** behind `process.env.NODE_ENV !== 'production'`. It can never run in a production deployment even if the env variable is accidentally set.
+
+### Mock data
+
+Fixtures live in `lib/mock/mockData.ts`. Edit them to adjust the data shown in dev.
+
+---
+
+## Project Structure
+
+```
+app/
+  canhoes/(app)/          — Protected app pages (feed, admin, categorias, …)
+  canhoes/(public)/       — Public pages (login)
+  api/                    — Next.js API routes (auth, proxy, uploads)
+components/
+  chrome/canhoes/         — Navigation shell (bottom tabs, header)
+  modules/canhoes/        — Feature modules
+    admin/                — Admin panel & components
+  dev/                    — DevModeBanner (dev-only)
+  ui/                     — Shared UI components (shadcn/ui)
+lib/
+  api/                    — xplayerFetch wrapper
+  mock/                   — Mock mode: index, mockData, mockFetch
+  repositories/           — API repositories (canhoesRepo, hubRepo)
+  auth/                   — Auth utilities (useIsAdmin)
+contexts/
+  AuthContext.tsx          — App-level auth state
+hooks/
+  useAuth.ts              — Re-export of AuthContext
+```
+
+## Architecture
+
+- **UI → Repository → xplayerFetch → /api/proxy → Backend**
+- Auth: NextAuth v4 with Google provider, JWT strategy
+- Admin check: `user.isAdmin` from the `/api/me` backend endpoint
+- Mock mode bypasses all auth and API calls with static fixtures
+
+## Commands
+
+```bash
+npm run dev       # Development server
+npm run build     # Production build
+npm run lint      # ESLint
+```
+
+---
 
 ## Google OAuth Notes (Local + Vercel)
 
@@ -43,3 +104,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 	- `http://localhost:3000/api/auth/callback/google`
 	- `https://x-player-eight.vercel.app/api/auth/callback/google`
 - Avoid LAN callback URLs like `http://192.168.x.x/...` with Google OAuth web flow.
+- Use **Mock Mode** (above) to avoid needing Google OAuth during development.

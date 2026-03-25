@@ -19,6 +19,7 @@ import type {
   NomineeDto,
   CategoryProposalDto,
   MeasureProposalDto,
+  PublicUserDto,
 } from "@/lib/api/types";
 
 import { EventStateCard } from "./components/EventStateCard";
@@ -26,6 +27,8 @@ import { NomineesAdmin } from "./components/NomineesAdmin";
 import { PendingProposals } from "./components/PendingProposals";
 import { VotesAudit } from "./components/VotesAudit";
 import { CategoriesAdmin } from "./components/CategoriesAdmin";
+import { AdminDashboard } from "./components/AdminDashboard";
+import { UsersAdmin } from "./components/UsersAdmin";
 
 type VoteAuditRow = {
   categoryId: string;
@@ -85,12 +88,13 @@ export default function CanhoesAdminModule() {
   const [allMeasureProposals, setAllMeasureProposals] = useState<
     MeasureProposalDto[]
   >([]);
+  const [members, setMembers] = useState<PublicUserDto[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [st, cats, pend, allNoms, votesResp, hist, measuresAll] = await Promise.all([
+      const [st, cats, pend, allNoms, votesResp, hist, measuresAll, membersList] = await Promise.all([
         safe<CanhoesStateDto | null>(canhoesRepo.getState(), null),
         safe<AwardCategoryDto[]>(
           canhoesRepo.adminGetAllCategories(),
@@ -119,6 +123,10 @@ export default function CanhoesAdminModule() {
           canhoesRepo.adminListMeasureProposals(),
           EMPTY_MEASURES
         ),
+        safe<PublicUserDto[]>(
+          canhoesRepo.getMembers(),
+          [] as PublicUserDto[]
+        ),
       ]);
 
       setState(st);
@@ -129,6 +137,7 @@ export default function CanhoesAdminModule() {
       setPendingMeasures((pend.measureProposals ?? []).filter((proposal) => proposal.status === "pending"));
       setVotes(votesResp.votes ?? []);
       setAllCategoryProposals(normalizeProposals(hist.categoryProposals));
+      setMembers(membersList ?? []);
       let fallbackMeasures: MeasureProposalDto[];
       if (hist.measureProposals && !Array.isArray(hist.measureProposals)) {
         fallbackMeasures = normalizeProposals(hist.measureProposals);
@@ -165,8 +174,9 @@ export default function CanhoesAdminModule() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="nominees">
-        <TabsList className="grid w-full grid-cols-5 bg-black/30 border border-primary/20">
+      <Tabs defaultValue="dashboard">
+        <TabsList className="grid grid-flow-col auto-cols-fr bg-black/30 border border-primary/20">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="nominees">
             Nomeações
             {pendingNominees.length > 0 && (
@@ -185,6 +195,10 @@ export default function CanhoesAdminModule() {
           </TabsTrigger>
           <TabsTrigger value="state">Estado</TabsTrigger>
           <TabsTrigger value="categories">Categorias</TabsTrigger>
+          <TabsTrigger value="users">
+            Membros
+            <Badge variant="secondary" className="ml-2">{members.length}</Badge>
+          </TabsTrigger>
           <TabsTrigger value="audit">
             Auditoria
             {votes.length > 0 && (
@@ -194,6 +208,19 @@ export default function CanhoesAdminModule() {
             )}
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="dashboard" className="space-y-3">
+          <AdminDashboard
+            categories={categories}
+            allNominees={allNominees}
+            pendingNominees={pendingNominees}
+            pendingCategoryProposals={pendingCats}
+            pendingMeasureProposals={pendingMeasures}
+            members={members}
+            totalVotes={votes.length}
+            loading={loading}
+          />
+        </TabsContent>
 
         <TabsContent value="nominees" className="space-y-3">
           <NomineesAdmin
@@ -229,6 +256,10 @@ export default function CanhoesAdminModule() {
             loading={loading}
             onUpdate={loadData}
           />
+        </TabsContent>
+
+        <TabsContent value="users">
+          <UsersAdmin members={members} loading={loading} />
         </TabsContent>
 
         <TabsContent value="audit">

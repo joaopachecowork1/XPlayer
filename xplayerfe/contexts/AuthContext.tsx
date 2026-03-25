@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { xplayerFetch, ApiError } from "@/lib/api";
+import { IS_MOCK_MODE, MOCK_AUTH_USER } from "@/lib/mock";
 
 export type AuthUser = {
   id: string;
@@ -64,12 +65,16 @@ async function fetchMeOnce(): Promise<MeResponse | null> {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
-  const [user, setUser] = useState<AuthUser | null>(null);
+  // In mock mode, start with the mock admin user already populated.
+  const [user, setUser] = useState<AuthUser | null>(IS_MOCK_MODE ? MOCK_AUTH_USER : null);
   const [isFetching, setIsFetching] = useState(false);
 
   const loading = status === "loading" || isFetching;
 
   useEffect(() => {
+    // Mock mode: skip real authentication entirely.
+    if (IS_MOCK_MODE) return;
+
     if (status !== "authenticated") {
       setUser(null);
       return;
@@ -104,11 +109,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AuthContextType>(
     () => ({
-      user,
-      isLogged: status === "authenticated",
-      loading,
-      loginGoogle: () => signIn("google"),
-      logout: () => signOut({ callbackUrl: "/login" }),
+      user: IS_MOCK_MODE ? MOCK_AUTH_USER : user,
+      isLogged: IS_MOCK_MODE ? true : status === "authenticated",
+      loading: IS_MOCK_MODE ? false : loading,
+      loginGoogle: () => { if (!IS_MOCK_MODE) signIn("google"); },
+      logout: () => { if (!IS_MOCK_MODE) signOut({ callbackUrl: "/login" }); },
     }),
     [user, status, loading]
   );

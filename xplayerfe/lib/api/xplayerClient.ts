@@ -7,10 +7,20 @@
  * - Junior-friendly
  * - Safe defaults for auth bootstrap (avoid crashing on 401)
  * - Still allow "strict" mode when you want to throw on 401
+ *
+ * Mock mode: when `NEXT_PUBLIC_MOCK_AUTH=true` (non-production only),
+ * all requests are intercepted and return static fixtures from
+ * `lib/mock/mockFetch`.  This allows fully offline development.
  */
 
 export const XPLAYER_API_URL =
   process.env.NEXT_PUBLIC_XPLAYER_API_URL || "http://localhost:5000";
+
+// ── Mock mode intercept ──────────────────────────────────────────────────────
+// Hard-guarded behind NODE_ENV !== 'production' so this code is dead in prod.
+const IS_MOCK_MODE =
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_MOCK_AUTH === "true";
 
 export class ApiError extends Error {
   status: number;
@@ -68,8 +78,18 @@ function isUnauthorizedStatus(status: number) {
  * Default behavior:
  * - Throws on non-2xx EXCEPT 401/403, which returns null (so app doesn't crash on bootstrap)
  * - If you want strict unauthorized behavior: pass { xplayer: { throwOnUnauthorized: true } }
+ *
+ * In mock mode (`NEXT_PUBLIC_MOCK_AUTH=true`, non-production only) the real
+ * network request is skipped and a static fixture is returned instead.
  */
 export async function xplayerFetch<T>(path: string, init?: XplayerRequestInit): Promise<T> {
+  if (IS_MOCK_MODE) {
+    // Lazy-import to keep mock code out of the production bundle analysis path.
+    const { getMockResponse } = await import("@/lib/mock/mockFetch");
+    const proxyPath = `/api/proxy/${normalizePath(path)}`;
+    return getMockResponse<T>(proxyPath, init?.method || "GET");
+  }
+
   const normalized = normalizePath(path);
   if (!normalized) {
     throw new ApiError("Invalid API path: path cannot be empty", 400);

@@ -4,19 +4,23 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CanhoesChrome } from "@/components/chrome/canhoes/CanhoesChrome";
 import { useAuth } from "@/hooks/useAuth";
+import { IS_MOCK_MODE } from "@/lib/mock";
+import { DevModeBanner } from "@/components/dev/DevModeBanner";
 
 export default function CanhoesAppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
   const { isLogged, loading } = useAuth();
 
   useEffect(() => {
+    // Skip login redirect when mock mode is active.
+    if (IS_MOCK_MODE) return;
     if (!loading && !isLogged) {
       router.replace("/canhoes/login");
     }
   }, [loading, isLogged, router]);
 
   // UI de Loading muito mais elegante
-  if (loading || !isLogged) {
+  if (!IS_MOCK_MODE && (loading || !isLogged)) {
     return (
       <div data-theme="canhoes" className="min-h-[100svh] flex flex-col items-center justify-center bg-[linear-gradient(160deg,#1a3320_0%,#0d1f12_100%)]">
          <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
@@ -27,5 +31,10 @@ export default function CanhoesAppLayout({ children }: Readonly<{ children: Reac
     );
   }
 
-  return <CanhoesChrome>{children}</CanhoesChrome>;
+  return (
+    <>
+      <CanhoesChrome>{children}</CanhoesChrome>
+      <DevModeBanner />
+    </>
+  );
 }
