@@ -12,21 +12,17 @@ export default function CanhoesAppLayout({ children }: Readonly<{ children: Reac
   const { isLogged, loading } = useAuth();
 
   useEffect(() => {
-    // Skip login redirect when mock mode is active.
     if (IS_MOCK_MODE) return;
     if (!loading && !isLogged) {
       router.replace("/canhoes/login");
     }
   }, [loading, isLogged, router]);
 
-  // UI de Loading muito mais elegante
   if (!IS_MOCK_MODE && (loading || !isLogged)) {
     return (
-      <div data-theme="canhoes" className="min-h-[100svh] flex flex-col items-center justify-center bg-[linear-gradient(160deg,#1a3320_0%,#0d1f12_100%)]">
-         <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-         <p className="text-sm text-muted-foreground animate-pulse">
-           {loading ? "A preparar os Canhões..." : "A redirecionar..."}
-         </p>
+      <div data-theme="canhoes" className="min-h-[100svh] flex flex-col items-center justify-center bg-[var(--bg-base)]">
+        <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-sm text-muted-foreground animate-pulse">{loading ? "A preparar os Canhões..." : "A redirecionar..."}</p>
       </div>
     );
   }
