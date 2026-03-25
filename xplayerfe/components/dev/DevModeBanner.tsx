@@ -1,23 +1,20 @@
 "use client";
 
 /**
- * DevModeBanner — visible only when NEXT_PUBLIC_MOCK_AUTH=true.
+ * DevModeBanner — visible only in development (mock mode is active by default).
  *
- * Renders a small, dismissible badge in the bottom-left corner so
- * developers know they are in mock mode. Never shown in production.
+ * Renders a small, dismissible badge so developers can confirm they are in
+ * mock/demo mode. Disable mock mode with NEXT_PUBLIC_MOCK_AUTH=false.
+ * Never shown in production.
  */
 
 import { useState } from "react";
 import { IS_MOCK_MODE } from "@/lib/mock";
 
-/**
- * A subtle but unmistakable banner indicating mock/dev mode is active.
- * Placed fixed in the bottom-left corner, dismissible per session.
- */
 export function DevModeBanner() {
   const [dismissed, setDismissed] = useState(false);
 
-  // Hard guard: never render in production, even if the component is imported.
+  // Hard guard: never render in production.
   if (process.env.NODE_ENV === "production") return null;
   if (!IS_MOCK_MODE) return null;
   if (dismissed) return null;
@@ -46,10 +43,10 @@ export function DevModeBanner() {
         pointerEvents: "auto",
         cursor: "default",
       }}
-      title="Mock Auth is active. This banner appears when NEXT_PUBLIC_MOCK_AUTH=true is set in .env.local."
+      title="Modo demonstração activo. Para desativar: NEXT_PUBLIC_MOCK_AUTH=false"
     >
       <span>🧪</span>
-      <span style={{ letterSpacing: "0.03em" }}>DEV MODE — Mock Auth Active</span>
+      <span style={{ letterSpacing: "0.03em" }}>DEMO — sem backend</span>
       <button
         onClick={() => setDismissed(true)}
         aria-label="Dismiss dev mode banner"

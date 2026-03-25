@@ -1,20 +1,24 @@
 /**
  * Mock mode utilities.
  *
- * Activated by setting `NEXT_PUBLIC_MOCK_AUTH=true` in `.env.local`.
- * Hard-guarded behind `NODE_ENV !== 'production'` so mock code
- * never runs in a production deployment.
+ * Enabled by default in development so the app works without a running backend
+ * or Google OAuth credentials. Disable explicitly with NEXT_PUBLIC_MOCK_AUTH=false.
  *
- * Usage:
- *   NEXT_PUBLIC_MOCK_AUTH=true npm run dev
+ * In production this is always false — mock code never runs in deployed builds.
+ *
+ * Usage (dev, mock ON — default):
+ *   npm run dev
+ *
+ * Usage (dev, mock OFF — needs real backend + Google OAuth):
+ *   NEXT_PUBLIC_MOCK_AUTH=false npm run dev
  */
 
 import type { AuthUser } from "@/contexts/AuthContext";
 
-/** True only in non-production builds when the NEXT_PUBLIC_MOCK_AUTH flag is set. */
+/** True in non-production builds unless explicitly disabled with NEXT_PUBLIC_MOCK_AUTH=false. */
 export const IS_MOCK_MODE: boolean =
   process.env.NODE_ENV !== "production" &&
-  process.env.NEXT_PUBLIC_MOCK_AUTH === "true";
+  process.env.NEXT_PUBLIC_MOCK_AUTH !== "false";
 
 /**
  * Mock admin user injected into AuthContext when mock mode is active.
