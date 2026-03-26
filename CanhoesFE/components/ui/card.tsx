@@ -7,7 +7,14 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        "card flex flex-col gap-4 rounded-[var(--radius-lg-token)] border border-[var(--color-moss)]/20 bg-[var(--color-bg-card)] py-4 text-[var(--color-text-primary)]",
+        /* Canhao Card - Dark glass com neon border */
+        "overflow-hidden rounded-[var(--radius-lg-token)]",
+        "bg-[linear-gradient(145deg,#0f2018,#0a1510)]",
+        "border-0 border-t border-b",
+        "border-t-[rgba(0,255,68,0.12)] border-b-[rgba(0,255,68,0.08)]",
+        "shadow-[0_0_0_1px_rgba(0,255,68,0.10),0_0_20px_rgba(0,170,51,0.12),inset_0_1px_0_rgba(255,255,255,0.04)]",
+        "transition-[border-color,transform,box-shadow] duration-150 ease-out",
+        "hover:border-t-[rgba(0,255,68,0.18)] hover:border-b-[rgba(0,255,68,0.12)]",
         className
       )}
       {...props}

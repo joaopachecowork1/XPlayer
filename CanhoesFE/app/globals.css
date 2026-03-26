@@ -45,6 +45,7 @@
 }
 
 :root {
+  /* ── CORE PALETTE (Mockup Reference) ── */
   --color-bg-primary: #1a1f14;
   --color-bg-card: #252b1c;
   --color-bg-surface: #f5efe0;
@@ -54,26 +55,47 @@
   --color-text-dark: #1a1f14;
   --color-text-muted: #8a9070;
 
+  /* Moss - Verde musgo escuro (headers, backgrounds principais) */
   --color-moss: #4a5c2f;
   --color-moss-light: #6b7c45;
+  --color-moss-dark: #2d381f;
+
+  /* Brown - Castanho médio (tags, categorias, filtros) */
   --color-brown: #6b4c2a;
   --color-brown-dark: #3d2b18;
+  --color-brown-light: #8a6236;
+
+  /* Beige - Bege claro/quente (cards, inputs, superfícies) */
   --color-beige: #d4b896;
   --color-beige-dark: #b89b7a;
+  --color-beige-light: #e8dcc8;
 
+  /* Fire/Success/Danger */
   --color-success: #4caf50;
   --color-danger: #e05a3a;
   --color-fire: #ff6b35;
 
-  --color-psycho-1: #ff6b9d;
-  --color-psycho-2: #ffd93d;
-  --color-psycho-3: #6bcb77;
-  --color-psycho-4: #4d96ff;
+  /* Psycho - Acentos psicadélicos (arco-íris, badges, flames, rankings) */
+  --color-psycho-1: #ff6b9d;  /* Rosa - badges numéricos, flames 🔥 */
+  --color-psycho-2: #ffd93d;  /* Amarelo */
+  --color-psycho-3: #6bcb77;  /* Verde */
+  --color-psycho-4: #4d96ff;  /* Azul - focus, hover */
+  --color-psycho-5: #c77dff;  /* Roxo */
   --gradient-psycho: linear-gradient(135deg, #ff6b9d, #ffd93d, #6bcb77, #4d96ff, #c77dff);
+  --gradient-psycho-pulse: linear-gradient(
+    135deg,
+    #ff6b9d 0%,
+    #ffd93d 20%,
+    #6bcb77 40%,
+    #4d96ff 60%,
+    #c77dff 80%,
+    #ff6b9d 100%
+  );
 
+  /* Semantic mappings */
   --bg-base: var(--color-bg-primary);
   --bg-surface: var(--color-bg-card);
-  --bg-elevated: rgba(107, 76, 42, 0.3);
+  --bg-elevated: rgba(37, 43, 28, 0.92);
   --bg-accent: var(--color-brown);
 
   --text-primary: var(--color-text-primary);
@@ -81,25 +103,34 @@
   --text-muted: var(--color-text-muted);
   --text-accent: var(--color-fire);
 
-  --border-subtle: rgba(74, 92, 47, 0.22);
+  /* Borders */
+  --border-subtle: rgba(74, 92, 47, 0.24);
   --border-default: rgba(212, 184, 150, 0.18);
   --border-accent: rgba(77, 150, 255, 0.45);
+  --border-moss: rgba(74, 92, 47, 0.32);
+  --border-beige: rgba(212, 184, 150, 0.28);
 
+  /* Buttons */
   --btn-primary-bg: var(--color-moss);
   --btn-primary-text: var(--color-text-primary);
   --btn-primary-hover: var(--color-moss-light);
   --btn-secondary-bg: var(--color-brown-dark);
   --btn-secondary-text: var(--color-beige);
 
+  /* Radius - Cantos suaves como mockup */
   --radius: 1rem;
-  --radius-sm-token: 0.875rem;
-  --radius-md-token: 1rem;
-  --radius-lg-token: 1.5rem;
-  --radius-xl-token: 1.75rem;
+  --radius-sm-token: 0.75rem;   /* 12px - inputs, badges */
+  --radius-md-token: 1rem;      /* 16px - buttons, cards small */
+  --radius-lg-token: 1.5rem;    /* 24px - cards principais */
+  --radius-xl-token: 1.75rem;   /* 28px - modais, sheets */
 
+  /* Shadows */
   --shadow-card: 0 18px 40px rgba(0, 0, 0, 0.22);
   --shadow-modal: 0 -20px 48px rgba(0, 0, 0, 0.28);
+  --shadow-glow-moss: 0 0 24px rgba(107, 124, 69, 0.28);
+  --shadow-glow-psycho: 0 0 20px rgba(77, 150, 255, 0.35);
 
+  /* Typography */
   --font-app: "Inter", "DM Sans", system-ui, sans-serif;
 
   --background: var(--color-bg-primary);
@@ -427,11 +458,100 @@
     animation-delay: 0.25s;
   }
 
+  .stagger-6 {
+    animation-delay: 0.3s;
+  }
+
+  .stagger-7 {
+    animation-delay: 0.35s;
+  }
+
+  .stagger-8 {
+    animation-delay: 0.4s;
+  }
+
+  /* Glass morphism */
   .glass,
   .canhoes-glass {
     background: rgba(37, 43, 28, 0.92);
     border: 1px solid rgba(74, 92, 47, 0.24);
     box-shadow: var(--shadow-card);
+  }
+
+  /* Tap feedback */
+  .canhoes-tap {
+    @apply transition-transform duration-150 ease-out active:scale-95;
+  }
+
+  /* Neon border effect */
+  .canhoes-neon-border {
+    border: 1px solid rgba(184, 155, 122, 0.24);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Glow ring animation */
+  .canhoes-glow-ring {
+    animation: canhoes-glow-ring 2.8s ease-in-out infinite;
+  }
+
+  /* Text colors */
+  .canhoes-neon-text,
+  .canhoes-gold-text {
+    color: var(--color-beige);
+  }
+
+  .canhoes-fire-text {
+    color: var(--color-fire);
+  }
+
+  .canhoes-neon-flicker {
+    animation: neon-flicker 6s ease-in-out infinite;
+  }
+
+  /* ── INPUT FOCUS PSICODÉLICO (Mockup) ── */
+  /* Outline animado arco-íris ao focar */
+  .input-psycho-focus:focus {
+    animation: psycho-glow 2s infinite;
+  }
+
+  /* ── BLURFADE + STAGGERED (Mockup) ── */
+  /* Cards entram com fade + blur + translate ao scroll */
+  .blurfade-in {
+    animation: blurfade-in 0.5s ease-out both;
+  }
+
+  /* ── NUMBER TICKER (Mockup) ── */
+  /* Animação de contagem para badges numéricos */
+  .number-ticker {
+    font-variant-numeric: tabular-nums;
+    animation: number-ticker 0.4s ease-out both;
+  }
+
+  /* ── PARTICLE BURST ── */
+  /* Partículas ao votar/submeter */
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    animation: particle-burst 0.8s ease-out forwards;
+  }
+
+  /* ── PODIUM PULSE ── */
+  /* Gradiente arco-íris pulsante para pódio/ranking */
+  .podium-pulse {
+    animation: podium-pulse 2.4s ease-in-out infinite;
+    background: var(--gradient-psycho-pulse);
+    background-size: 200% 200%;
+  }
+
+  /* ── BACKDROP BLUR DINÂMICO ── */
+  /* Header sticky com blur que aumenta com scroll */
+  .backdrop-blur-dynamic {
+    backdrop-filter: blur(8px);
+    transition: backdrop-filter 0.3s ease;
+  }
+
+  .backdrop-blur-dynamic.scrolled {
+    backdrop-filter: blur(16px);
   }
 
   .canhoes-tap {
@@ -661,6 +781,83 @@
 
 .btn-shimmer:hover::after {
   transform: translateX(100%);
+}
+
+/* ── NOVAS ANIMAÇÕES DO MOCKUP ── */
+
+/* BlurFade - Cards entram com fade + blur + translate */
+@keyframes blurfade-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Number Ticker - Animação de contagem para badges */
+@keyframes number-ticker {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Particle Burst - Partículas ao votar/submeter */
+@keyframes particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 50px), var(--ty, -80px)) scale(0.5) rotate(180deg);
+  }
+}
+
+/* Podium Pulse - Gradiente arco-íris pulsante */
+@keyframes podium-pulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.15);
+  }
+}
+
+/* Cannon Bounce Rotate - Emoji dos canhões */
+@keyframes canhoes-bounce-rotate {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(5deg);
+  }
+  75% {
+    transform: translateY(-8px) rotate(-5deg);
+  }
+}
+
+/* Confetti - Para celebrações */
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(200px) rotate(720deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

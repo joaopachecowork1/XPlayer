@@ -68,7 +68,19 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
   const [isMoreSheetOpen, setIsMoreSheetOpen] = useState(false);
   const [isComposeSheetOpen, setIsComposeSheetOpen] = useState(false);
   const [backgroundPresetId, setBackgroundPresetId] = useState<BackgroundPresetId>("moss");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Scroll listener para backdrop blur dinâmico
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 8);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Load saved preset
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -79,6 +91,13 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
       setBackgroundPresetId(savedPresetId);
     }
   }, []);
+
+  // Fade transition ao mudar background
+  useEffect(() => {
+    setIsTransitioning(true);
+    const t = setTimeout(() => setIsTransitioning(false), 300);
+    return () => clearTimeout(t);
+  }, [backgroundPresetId]);
 
   const currentBackgroundPreset =
     BACKGROUND_PRESETS.find(({ id }) => id === backgroundPresetId) ?? BACKGROUND_PRESETS[0];
@@ -98,9 +117,21 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
   return (
     <div
       data-theme="canhoes"
-      className={cn("relative isolate flex min-h-[100svh] flex-col overflow-hidden", currentBackgroundPreset.className)}
+      className={cn(
+        "relative isolate flex min-h-[100svh] flex-col overflow-hidden transition-opacity duration-300",
+        currentBackgroundPreset.className,
+        isTransitioning && "opacity-90"
+      )}
     >
-      <header className="sticky top-0 z-30 border-b border-[var(--color-moss)]/20 bg-[rgba(26,31,20,0.84)] backdrop-blur">
+      {/* Header Sticky com Backdrop Blur Dinâmico */}
+      <header
+        className={cn(
+          "sticky top-0 z-30 border-b border-[var(--color-moss)]/20 transition-all duration-300",
+          "backdrop-blur-dynamic",
+          isScrolled && "backdrop-blur-dynamic scrolled",
+          "bg-[rgba(26,31,20,0.84)]"
+        )}
+      >
         <div className="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
             <p className="label text-[var(--color-text-muted)]">Canhões</p>

@@ -20,6 +20,11 @@ import { MediaCarousel } from "./components/MediaCarousel";
 import { PollBox } from "./components/PollBox";
 import { HUB_EMOJIS, ReactionRail } from "./components/ReactionRail";
 
+// Animações do mockup
+import { BlurFade } from "@/components/animations/BlurFade";
+import { NumberTicker } from "@/components/animations/NumberTicker";
+import { Particles } from "@/components/animations/Particles";
+
 const EMOJIS = HUB_EMOJIS;
 
 function reactionCount(post: HubPostDto, emoji: string) {
@@ -121,6 +126,9 @@ export function HubFeedModule({
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [comments, setComments] = useState<Record<string, HubCommentDto[]>>({});
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
+
+  // Particles effect ao votar
+  const [showParticles, setShowParticles] = useState<{ postId: string; x: number; y: number } | null>(null);
 
   // Auto-heal old sessions that don't carry idToken (common outside incognito)
   useEffect(() => {
@@ -254,6 +262,9 @@ export function HubFeedModule({
   };
 
   const votePoll = async (postId: string, optionId: string) => {
+    // Trigger particles effect
+    setShowParticles({ postId, x: 50, y: 50 });
+
     // optimistic update
     setPosts((prev: HubPostDto[]) => applyOptimisticPollVote(prev, postId, optionId));
 
@@ -420,133 +431,137 @@ export function HubFeedModule({
 
           if (variant === "instagram") {
             const counts = p.reactionCounts || {};
+            const postIndex = safePosts.findIndex(p => p.id === p.id);
+            
             return (
-              // "canhao-card" visual — dark glass card with neon-green border and glow.
-              // On mobile: full-bleed (no border-x). On sm+: rounded card with border.
-              <div
-                key={p.id}
-                className="overflow-hidden rounded-none sm:rounded-2xl"
-                style={{
-                  background: "linear-gradient(145deg, #0f2018, #0a1510)",
-                  border: "0px solid transparent",
-                  borderTop: "1px solid rgba(0,255,68,0.12)",
-                  borderBottom: "1px solid rgba(0,255,68,0.08)",
-                }}
-              >
+              <BlurFade key={p.id} delay={postIndex * 50}>
+                {/* "canhao-card" visual — dark glass card with neon-green border and glow. */}
                 <div
-                  className="sm:rounded-2xl sm:m-0"
+                  className="overflow-hidden rounded-none sm:rounded-2xl"
                   style={{
-                    borderRadius: "inherit",
-                    boxShadow: "0 0 0 1px rgba(0,255,68,0.10), 0 0 20px rgba(0,170,51,0.12), inset 0 1px 0 rgba(255,255,255,0.04)",
+                    background: "linear-gradient(145deg, #0f2018, #0a1510)",
+                    border: "0px solid transparent",
+                    borderTop: "1px solid rgba(0,255,68,0.12)",
+                    borderBottom: "1px solid rgba(0,255,68,0.08)",
                   }}
                 >
-                  {/* Post header — isPinned not passed here; handled below in reaction bar */}
-                  <div className="px-3 pt-3 pb-2.5 sm:p-4">
-                    <PostHeader
-                      authorName={p.authorName}
-                      createdAtUtc={p.createdAtUtc}
-                      isAdmin={isAdmin}
-                      onAdminPin={() => void adminPin(p.id)}
-                      onAdminDelete={() => void adminDelete(p.id)}
-                    />
-                    {!!p.text && (
-                      <div
-                        className="mt-2.5 whitespace-pre-wrap break-words text-[13px] sm:text-sm leading-relaxed"
-                        style={{ color: "#d0f0d0", fontFamily: "'Nunito', sans-serif", fontWeight: 600 }}
-                      >
-                        {p.text}
-                      </div>
-                    )}
-                  </div>
-
-                  {media.length > 0 && (
-                    <div className="px-0 sm:px-4 pb-2.5 sm:pb-3">
-                      <MediaCarousel urls={media} />
-                    </div>
-                  )}
-
-                  {p.poll && (
-                    <div className={`px-3 sm:px-4 pb-2.5 sm:pb-3 ${media.length > 0 ? "pt-0" : ""}`}>
-                      <PollBox poll={p.poll} onVote={(optionId) => votePoll(p.id, optionId)} />
-                    </div>
-                  )}
-
-                  <div className="px-3 pb-3 sm:px-4 sm:pb-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pr-1">
-                        {EMOJIS.map((emoji) => {
-                          const active = (p.myReactions ?? []).includes(emoji);
-                          const count = counts[emoji] ?? reactionCount(p, emoji);
-                          return (
-                            <Button
-                              key={emoji}
-                              variant={active ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => void toggleReaction(p.id, emoji)}
-                              className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
-                              style={active ? {
-                                background: "linear-gradient(90deg, #00cc44, #008833)",
-                                border: "1.5px solid rgba(0,255,68,0.40)",
-                                color: "white",
-                              } : {
-                                background: "rgba(0,20,10,0.6)",
-                                border: "1px solid rgba(0,255,68,0.18)",
-                                color: "rgba(0,255,68,0.80)",
-                              }}
-                            >
-                              <span className="text-sm leading-none">{emoji}</span>
-                              <span className="tabular-nums text-xs">{count}</span>
-                            </Button>
-                          );
-                        })}
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => void toggleComments(p.id)}
-                          className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
-                          style={{
-                            background: "rgba(0,20,10,0.6)",
-                            border: "1px solid rgba(0,255,68,0.18)",
-                            color: "rgba(0,255,68,0.80)",
-                          }}
+                  <div
+                    className="sm:rounded-2xl sm:m-0"
+                    style={{
+                      borderRadius: "inherit",
+                      boxShadow: "0 0 0 1px rgba(0,255,68,0.10), 0 0 20px rgba(0,170,51,0.12), inset 0 1px 0 rgba(255,255,255,0.04)",
+                    }}
+                  >
+                    {/* Post header */}
+                    <div className="px-3 pt-3 pb-2.5 sm:p-4">
+                      <PostHeader
+                        authorName={p.authorName}
+                        createdAtUtc={p.createdAtUtc}
+                        isAdmin={isAdmin}
+                        onAdminPin={() => void adminPin(p.id)}
+                        onAdminDelete={() => void adminDelete(p.id)}
+                      />
+                      {!!p.text && (
+                        <div
+                          className="mt-2.5 whitespace-pre-wrap break-words text-[13px] sm:text-sm leading-relaxed"
+                          style={{ color: "#d0f0d0", fontFamily: "'Nunito', sans-serif", fontWeight: 600 }}
                         >
-                          <span className="text-sm leading-none">💬</span>
-                          <span className="tabular-nums text-xs">{p.commentCount ?? 0}</span>
-                        </Button>
-                      </div>
-
-                      {p.isPinned && (
-                        <Badge
-                          variant="secondary"
-                          style={{
-                            background: "rgba(255,225,53,0.10)",
-                            border: "1px solid rgba(255,225,53,0.35)",
-                            color: "#ffe135",
-                            fontFamily: "'Nunito', sans-serif",
-                            fontWeight: 700,
-                            fontSize: "11px",
-                          }}
-                        >
-                          📌 Fixado
-                        </Badge>
+                          {p.text}
+                        </div>
                       )}
                     </div>
 
-                    {openComments[p.id] && (
-                      <div className="mt-4">
-                        <CommentsSection
-                          comments={comments[p.id] ?? []}
-                          draft={commentDrafts[p.id] ?? ""}
-                          onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
-                          onSubmit={() => void addComment(p.id)}
-                          onToggleReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
-                        />
+                    {media.length > 0 && (
+                      <div className="px-0 sm:px-4 pb-2.5 sm:pb-3">
+                        <MediaCarousel urls={media} />
                       </div>
                     )}
+
+                    {p.poll && (
+                      <div className={`px-3 sm:px-4 pb-2.5 sm:pb-3 ${media.length > 0 ? "pt-0" : ""}`}>
+                        <PollBox poll={p.poll} onVote={(optionId) => votePoll(p.id, optionId)} />
+                      </div>
+                    )}
+
+                    <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pr-1">
+                          {EMOJIS.map((emoji) => {
+                            const active = (p.myReactions ?? []).includes(emoji);
+                            const count = counts[emoji] ?? reactionCount(p, emoji);
+                            return (
+                              <Button
+                                key={emoji}
+                                variant={active ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => void toggleReaction(p.id, emoji)}
+                                className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
+                                style={active ? {
+                                  background: "linear-gradient(90deg, #00cc44, #008833)",
+                                  border: "1.5px solid rgba(0,255,68,0.40)",
+                                  color: "white",
+                                } : {
+                                  background: "rgba(0,20,10,0.6)",
+                                  border: "1px solid rgba(0,255,68,0.18)",
+                                  color: "rgba(0,255,68,0.80)",
+                                }}
+                              >
+                                <span className="text-sm leading-none">{emoji}</span>
+                                {/* NumberTicker para badges numéricos */}
+                                <NumberTicker value={count} className="tabular-nums text-xs" />
+                              </Button>
+                            );
+                          })}
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => void toggleComments(p.id)}
+                            className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
+                            style={{
+                              background: "rgba(0,20,10,0.6)",
+                              border: "1px solid rgba(0,255,68,0.18)",
+                              color: "rgba(0,255,68,0.80)",
+                            }}
+                          >
+                            <span className="text-sm leading-none">💬</span>
+                            {/* NumberTicker para comentários */}
+                            <NumberTicker value={p.commentCount ?? 0} className="tabular-nums text-xs" />
+                          </Button>
+                        </div>
+
+                        {p.isPinned && (
+                          <Badge
+                            variant="secondary"
+                            style={{
+                              background: "rgba(255,225,53,0.10)",
+                              border: "1px solid rgba(255,225,53,0.35)",
+                              color: "#ffe135",
+                              fontFamily: "'Nunito', sans-serif",
+                              fontWeight: 700,
+                              fontSize: "11px",
+                            }}
+                          >
+                            📌 Fixado
+                          </Badge>
+                        )}
+                      </div>
+
+                      {openComments[p.id] && (
+                        <div className="mt-4">
+                          <CommentsSection
+                            comments={comments[p.id] ?? []}
+                            draft={commentDrafts[p.id] ?? ""}
+                            onDraftChange={(v) => setCommentDrafts((d: Record<string, string>) => ({ ...d, [p.id]: v }))}
+                            onSubmit={() => void addComment(p.id)}
+                            onToggleReaction={(commentId, emoji) => void toggleCommentReaction(p.id, commentId, emoji)}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </BlurFade>
             );
           }
 
@@ -618,6 +633,15 @@ export function HubFeedModule({
           <div className="text-sm text-muted-foreground text-center py-8">Sem posts ainda.</div>
         )}
       </div>
+
+      {/* Particles effect ao votar - renderizado apenas quando ativo */}
+      {showParticles && (
+        <Particles
+          count={24}
+          onComplete={() => setShowParticles(null)}
+          className="pointer-events-none fixed inset-0 z-50"
+        />
+      )}
     </div>
   );
 }
