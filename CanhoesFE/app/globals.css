@@ -45,41 +45,43 @@
 }
 
 :root {
-  /* ── CORE PALETTE (Mockup Reference) ── */
-  --color-bg-primary: #1a1f14;
-  --color-bg-card: #252b1c;
-  --color-bg-surface: #f5efe0;
-  --color-bg-surface-alt: #ede3cc;
+  /* ── NOVO TEMA LIGHT/CREAM (Mockup Reference) ── */
+  /* Identidade visual limpa, orgânica e premium */
 
-  --color-text-primary: #f5efe0;
-  --color-text-dark: #1a1f14;
-  --color-text-muted: #8a9070;
+  /* Backgrounds principais */
+  --color-bg-primary: #f5f2ed;      /* Cream claro - fundo principal */
+  --color-bg-secondary: #e8e4dc;    /* Cream médio - superfícies */
+  --color-bg-card: #ffffff;         /* Branco - cards */
+  --color-bg-surface: #faf8f5;      /* Off-white - superfícies elevadas */
 
-  /* Moss - Verde musgo escuro (headers, backgrounds principais) */
-  --color-moss: #4a5c2f;
-  --color-moss-light: #6b7c45;
-  --color-moss-dark: #2d381f;
+  /* Texto */
+  --color-text-primary: #1a1f14;    /* Musgo muito escuro - texto principal */
+  --color-text-secondary: #3d4236;  /* Musgo escuro - texto secundário */
+  --color-text-muted: #6b7064;      /* Musgo médio - texto secundário */
+  --color-text-light: #8a9070;      /* Musgo claro - placeholders */
 
-  /* Brown - Castanho médio (tags, categorias, filtros) */
-  --color-brown: #6b4c2a;
-  --color-brown-dark: #3d2b18;
-  --color-brown-light: #8a6236;
+  /* Musgo - Cor primária da marca */
+  --color-moss: #4a5c2f;            /* Musgo principal */
+  --color-moss-light: #6b7c45;      /* Musgo claro - hover */
+  --color-moss-dark: #2d381f;       /* Musgo escuro - active */
+  --color-moss-subtle: rgba(74, 92, 47, 0.08);  /* Backgrounds sutis */
 
-  /* Beige - Bege claro/quente (cards, inputs, superfícies) */
-  --color-beige: #d4b896;
-  --color-beige-dark: #b89b7a;
-  --color-beige-light: #e8dcc8;
+  /* Castanho - Secundária */
+  --color-brown: #6b4c2a;           /* Castanho principal */
+  --color-brown-dark: #3d2b18;      /* Castanho escuro */
+  --color-brown-light: #8a6236;     /* Castanho claro */
 
-  /* Fire/Success/Danger */
-  --color-success: #4caf50;
-  --color-danger: #e05a3a;
-  --color-fire: #ff6b35;
+  /* Beige/Cream - Superfícies */
+  --color-beige: #d4b896;           /* Beige principal */
+  --color-beige-dark: #b89b7a;      /* Beige escuro */
+  --color-beige-light: #e8dcc8;     /* Beige claro */
+  --color-cream: #f5efe0;           /* Cream puro */
 
-  /* Psycho - Acentos psicadélicos (arco-íris, badges, flames, rankings) */
-  --color-psycho-1: #ff6b9d;  /* Rosa - badges numéricos, flames 🔥 */
+  /* Cores de destaque (Psycho) - Mais sutis no tema light */
+  --color-psycho-1: #ff6b9d;  /* Rosa - badges, flames */
   --color-psycho-2: #ffd93d;  /* Amarelo */
   --color-psycho-3: #6bcb77;  /* Verde */
-  --color-psycho-4: #4d96ff;  /* Azul - focus, hover */
+  --color-psycho-4: #4d96ff;  /* Azul - focus */
   --color-psycho-5: #c77dff;  /* Roxo */
   --gradient-psycho: linear-gradient(135deg, #ff6b9d, #ffd93d, #6bcb77, #4d96ff, #c77dff);
   --gradient-psycho-pulse: linear-gradient(
@@ -92,43 +94,50 @@
     #ff6b9d 100%
   );
 
-  /* Semantic mappings */
+  /* Cores semânticas */
+  --color-success: #4caf50;
+  --color-danger: #e05a3a;
+  --color-fire: #ff6b35;
+  --color-warning: #ff9800;
+  --color-info: #2196f3;
+
+  /* Mappings semânticos */
   --bg-base: var(--color-bg-primary);
   --bg-surface: var(--color-bg-card);
-  --bg-elevated: rgba(37, 43, 28, 0.92);
-  --bg-accent: var(--color-brown);
+  --bg-elevated: var(--color-bg-surface);
+  --bg-accent: var(--color-moss);
 
   --text-primary: var(--color-text-primary);
-  --text-secondary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
   --text-muted: var(--color-text-muted);
-  --text-accent: var(--color-fire);
+  --text-accent: var(--color-moss);
 
-  /* Borders */
-  --border-subtle: rgba(74, 92, 47, 0.24);
-  --border-default: rgba(212, 184, 150, 0.18);
-  --border-accent: rgba(77, 150, 255, 0.45);
-  --border-moss: rgba(74, 92, 47, 0.32);
-  --border-beige: rgba(212, 184, 150, 0.28);
+  /* Borders - mais sutis no tema light */
+  --border-subtle: rgba(74, 92, 47, 0.12);
+  --border-default: rgba(74, 92, 47, 0.18);
+  --border-accent: rgba(74, 92, 47, 0.32);
+  --border-moss: rgba(74, 92, 47, 0.20);
+  --border-beige: rgba(184, 155, 122, 0.28);
 
   /* Buttons */
   --btn-primary-bg: var(--color-moss);
-  --btn-primary-text: var(--color-text-primary);
+  --btn-primary-text: #ffffff;
   --btn-primary-hover: var(--color-moss-light);
-  --btn-secondary-bg: var(--color-brown-dark);
-  --btn-secondary-text: var(--color-beige);
+  --btn-secondary-bg: var(--color-brown);
+  --btn-secondary-text: #ffffff;
 
-  /* Radius - Cantos suaves como mockup */
+  /* Radius */
   --radius: 1rem;
-  --radius-sm-token: 0.75rem;   /* 12px - inputs, badges */
-  --radius-md-token: 1rem;      /* 16px - buttons, cards small */
-  --radius-lg-token: 1.5rem;    /* 24px - cards principais */
-  --radius-xl-token: 1.75rem;   /* 28px - modais, sheets */
+  --radius-sm-token: 0.75rem;   /* 12px */
+  --radius-md-token: 1rem;      /* 16px */
+  --radius-lg-token: 1.5rem;    /* 24px */
+  --radius-xl-token: 1.75rem;   /* 28px */
 
-  /* Shadows */
-  --shadow-card: 0 18px 40px rgba(0, 0, 0, 0.22);
-  --shadow-modal: 0 -20px 48px rgba(0, 0, 0, 0.28);
-  --shadow-glow-moss: 0 0 24px rgba(107, 124, 69, 0.28);
-  --shadow-glow-psycho: 0 0 20px rgba(77, 150, 255, 0.35);
+  /* Shadows - mais suaves no tema light */
+  --shadow-card: 0 4px 24px rgba(74, 92, 47, 0.08);
+  --shadow-modal: 0 8px 48px rgba(74, 92, 47, 0.12);
+  --shadow-glow-moss: 0 0 24px rgba(74, 124, 69, 0.15);
+  --shadow-glow-psycho: 0 0 20px rgba(77, 150, 255, 0.25);
 
   /* Typography */
   --font-app: "Inter", "DM Sans", system-ui, sans-serif;
@@ -200,19 +209,19 @@
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: var(--border-subtle);
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     scroll-behavior: smooth;
   }
 
   body {
     min-height: 100vh;
     background:
-      radial-gradient(circle at top, rgba(107, 124, 69, 0.24), transparent 30%),
-      linear-gradient(180deg, #202617 0%, var(--color-bg-primary) 40%, #11150d 100%);
+      radial-gradient(circle at top, rgba(107, 124, 69, 0.08), transparent 40%),
+      linear-gradient(180deg, #faf8f5 0%, var(--color-bg-primary) 50%, #f0ece6 100%);
     color: var(--color-text-primary);
     font-family: var(--font-app), system-ui, sans-serif;
     font-size: 1rem;
@@ -280,10 +289,10 @@
   textarea,
   select {
     min-height: 2.75rem;
-    background: var(--color-bg-surface-alt);
-    border: 2px solid transparent;
+    background: var(--color-bg-surface);
+    border: 2px solid var(--border-subtle);
     border-radius: var(--radius-md-token);
-    color: var(--color-text-dark);
+    color: var(--color-text-primary);
     padding: 0.75rem 1rem;
   }
 
@@ -298,20 +307,21 @@
   textarea:focus,
   select:focus {
     outline: none;
-    border-color: transparent;
-    box-shadow: 0 0 0 2px var(--color-psycho-4);
+    border-color: var(--color-moss);
+    box-shadow: 0 0 0 3px var(--color-moss-subtle);
   }
 
   ::selection {
-    background: rgba(255, 107, 53, 0.28);
+    background: rgba(74, 92, 47, 0.15);
     color: var(--color-text-primary);
   }
 }
 
 @layer components {
+  /* Card Light Design - Mockup Reference */
   .card {
-    background: rgba(37, 43, 28, 0.92);
-    border: 1px solid rgba(74, 92, 47, 0.24);
+    background: var(--color-bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg-token);
     box-shadow: var(--shadow-card);
     padding: 1rem;
@@ -319,15 +329,17 @@
   }
 
   .card:hover {
-    border-color: rgba(212, 184, 150, 0.18);
+    border-color: var(--border-default);
+    box-shadow: 0 8px 32px rgba(74, 92, 47, 0.12);
   }
 
+  /* Button Primary - Musgo */
   .btn-primary {
     min-height: 2.75rem;
     border: 1px solid transparent;
     border-radius: var(--radius-md-token);
     background: var(--color-moss);
-    color: var(--color-text-primary);
+    color: #ffffff;
     padding: 0.75rem 1.5rem;
     font-size: 0.875rem;
     font-weight: 700;
@@ -338,37 +350,38 @@
     background: var(--color-moss-light);
   }
 
+  /* Canhao Panel - Light */
   .canhoes-panel {
-    background: rgba(37, 43, 28, 0.92);
-    border: 1px solid rgba(74, 92, 47, 0.24);
+    background: var(--color-bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg-token);
     box-shadow: var(--shadow-card);
   }
 
   .canhoes-panel-soft {
-    background: rgba(245, 239, 224, 0.04);
-    border: 1px solid rgba(184, 155, 122, 0.16);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--border-beige);
     border-radius: var(--radius-md-token);
   }
 
   .canhoes-panel-beige {
-    background: var(--color-bg-surface);
-    color: var(--color-text-dark);
+    background: var(--color-cream);
+    color: var(--color-text-primary);
     border-radius: var(--radius-lg-token);
-    border: 1px solid rgba(184, 155, 122, 0.28);
+    border: 1px solid var(--border-beige);
     box-shadow: var(--shadow-card);
   }
 
   .canhoes-list-item {
-    background: rgba(245, 239, 224, 0.05);
-    border: 1px solid rgba(184, 155, 122, 0.14);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md-token);
   }
 
   .canhoes-sheet {
-    background: var(--color-bg-surface);
-    color: var(--color-text-dark);
-    border-top: 1px solid rgba(184, 155, 122, 0.45);
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    border-top: 1px solid var(--border-default);
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
@@ -376,8 +389,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(245, 239, 224, 0.06);
-    border: 1px solid rgba(184, 155, 122, 0.16);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--border-subtle);
     border-radius: 999px;
   }
 
@@ -415,12 +428,12 @@
   }
 
   .canhoes-link {
-    color: var(--color-beige);
+    color: var(--color-brown);
     text-decoration: none;
   }
 
   .canhoes-link:hover {
-    color: var(--color-text-primary);
+    color: var(--color-moss);
     text-decoration: underline;
   }
 }

@@ -47,10 +47,12 @@ export function useHubFeed() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      console.log("[useHubFeed] Loading posts...");
       const data = await hubRepo.getPosts(50);
+      console.log("[useHubFeed] Posts loaded:", data?.length ?? 0);
       setPosts((data ?? []).filter(Boolean));
     } catch (e) {
-      console.error(e);
+      console.error("[useHubFeed] Error loading posts:", e);
       toast.error("Erro ao carregar o feed");
       setPosts([]);
     } finally {

@@ -31,21 +31,21 @@ const BACKGROUND_PRESETS = [
     label: "Musgo",
     emoji: "🌿",
     className:
-      "bg-[radial-gradient(circle_at_top,_rgba(107,124,69,0.24),_transparent_32%),linear-gradient(180deg,#202617_0%,var(--color-bg-primary)_40%,#11150d_100%)]",
+      "bg-[radial-gradient(circle_at_top,_rgba(107,124,69,0.08),_transparent_35%),linear-gradient(180deg,#faf8f5_0%,#f5f2ed_45%,#f0ece6_100%)]",
   },
   {
-    id: "fire",
-    label: "Brasa",
-    emoji: "🔥",
+    id: "cream",
+    label: "Cream",
+    emoji: "🤍",
     className:
-      "bg-[radial-gradient(circle_at_top,_rgba(255,107,53,0.18),_transparent_34%),linear-gradient(180deg,#2c1d13_0%,var(--color-bg-primary)_44%,#11150d_100%)]",
+      "bg-[radial-gradient(circle_at_top,_rgba(212,184,150,0.1),_transparent_35%),linear-gradient(180deg,#faf8f5_0%,#f5efe0_50%,#ede3cc_100%)]",
   },
   {
-    id: "psycho",
-    label: "Psycho",
-    emoji: "⚡",
+    id: "sage",
+    label: "Sage",
+    emoji: "🍃",
     className:
-      "bg-[radial-gradient(circle_at_top,_rgba(77,150,255,0.2),_transparent_32%),linear-gradient(180deg,#1d2318_0%,var(--color-bg-primary)_44%,#10140d_100%)]",
+      "bg-[radial-gradient(circle_at_top,_rgba(107,156,103,0.08),_transparent_35%),linear-gradient(180deg,#f5f7f3_0%,#e8ece4_50%,#dce0d8_100%)]",
   },
 ] as const;
 
@@ -123,13 +123,13 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
         isTransitioning && "opacity-90"
       )}
     >
-      {/* Header Sticky com Backdrop Blur Dinâmico */}
+      {/* Header Sticky com Backdrop Blur Dinâmico - Light Theme */}
       <header
         className={cn(
-          "sticky top-0 z-30 border-b border-[var(--color-moss)]/20 transition-all duration-300",
+          "sticky top-0 z-30 border-b border-[var(--color-moss)]/10 transition-all duration-300",
           "backdrop-blur-dynamic",
           isScrolled && "backdrop-blur-dynamic scrolled",
-          "bg-[rgba(26,31,20,0.84)]"
+          "bg-[rgba(255,255,255,0.85)]"
         )}
       >
         <div className="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4 py-3">

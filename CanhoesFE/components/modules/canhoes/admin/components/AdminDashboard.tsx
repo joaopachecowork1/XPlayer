@@ -77,12 +77,20 @@ export function AdminDashboard({
   pendingNominees,
   totalVotes,
 }: Readonly<AdminDashboardProps>) {
-  const activeCategories = categories.filter((category) => category.isActive).length;
-  const approvedNominees = allNominees.filter((nominee) => nominee.status === "approved").length;
-  const pendingReviews = pendingNominees.length + pendingCategoryProposals.length + pendingMeasureProposals.length;
-  const adminCount = members.filter((member) => member.isAdmin).length;
+  // Defensive: garantir que arrays não são null/undefined
+  const safeCategories = categories ?? [];
+  const safeAllNominees = allNominees ?? [];
+  const safeMembers = members ?? [];
+  const safePendingCategoryProposals = pendingCategoryProposals ?? [];
+  const safePendingMeasureProposals = pendingMeasureProposals ?? [];
+  const safePendingNominees = pendingNominees ?? [];
 
-  const recentNominees = [...allNominees]
+  const activeCategories = safeCategories.filter((category) => category.isActive).length;
+  const approvedNominees = safeAllNominees.filter((nominee) => nominee.status === "approved").length;
+  const pendingReviews = safePendingNominees.length + safePendingCategoryProposals.length + safePendingMeasureProposals.length;
+  const adminCount = safeMembers.filter((member) => member.isAdmin).length;
+
+  const recentNominees = [...safeAllNominees]
     .sort((leftNominee, rightNominee) => new Date(rightNominee.createdAtUtc).getTime() - new Date(leftNominee.createdAtUtc).getTime())
     .slice(0, 5);
 

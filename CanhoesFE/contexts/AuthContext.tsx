@@ -34,7 +34,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Mock mode: skip real authentication entirely.
-    if (IS_MOCK_MODE) return;
+    if (IS_MOCK_MODE) {
+      console.log("[AuthContext] Mock mode active - using mock user");
+      return;
+    }
+
+    console.log("[AuthContext] Session status:", status, "isAuthenticated:", status === "authenticated");
 
     if (status !== "authenticated") {
       setUser(null);
@@ -44,25 +49,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     
     const bootstrap = async () => {
+      console.log("[AuthContext] Fetching user data...");
       setIsFetching(true);
       await refreshMe();
       
       if (cancelled) return;
 
-      const me = meData;
-      if (!me?.user) {
+      console.log("[AuthContext] User data received:", meData);
+
+      if (!meData?.user) {
+        console.warn("[AuthContext] No user data - setting user to null");
         setUser(null);
         setIsFetching(false);
         return;
       }
 
-      setUser({
-        id: me.user.id,
-        email: me.user.email,
-        name: me.user.displayName || session?.user?.name || undefined,
-        isAdmin: Boolean(me.user.isAdmin),
-      });
-
+      const newUser = {
+        id: meData.user.id,
+        email: meData.user.email,
+        name: meData.user.displayName || session?.user?.name || undefined,
+        isAdmin: Boolean(meData.user.isAdmin),
+      };
+      
+      console.log("[AuthContext] Setting user:", newUser);
+      setUser(newUser);
       setIsFetching(false);
     };
 

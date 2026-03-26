@@ -65,15 +65,13 @@ export function HubPostCard({
 
     return (
         <BlurFade delay={index * 50}>
-            {/* Canhao Card - Dark glass com neon border */}
+            {/* Canhao Card - Light Theme */}
             <div
-                className="overflow-hidden rounded-none sm:rounded-2xl"
+                className="overflow-hidden rounded-2xl"
                 style={{
-                    background: "linear-gradient(145deg, #0f2018, #0a1510)",
-                    border: "0px solid transparent",
-                    borderTop: "1px solid rgba(0,255,68,0.12)",
-                    borderBottom: "1px solid rgba(0,255,68,0.08)",
-                    boxShadow: "0 0 0 1px rgba(0,255,68,0.10), 0 0 20px rgba(0,170,51,0.12), inset 0 1px 0 rgba(255,255,255,0.04)",
+                    background: "var(--color-bg-card)",
+                    border: "1px solid var(--border-subtle)",
+                    boxShadow: "var(--shadow-card)",
                 }}
             >
                 {/* Header + Texto */}
@@ -88,7 +86,7 @@ export function HubPostCard({
                     {!!post.text && (
                         <div
                             className="mt-2.5 whitespace-pre-wrap break-words text-[13px] sm:text-sm leading-relaxed"
-                            style={{ color: "#d0f0d0", fontFamily: "'Nunito', sans-serif", fontWeight: 600 }}
+                            style={{ color: "var(--color-text-secondary)", fontFamily: "'Nunito', sans-serif", fontWeight: 500 }}
                         >
                             {post.text}
                         </div>
@@ -127,14 +125,14 @@ export function HubPostCard({
                                         style={
                                             active
                                                 ? {
-                                                    background: "linear-gradient(90deg, #00cc44, #008833)",
-                                                    border: "1.5px solid rgba(0,255,68,0.40)",
-                                                    color: "white",
+                                                    background: "var(--color-moss)",
+                                                    border: "1.5px solid var(--color-moss)",
+                                                    color: "#ffffff",
                                                 }
                                                 : {
-                                                    background: "rgba(0,20,10,0.6)",
-                                                    border: "1px solid rgba(0,255,68,0.18)",
-                                                    color: "rgba(0,255,68,0.80)",
+                                                    background: "var(--color-bg-surface)",
+                                                    border: "1px solid var(--border-subtle)",
+                                                    color: "var(--color-text-secondary)",
                                                 }
                                         }
                                     >
@@ -151,9 +149,9 @@ export function HubPostCard({
                                 onClick={() => onToggleComments(post.id)}
                                 className="canhoes-tap h-8 gap-1.5 rounded-full px-2.5 shrink-0"
                                 style={{
-                                    background: "rgba(0,20,10,0.6)",
-                                    border: "1px solid rgba(0,255,68,0.18)",
-                                    color: "rgba(0,255,68,0.80)",
+                                    background: "var(--color-bg-surface)",
+                                    border: "1px solid var(--border-subtle)",
+                                    color: "var(--color-text-secondary)",
                                 }}
                             >
                                 <span className="text-sm leading-none">💬</span>
