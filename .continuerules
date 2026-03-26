@@ -1,0 +1,565 @@
+# .continuerules — Code Quality, Mobile-First & Design System
+> Stack: **React / Next.js** + **.NET Backend**
+> Prioridades: Simplificação → Mobile-first → Nomes de variáveis → Legibilidade
+
+---
+
+## COMPORTAMENTO GERAL DO ASSISTENTE
+
+Quando analisares ou sugerires alterações a este repositório, segue sempre estas regras por ordem de prioridade:
+
+1. **Simplifica primeiro** — Menos código é melhor código. Se algo pode ser feito com metade das linhas sem perder clareza, fá-lo.
+2. **Mobile-first sempre** — Todo o CSS e layout começa pela versão mobile. Desktop é uma extensão.
+3. **Nomes honestos** — O nome de uma variável, função ou componente deve descrever exactamente o que faz, sem abreviações crípticas.
+4. **Legibilidade acima de esperteza** — Código que qualquer developer de nível médio entenda ao primeiro scan é melhor do que código "inteligente".
+5. **Design system consistente** — Toda a UI nova ou refactorizada segue o design system definido na secção [DESIGN SYSTEM](#design-system--visual-language) abaixo. Sem estilos inline ad-hoc.
+
+---
+
+## FRONTEND — REACT / NEXT.JS
+
+### Simplificação de Código
+
+- **Elimina estados redundantes.** Se um valor pode ser derivado de outro estado ou prop, não o coloques num `useState`. Usa variáveis simples ou `useMemo` apenas quando necessário.
+- **Achata componentes excessivamente aninhados.** Se um componente tem mais de 3 níveis de JSX antes de chegar ao conteúdo real, divide-o.
+- **Remove `useEffect` desnecessários.** Efeitos para sincronizar estado com outro estado são quase sempre errados. Prefere derivar o valor directamente.
+- **Consolida lógica repetida.** Se o mesmo bloco de lógica aparece em 2 ou mais sítios, extrai para um custom hook (`use<NomeFuncional>`) ou uma função utilitária.
+- **Prefere early returns.** Em vez de `if/else` aninhados, usa guards no topo da função para os casos de erro ou loading.
+- **Evita prop drilling além de 2 níveis.** Usa Context, Zustand, ou composição de componentes.
+- **Simplifica condicionais em JSX.** Prefere `condition && <Component />` para renderização simples.
+
+```tsx
+// ❌ Evitar — estados separados para o mesmo fluxo
+const [isLoading, setIsLoading] = useState(false);
+const [hasError, setHasError] = useState(false);
+const [data, setData] = useState(null);
+
+// ✅ Preferir — um estado que descreve a fase
+const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'success'>('idle');
+```
+
+### Nomes de Variáveis e Funções (Frontend)
+
+| Tipo | Convenção | Exemplo |
+|------|-----------|---------|
+| Componentes | PascalCase substantivo | `UserProfileCard`, `RankingPodium` |
+| Event handlers | `handle` + acção | `handleFormSubmit`, `handleModalClose` |
+| Booleans | `is/has/can/should` | `isMenuOpen`, `hasUnsavedChanges` |
+| Custom hooks | `use` + recurso | `useUserSession`, `useProductList` |
+| Funções utilitárias | verbo + substantivo | `formatCurrency`, `buildQueryString` |
+| Constantes globais | SCREAMING_SNAKE_CASE | `MAX_RETRY_COUNT`, `DEFAULT_PAGE_SIZE` |
+
+- **Evita:** `data`, `info`, `temp`, `stuff`, `handleClick` sem contexto, `item` em listas tipadas (usa o tipo: `product`, `user`, `order`).
+
+### Layout Mobile-First
+
+- **Começa sempre pelo viewport mais pequeno (320px).** Os estilos base são mobile. Usa breakpoints para expandir, nunca para reduzir.
+- **Ordem de breakpoints (Tailwind):** `base → sm (640px) → md (768px) → lg (1024px) → xl (1280px)`
+
+```tsx
+// ❌ Desktop-first (evitar)
+<div className="flex-row md:flex-col">
+
+// ✅ Mobile-first
+<div className="flex-col md:flex-row">
+```
+
+- **Touch targets mínimos de 44×44px.** Botões, links e controlos interactivos têm sempre esta dimensão mínima em mobile.
+- **Texto legível sem zoom.** Mínimo `text-base` (16px) para corpo de texto. Nunca `text-xs` para conteúdo relevante em mobile.
+- **Espaçamento generoso.** Padding interno mínimo `p-4`. Entre secções `gap-4` ou `space-y-4`.
+- **Navegação mobile:** menus colapsados (`hidden md:flex`). Usa bottom navigation para 3-5 secções principais.
+- **Grids adaptáveis:**
+
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+```
+
+- **Modals em mobile:** prefere bottom sheets (deslizam de baixo para cima) em vez de modals centrados.
+- **Formulários em mobile:** inputs com `w-full`, labels visíveis (não só placeholder), `space-y-4` entre campos.
+
+### Estrutura de Ficheiros
+
+```
+/src
+  /components
+    /ui            ← Componentes genéricos reutilizáveis (Button, Input, Card, Badge)
+    /features      ← Componentes de feature (/features/ranking, /features/polls, /features/admin)
+    /layouts       ← Layouts de página (MainLayout, AuthLayout)
+  /hooks           ← Custom hooks globais
+  /lib             ← Utilitários, helpers, configuração de clientes (api.ts, auth.ts)
+  /types           ← Tipos TypeScript partilhados
+  /constants       ← Constantes globais
+  /styles          ← Tokens de design (CSS variables, tema Tailwind)
+```
+
+### TypeScript (Frontend)
+
+- **Sem `any`.** Se não sabes o tipo, usa `unknown` e faz narrowing.
+- **Prefere `interface` para formas de dados; `type` para unions e aliases.**
+- **Exporta os tipos dos props dos componentes.**
+- **Evita asserções de tipo (`as SomeType`) excepto em casos inevitáveis.**
+
+---
+
+## BACKEND — .NET (C#)
+
+### Simplificação de Código
+
+- **Elimina abstracções prematuras.** Não cries interfaces para classes com uma só implementação, a não ser que os testes o exijam.
+- **Usa pattern matching moderno (C# 8+).** Switch expressions, `is` patterns e `when` clauses.
+
+```csharp
+// ❌ Evitar
+if (order.Status == OrderStatus.Pending)
+    return "Pendente";
+else if (order.Status == OrderStatus.Shipped)
+    return "Enviado";
+
+// ✅ Preferir
+return order.Status switch
+{
+    OrderStatus.Pending  => "Pendente",
+    OrderStatus.Shipped  => "Enviado",
+    _                    => "Desconhecido"
+};
+```
+
+- **LINQ com parcimónia.** Mais de 4 operações encadeadas? Divide em variáveis intermédias com nomes descritivos.
+- **Prefere `record` para DTOs e Value Objects.** Imutáveis por defeito, igualdade estrutural automática.
+- **Result pattern em vez de exceptions para erros esperados.** Usa `Result<T>` para fluxos de erro previsíveis.
+- **Elimina código morto imediatamente.** Sem métodos comentados, parâmetros não utilizados, ou `TODO` com mais de 1 sprint.
+
+### Nomes de Variáveis e Métodos (.NET)
+
+| Tipo | Convenção | Exemplo |
+|------|-----------|---------|
+| Classes e métodos públicos | PascalCase | `OrderService`, `GetActiveOrders` |
+| Variáveis locais e parâmetros | camelCase | `userId`, `orderList` |
+| Campos privados | `_` + camelCase | `_orderRepository`, `_logger` |
+| Constantes | PascalCase | `MaxRetryCount` |
+| Booleans | `is/has/can/should` | `isActive`, `hasPermission` |
+| Métodos assíncronos | sufixo `Async` | `GetUserByIdAsync` |
+| DTOs | sufixo de direcção | `CreateOrderRequest`, `OrderSummaryResponse` |
+
+- **Evita nomes genéricos** como `Manager`, `Helper`, `Processor` sem contexto. Prefere `OrderPriceCalculator` a `OrderHelper`.
+
+### Estrutura de Projeto (.NET)
+
+```
+/src
+  /Api               ← Controllers, Middleware, Program.cs
+  /Application       ← Use Cases, Commands, Queries, DTOs
+  /Domain            ← Entidades, Value Objects, Interfaces de repositório
+  /Infrastructure    ← EF Core, repositórios, serviços externos
+/tests
+  /Unit
+  /Integration
+```
+
+- **Controllers finos.** Só recebem request, delegam para Application, devolvem response. Sem lógica de negócio.
+- **Valida na camada de Application.** FluentValidation ou Data Annotations, não no controller.
+- **Devolve tipos explícitos.** `ActionResult<OrderResponse>` em vez de `IActionResult` genérico.
+
+### API Design
+
+- Endpoints RESTful: `GET /items`, `GET /items/{id}`, `POST /items`, `PUT /items/{id}`, `PATCH /items/{id}`, `DELETE /items/{id}`
+- **Versionamento** desde o início: `/api/v1/...`
+- **Erros consistentes** com Problem Details (RFC 7807)
+- **Paginação:** `{ data: [], totalCount, pageNumber, pageSize }`
+
+---
+
+## DESIGN SYSTEM — VISUAL LANGUAGE
+
+> Toda a UI nova ou refactorizada segue este design system. Não uses cores, espaçamentos ou componentes fora deste sistema sem justificação.
+
+### Paleta de Cores (CSS Variables)
+
+```css
+:root {
+  /* Fundos */
+  --color-bg-primary:    #1a1f14;   /* Verde musgo escuro — fundo principal */
+  --color-bg-card:       #252b1c;   /* Fundo de cards e painéis */
+  --color-bg-surface:    #f5efe0;   /* Bege claro — formulários e modals */
+  --color-bg-surface-alt:#ede3cc;   /* Bege escuro — inputs, tabs inactivas */
+
+  /* Texto */
+  --color-text-primary:  #f5efe0;   /* Bege claro — texto sobre fundo escuro */
+  --color-text-dark:     #1a1f14;   /* Musgo escuro — texto sobre fundo claro */
+  --color-text-muted:    #8a9070;   /* Verde acinzentado — texto secundário */
+
+  /* Tokens de marca */
+  --color-moss:          #4a5c2f;   /* Verde musgo — botões primários, destaques */
+  --color-moss-light:    #6b7c45;   /* Musgo claro — hover states */
+  --color-brown:         #6b4c2a;   /* Castanho — badges, tags, variante quente */
+  --color-brown-dark:    #3d2b18;   /* Castanho escuro — botões escuros, fundo de card secundário */
+  --color-beige:         #d4b896;   /* Bege médio — bordas, separadores */
+  --color-beige-dark:    #b89b7a;   /* Bege escuro — badges secundários */
+
+  /* Acções */
+  --color-success:       #4caf50;   /* Verde — botão Aprovar */
+  --color-danger:        #e05a3a;   /* Laranja-vermelho — botão Rejeitar */
+  --color-fire:          #ff6b35;   /* Laranja fogo — ícones de destaque, scores altos */
+
+  /* Psicodélico (foco e animações especiais) */
+  --color-psycho-1:      #ff6b9d;
+  --color-psycho-2:      #ffd93d;
+  --color-psycho-3:      #6bcb77;
+  --color-psycho-4:      #4d96ff;
+  --gradient-psycho:     linear-gradient(135deg, #ff6b9d, #ffd93d, #6bcb77, #4d96ff, #c77dff);
+}
+```
+
+### Tipografia
+
+```css
+/* Headings — bold, impactante */
+.heading-1 { font-size: 1.5rem;  font-weight: 800; letter-spacing: -0.02em; }
+.heading-2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+.heading-3 { font-size: 1rem;    font-weight: 700; }
+
+/* Body */
+.body-base  { font-size: 1rem;    font-weight: 400; line-height: 1.5; }
+.body-small { font-size: 0.875rem; font-weight: 400; }
+
+/* Labels e badges */
+.label      { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+```
+
+- **Font stack sugerido:** `'Inter', 'DM Sans', system-ui, sans-serif`
+- Emojis são parte do design (🔥, ⚡, 🌿) — usa-os com intenção, não decorativamente.
+
+---
+
+### Componentes UI
+
+#### Cards
+
+```tsx
+// Card base — fundo escuro, cantos arredondados, sem sombra excessiva
+<div className="bg-[var(--color-bg-card)] rounded-2xl p-4 border border-[var(--color-moss)]/20">
+  {children}
+</div>
+
+// Card bege (formulários, modals)
+<div className="bg-[var(--color-bg-surface)] rounded-2xl p-4">
+  {children}
+</div>
+```
+
+#### Badges / Tags (Pill)
+
+```tsx
+// Badge castanho
+<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+  bg-[var(--color-brown)] text-[var(--color-text-primary)]">
+  --brown
+</span>
+
+// Badge bege-dark
+<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+  bg-[var(--color-beige-dark)] text-[var(--color-text-dark)]">
+  --beige-dark
+</span>
+
+// Badge musgo
+<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+  bg-[var(--color-moss)] text-[var(--color-text-primary)]">
+  --moss
+</span>
+```
+
+#### Botões
+
+```tsx
+// Primário (musgo) — acção principal
+<button className="w-full py-3 px-6 rounded-xl bg-[var(--color-moss)] text-[var(--color-text-primary)]
+  font-semibold text-sm active:scale-95 transition-transform">
+  Botão Submit
+</button>
+
+// Secundário (brown-dark + beige) — acções secundárias
+<button className="py-2 px-4 rounded-xl bg-[var(--color-brown-dark)] text-[var(--color-beige)]
+  font-semibold text-sm active:scale-95 transition-transform">
+  Lançar Canhão
+</button>
+
+// Aprovar (success)
+<button className="py-2 px-4 rounded-lg bg-[var(--color-success)] text-white font-semibold text-sm">
+  Aprovar
+</button>
+
+// Rejeitar (danger)
+<button className="py-2 px-4 rounded-lg bg-[var(--color-danger)] text-white font-semibold text-sm">
+  Rejeitar
+</button>
+```
+
+#### Inputs com Foco Psicodélico
+
+```tsx
+// Input base — fundo bege, borda neutra, foco com gradiente psicodélico
+<input
+  className="
+    w-full px-4 py-3 rounded-xl
+    bg-[var(--color-bg-surface-alt)]
+    text-[var(--color-text-dark)]
+    placeholder:text-[var(--color-text-muted)]
+    border-2 border-transparent
+    focus:outline-none focus:border-transparent
+    focus:ring-2 focus:ring-offset-0
+    transition-all duration-200
+    [&:focus]:shadow-[0_0_0_2px] [&:focus]:shadow-[var(--color-psycho-4)]
+  "
+  placeholder="Título"
+/>
+```
+
+```css
+/* Alternativa com CSS puro para o foco psicodélico */
+input:focus {
+  outline: none;
+  border-image: var(--gradient-psycho) 1;
+  box-shadow: 0 0 12px rgba(77, 150, 255, 0.4);
+}
+```
+
+#### Tabs / Navegação por Separadores
+
+```tsx
+// Tab bar — fundo bege-surface, tab activa musgo
+<div className="flex rounded-xl bg-[var(--color-bg-surface-alt)] p-1 gap-1">
+  {['Pendentes', 'Estado', 'Categorias'].map((tab) => (
+    <button
+      key={tab}
+      className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors ${
+        activeTab === tab
+          ? 'bg-[var(--color-moss)] text-[var(--color-text-primary)]'
+          : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-dark)]'
+      }`}
+      onClick={() => setActiveTab(tab)}
+    >
+      {tab}
+    </button>
+  ))}
+</div>
+```
+
+#### NumberTicker (Animação de Score)
+
+```tsx
+// Componente para scores animados (ex: 4200🔥, #3200)
+// Usa framer-motion ou CSS counter animation
+const NumberTicker = ({ value, suffix }: { value: number; suffix?: string }) => {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const duration = 1200;
+    const start = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      setDisplay(Math.floor(eased * value));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [value]);
+
+  return <span>{display.toLocaleString()}{suffix}</span>;
+};
+```
+
+#### Toast / Notificação Flutuante
+
+```tsx
+// Toast bottom — notificação de acção concluída
+<div className="
+  fixed bottom-6 left-1/2 -translate-x-1/2
+  bg-[var(--color-brown-dark)] text-[var(--color-beige)]
+  px-5 py-3 rounded-2xl
+  flex items-center gap-2
+  shadow-lg
+  animate-in slide-in-from-bottom-4 duration-300
+">
+  🌿 Novo post aprovado!
+</div>
+```
+
+#### Pódio de Ranking (Animação Pulsante)
+
+```tsx
+// Pódio com arco-íris pulsante no #1
+// O item #1 tem escala maior e animação de brilho
+<div className="relative">
+  {/* Halo arco-íris no 1º lugar */}
+  <div className="absolute inset-0 rounded-full animate-pulse
+    bg-gradient-to-r from-[var(--color-psycho-1)] via-[var(--color-psycho-2)] to-[var(--color-psycho-4)]
+    opacity-40 blur-md scale-110" />
+  <div className="relative z-10 text-center font-bold">
+    anon#1
+  </div>
+</div>
+```
+
+#### Partículas / Confetti
+
+```tsx
+// Usa a lib 'canvas-confetti' ou 'react-confetti' para efeitos de celebração
+// Trigger em: submit de formulário, aprovação, novo #1 no ranking
+import confetti from 'canvas-confetti';
+
+const triggerCelebration = () => {
+  confetti({
+    particleCount: 80,
+    spread: 70,
+    colors: ['#ff6b9d', '#ffd93d', '#6bcb77', '#4d96ff', '#c77dff'],
+    origin: { y: 0.6 }
+  });
+};
+```
+
+---
+
+### Padrões de Layout Mobile
+
+#### Header de App
+
+```tsx
+<header className="flex items-center justify-between px-4 py-3
+  bg-[var(--color-bg-primary)] border-b border-[var(--color-moss)]/30">
+  <div className="flex items-center gap-2">
+    <span className="text-lg">🌿</span>
+    <h1 className="font-bold text-[var(--color-text-primary)] tracking-tight">CANHÕES</h1>
+  </div>
+  <div className="flex items-center gap-3">
+    <button className="text-[var(--color-text-primary)]"><FeatherIcon /></button>
+    <button className="text-[var(--color-text-primary)]"><UserIcon /></button>
+  </div>
+</header>
+```
+
+#### Feed de Cards (Lista Principal)
+
+```tsx
+<main className="flex-1 overflow-y-auto px-4 py-4 space-y-4
+  bg-[var(--color-bg-primary)]">
+  {items.map((item) => (
+    <ItemCard key={item.id} item={item} />
+  ))}
+</main>
+```
+
+#### Painel Admin (Sidebar em Desktop, Tab em Mobile)
+
+```tsx
+// Em mobile: tabs no topo (Aprovações | Categorias | Stickers)
+// Em desktop: sidebar lateral com ícones
+<nav className="flex md:flex-col gap-1
+  overflow-x-auto md:overflow-x-visible
+  px-4 md:px-2 py-2
+  bg-[var(--color-bg-card)]">
+  {adminTabs.map((tab) => (
+    <AdminTabItem key={tab.id} tab={tab} />
+  ))}
+</nav>
+```
+
+---
+
+### Animações e Interacções
+
+```css
+/* Escala subtil em press (feedback táctil) */
+.btn-press {
+  transition: transform 150ms ease;
+}
+.btn-press:active {
+  transform: scale(0.95);
+}
+
+/* Foco psicodélico — brilho colorido */
+@keyframes psycho-glow {
+  0%, 100% { box-shadow: 0 0 8px var(--color-psycho-1); }
+  33%       { box-shadow: 0 0 8px var(--color-psycho-2); }
+  66%       { box-shadow: 0 0 8px var(--color-psycho-4); }
+}
+.input-psycho-focus:focus {
+  animation: psycho-glow 2s infinite;
+}
+
+/* Pulse para o pódio #1 */
+@keyframes rank-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1.1); }
+  50%       { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* Slide-in de baixo para toasts e bottom sheets */
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+```
+
+**Regras de animação:**
+- Duração máxima de interacção: **200ms**. Transições de página: **300ms**.
+- Usa `transform` e `opacity` — nunca anima `width`, `height` ou `top/left` (causa reflow).
+- Respeita `prefers-reduced-motion`:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+```
+
+---
+
+## CHECKLIST DE REVISÃO DE CÓDIGO
+
+### 🔴 Crítico (corrige sempre)
+- [ ] Há lógica duplicada que pode ser extraída?
+- [ ] Há estados ou variáveis que nunca são usados?
+- [ ] Há nomes sem significado (`x`, `temp`, `data2`, `handleClick` sem contexto)?
+- [ ] O layout quebra em viewport de 375px (iPhone SE)?
+- [ ] Há texto ou botões inacessíveis em mobile (muito pequenos, cortados)?
+- [ ] Há cores hardcoded em vez de CSS variables do design system?
+- [ ] Há componentes que ignoram o design system (cores, tipografia, espaçamento)?
+
+### 🟡 Importante (sugere sempre)
+- [ ] Há componentes com mais de 200 linhas que deviam ser divididos?
+- [ ] Há funções com mais de 3 parâmetros (considera um objecto de configuração)?
+- [ ] Há `useEffect` com dependências suspeitas ou arrays vazios que escondem bugs?
+- [ ] Há endpoints sem tratamento de erro adequado?
+- [ ] O TypeScript está a usar `any` ou asserções desnecessárias?
+- [ ] As animações respeitam `prefers-reduced-motion`?
+
+### 🟢 Melhoria (menciona se relevante)
+- [ ] O código beneficiaria de um comentário explicativo (só para lógica verdadeiramente não óbvia)?
+- [ ] Há oportunidade de usar uma feature mais moderna de React ou C#?
+- [ ] O nome de um componente ou método poderia ser mais descritivo?
+- [ ] Um componente genérico poderia ir para `/components/ui` e ser reutilizado?
+
+---
+
+## FORMATO DAS SUGESTÕES
+
+Quando fizeres sugestões de refactoring, apresenta sempre nesta estrutura:
+
+1. **O problema** — O que está errado ou pode melhorar (1-2 frases).
+2. **Antes** — O código actual (bloco de código).
+3. **Depois** — A versão melhorada (bloco de código).
+4. **Porquê** — Justificação em 1 frase.
+
+Nunca reescreves um ficheiro inteiro sem primeiro identificar as mudanças específicas. Apresenta as mudanças de forma incremental e explicada.
+
+---
+
+## O QUE NÃO FAZER
+
+- **Não usar cores, tamanhos ou espaçamentos fora do design system** sem justificação explícita.
+- **Não sugerir over-engineering.** Microserviços, event sourcing, CQRS completo — só se o projecto claramente os necessita.
+- **Não adicionar dependências** sem justificação clara e alternativas consideradas.
+- **Não mudar o comportamento** durante refactoring. Refactoring é estrutural, não funcional.
+- **Não usar comentários para explicar código mau.** Melhora o código em vez de o comentar.
+- **Não ignorar mobile** em nenhuma sugestão de UI. Toda a sugestão de layout inclui a versão mobile.
+- **Não criar animações que ignoram** `prefers-reduced-motion`.

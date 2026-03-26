@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Canhoes.Api/Canhoes.Api.csproj" />
+  <Project Path="Canhoes.BL/Canhoes.BL.csproj" Id="b51b444b-2774-434f-8245-abdb9d608c66" />
+  <Project Path="Canhoes.Domain/Canhoes.Domain.csproj" />
+  <Project Path="Canhoes.Infrastructure/Canhoes.Infrastructure.csproj" />
+  <Project Path="Canhoes.Tests/Canhoes.Tests.csproj" />
+</Solution>
