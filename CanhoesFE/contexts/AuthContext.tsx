@@ -2,8 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { IS_MOCK_MODE, MOCK_AUTH_USER } from "@/lib/mock";
-import { useAuthCache } from "@/hooks/useAuthCache";
 
 export type AuthUser = {
   id: string;
@@ -24,74 +22,41 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
-  const { data: meData, loading: meLoading, refresh: refreshMe } = useAuthCache();
-  
-  // In mock mode, start with the mock admin user already populated.
-  const [user, setUser] = useState<AuthUser | null>(IS_MOCK_MODE ? MOCK_AUTH_USER : null);
-  const [isFetching, setIsFetching] = useState(false);
 
-  const loading = status === "loading" || isFetching || meLoading;
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    // Mock mode: skip real authentication entirely.
-    if (IS_MOCK_MODE) {
-      console.log("[AuthContext] Mock mode active - using mock user");
-      return;
-    }
-
-    console.log("[AuthContext] Session status:", status, "isAuthenticated:", status === "authenticated");
-
     if (status !== "authenticated") {
       setUser(null);
       return;
     }
 
-    let cancelled = false;
+    // Se já temos user definido, não faz nada
+    if (user) return;
+
+    // Usa dados da sessão NextAuth diretamente
+    const sessionUser = session?.user as any;
     
-    const bootstrap = async () => {
-      console.log("[AuthContext] Fetching user data...");
-      setIsFetching(true);
-      await refreshMe();
-      
-      if (cancelled) return;
-
-      console.log("[AuthContext] User data received:", meData);
-
-      if (!meData?.user) {
-        console.warn("[AuthContext] No user data - setting user to null");
-        setUser(null);
-        setIsFetching(false);
-        return;
-      }
-
-      const newUser = {
-        id: meData.user.id,
-        email: meData.user.email,
-        name: meData.user.displayName || session?.user?.name || undefined,
-        isAdmin: Boolean(meData.user.isAdmin),
-      };
-      
-      console.log("[AuthContext] Setting user:", newUser);
-      setUser(newUser);
-      setIsFetching(false);
+    const userData = {
+      id: sessionUser?.id || "unknown",
+      email: sessionUser?.email || "",
+      displayName: sessionUser?.name || sessionUser?.email?.split('@')[0] || "",
+      isAdmin: Boolean(sessionUser?.isAdmin),
     };
 
-    void bootstrap();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [status, session?.user?.name, refreshMe, meData]);
+    console.log("[AuthContext] Setting user from NextAuth:", userData);
+    setUser(userData);
+  }, [status, session?.user?.name, session?.user?.email, user]);
 
   const value = useMemo<AuthContextType>(
     () => ({
-      user: IS_MOCK_MODE ? MOCK_AUTH_USER : user,
-      isLogged: IS_MOCK_MODE ? true : status === "authenticated",
-      loading: IS_MOCK_MODE ? false : loading,
-      loginGoogle: () => { if (!IS_MOCK_MODE) signIn("google"); },
-      logout: () => { if (!IS_MOCK_MODE) signOut({ callbackUrl: "/canhoes/login" }); },
+      user,
+      isLogged: status === "authenticated",
+      loading: status === "loading",
+      loginGoogle: () => signIn("google"),
+      logout: () => signOut({ callbackUrl: "/canhoes/login", redirect: true }),
     }),
-    [user, status, loading]
+    [user, status]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

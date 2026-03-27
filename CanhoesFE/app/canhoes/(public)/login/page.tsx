@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Leaf, Target } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { IS_MOCK_MODE } from "@/lib/mock";
 
 export default function CanhoesLoginPage() {
   const router = useRouter();
   const { isLogged, loading, loginGoogle } = useAuth();
-  const [pressed, setPressed] = useState(false);
   const [visible, setVisible] = useState(false);
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   // Gerar partículas de folhas
   useEffect(() => {
@@ -30,8 +29,20 @@ export default function CanhoesLoginPage() {
   }, []);
 
   useEffect(() => {
-    if (!loading && isLogged) router.replace("/canhoes");
+    if (!loading && isLogged) {
+      router.replace("/canhoes");
+    }
   }, [loading, isLogged, router]);
+
+  const handleLogin = () => {
+    setIsSigningIn(true);
+    loginGoogle();
+  };
+
+  // Debug info (remove em produção)
+  if (typeof window !== "undefined") {
+    console.log("[LoginPage] loading:", loading, "isLogged:", isLogged, "isSigningIn:", isSigningIn);
+  }
 
   return (
     <div
@@ -146,46 +157,24 @@ export default function CanhoesLoginPage() {
           />
         </div>
 
-        {/* Botões */}
-        <div className="w-full space-y-4">
-          {IS_MOCK_MODE ? (
-            <button
-              onClick={() => {
-                setPressed(true);
-                router.replace("/canhoes");
-              }}
-              disabled={pressed}
-              className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 font-bold text-base transition-all duration-300"
-              style={{
-                background: "linear-gradient(135deg, var(--color-moss) 0%, var(--color-moss-light) 100%)",
-                border: "2px solid rgba(107, 124, 69, 0.5)",
-                boxShadow: "0 8px 32px rgba(107, 124, 69, 0.4), 0 0 40px rgba(107, 203, 119, 0.2) inset",
-                color: "#ffffff",
-                opacity: pressed ? 0.7 : 1,
-                transform: pressed ? "scale(0.98)" : "scale(1)",
-              }}
-            >
-              <Leaf className="h-5 w-5" />
-              🎮 Entrar no Jogo
-            </button>
-          ) : (
-            <button
-              onClick={() => loginGoogle()}
-              disabled={loading}
-              className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 font-bold text-sm transition-all duration-300 backdrop-blur-sm"
-              style={{
-                background: "rgba(26, 35, 24, 0.7)",
-                border: "2px solid rgba(107, 124, 69, 0.4)",
-                boxShadow: "0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(107, 124, 69, 0.1)",
-                color: "var(--color-text-primary)",
-                opacity: loading ? 0.6 : 1,
-                transform: loading ? "scale(0.99)" : "scale(1)",
-              }}
-            >
-              <Leaf className="h-5 w-5 flex-shrink-0" style={{ color: "var(--color-moss-light)" }} />
-              {loading ? "A entrar…" : "Continuar com Google"}
-            </button>
-          )}
+        {/* Botão de Login com Google */}
+        <div className="w-full">
+          <button
+            onClick={handleLogin}
+            disabled={isSigningIn || (loading && isLogged)}
+            className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 font-bold text-sm transition-all duration-300 backdrop-blur-sm"
+            style={{
+              background: "rgba(26, 35, 24, 0.7)",
+              border: "2px solid rgba(107, 124, 69, 0.4)",
+              boxShadow: "0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(107, 124, 69, 0.1)",
+              color: "var(--color-text-primary)",
+              opacity: (isSigningIn || (loading && isLogged)) ? 0.6 : 1,
+              transform: (isSigningIn || (loading && isLogged)) ? "scale(0.99)" : "scale(1)",
+            }}
+          >
+            <Leaf className="h-5 w-5 flex-shrink-0" style={{ color: "var(--color-moss-light)" }} />
+            {(isSigningIn || (loading && isLogged)) ? "A entrar…" : "Continuar com Google"}
+          </button>
         </div>
 
         {/* Nota de rodapé */}
@@ -197,9 +186,7 @@ export default function CanhoesLoginPage() {
             lineHeight: 1.6,
           }}
         >
-          {IS_MOCK_MODE
-            ? "🌿 Modo demonstração · sem backend"
-            : "🔒 Acesso exclusivo para membros dos Canhões"}
+          🔒 Acesso exclusivo para membros dos Canhões
         </p>
       </div>
 

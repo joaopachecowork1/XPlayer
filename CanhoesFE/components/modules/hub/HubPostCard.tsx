@@ -65,13 +65,14 @@ export function HubPostCard({
 
     return (
         <BlurFade delay={index * 50}>
-            {/* Canhao Card - Dark Orgânico */}
+            {/* Canhao Card - Light Design (Mockup) */}
             <div
                 className="overflow-hidden rounded-2xl"
                 style={{
                     background: "var(--color-bg-card)",
                     border: "1px solid var(--border-subtle)",
-                    boxShadow: "var(--shadow-card), 0 0 20px rgba(107, 124, 69, 0.08) inset",
+                    boxShadow: "var(--shadow-card)",
+                    color: "var(--color-text-dark)",
                 }}
             >
                 {/* Header + Texto */}
@@ -86,7 +87,7 @@ export function HubPostCard({
                     {!!post.text && (
                         <div
                             className="mt-2.5 whitespace-pre-wrap break-words text-[13px] sm:text-sm leading-relaxed"
-                            style={{ color: "var(--color-text-secondary)", fontFamily: "'Nunito', sans-serif", fontWeight: 500 }}
+                            style={{ color: "var(--color-text-dark)", fontFamily: "'Nunito', sans-serif", fontWeight: 500 }}
                         >
                             {post.text}
                         </div>
@@ -125,15 +126,15 @@ export function HubPostCard({
                                         style={
                                             active
                                                 ? {
-                                                    background: "var(--color-moss)",
-                                                    border: "1.5px solid var(--color-moss)",
+                                                    background: "var(--color-btn-primary)",
+                                                    border: "1.5px solid var(--color-btn-primary)",
                                                     color: "#ffffff",
-                                                    boxShadow: "0 0 12px rgba(107, 124, 69, 0.4)",
+                                                    boxShadow: "0 0 12px rgba(112, 122, 95, 0.4)",
                                                 }
                                                 : {
                                                     background: "var(--color-bg-surface)",
                                                     border: "1px solid var(--border-subtle)",
-                                                    color: "var(--color-text-secondary)",
+                                                    color: "var(--color-text-primary)",
                                                 }
                                         }
                                     >

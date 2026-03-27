@@ -6,7 +6,7 @@ import { Gift, ImageOff, Link as LinkIcon, Shuffle, User } from "lucide-react";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
 import { CANHOES_API_URL } from "@/lib/api/canhoesClient";
 import type { SecretSantaMeDto, WishlistItemDto } from "@/lib/api/types";
-import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/lib/auth/useIsAdmin";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export function CanhoesSecretSantaModule() {
-  const { user } = useAuth();
+  const isAdmin = useIsAdmin();
 
   const [secretSantaResult, setSecretSantaResult] = useState<SecretSantaMeDto | null>(null);
   const [wishlistItems, setWishlistItems] = useState<WishlistItemDto[]>([]);
@@ -70,7 +70,7 @@ export function CanhoesSecretSantaModule() {
         <Badge variant="outline">{eventCode}</Badge>
       </div>
 
-      {user?.isAdmin ? (
+      {isAdmin ? (
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Evento</CardTitle>

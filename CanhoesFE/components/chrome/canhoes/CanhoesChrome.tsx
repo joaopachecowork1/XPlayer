@@ -31,21 +31,21 @@ const BACKGROUND_PRESETS = [
     label: "Musgo",
     emoji: "🌿",
     className:
-      "bg-[radial-gradient(circle_at_top,_rgba(107,124,69,0.15),_transparent_40%),linear-gradient(180deg,#0d1410_0%,#0a0f08_40%,#08100a_100%)]",
+      "bg-[radial-gradient(circle_at_top,_rgba(112,122,95,0.12),_transparent_40%),linear-gradient(180deg,#353531_0%,#2F2F2B_40%,#282824_100%)]",
   },
   {
     id: "forest",
     label: "Floresta",
     emoji: "🌲",
     className:
-      "bg-[radial-gradient(circle_at_top,_rgba(74,92,47,0.18),_transparent_35%),linear-gradient(180deg,#0a1410_0%,#051008_45%,#030805_100%)]",
+      "bg-[radial-gradient(circle_at_top,_rgba(112,122,95,0.15),_transparent_35%),linear-gradient(180deg,#32352e_0%,#2a2d28_45%,#232621_100%)]",
   },
   {
     id: "psycho",
     label: "Psycho",
     emoji: "✨",
     className:
-      "bg-[radial-gradient(circle_at_top,_rgba(107,203,119,0.12),_transparent_35%),linear-gradient(180deg,#0f1410_0%,#0a0f0c_45%,#050807_100%)]",
+      "bg-[radial-gradient(circle_at_top,_rgba(107,203,119,0.1),_transparent_35%),linear-gradient(180deg,#2f3230_0%,#2a2d2b_45%,#252827_100%)]",
   },
 ] as const;
 
@@ -123,25 +123,25 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
         isTransitioning && "opacity-90"
       )}
     >
-      {/* Header Sticky com Backdrop Blur Dinâmico - Dark Theme */}
+      {/* Header Sticky com Backdrop Blur Dinâmico - Light/Dark Theme */}
       <header
         className={cn(
-          "sticky top-0 z-30 border-b border-[var(--color-moss)]/20 transition-all duration-300",
+          "sticky top-0 z-30 border-b border-[var(--color-title)]/20 transition-all duration-300",
           "backdrop-blur-dynamic",
           isScrolled && "backdrop-blur-dynamic scrolled",
-          "bg-[rgba(10,15,8,0.85)]"
+          "bg-[rgba(47,47,43,0.85)]"
         )}
       >
         <div className="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <p className="label text-[var(--color-text-muted)]">Canhões</p>
+            <p className="label text-[var(--color-title)] font-bold">Canhões</p>
             <div className="flex items-center gap-2">
               <span aria-hidden="true" className="text-base">
                 {currentBackgroundPreset.emoji}
               </span>
               <div className="min-w-0">
-                <h1 className="heading-2 truncate text-[var(--color-text-primary)]">Canhões do Ano</h1>
-                <p className="body-small truncate text-[var(--color-text-muted)]">{pageTitle}</p>
+                <h1 className="heading-2 truncate text-[var(--color-title)] font-extrabold drop-shadow-md">Canhões do Ano</h1>
+                <p className="body-small truncate text-[var(--color-text-secondary)] font-semibold">{pageTitle}</p>
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
           <div className="flex items-center gap-2">
             <button
               onClick={handleBackgroundCycle}
-              className="canhoes-tap flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--color-moss)]/25 bg-white/5 text-lg text-[var(--color-text-primary)]"
+              className="canhoes-tap flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--color-title)]/50 bg-white/15 text-lg text-[var(--color-text-primary)] shadow-md"
               aria-label={`Mudar fundo. Actual: ${currentBackgroundPreset.label}`}
               title={`Mudar fundo: ${currentBackgroundPreset.label}`}
               type="button"
@@ -158,7 +158,15 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
             </button>
 
             {isLogged ? (
-              <Button variant="ghost" className="hidden px-3 py-2 sm:inline-flex" onClick={() => logout()}>
+              <Button 
+                variant="ghost" 
+                className="hidden px-4 py-2 sm:inline-flex font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-danger)]/30 hover:text-[var(--color-danger)] transition-colors" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  logout();
+                }}
+              >
                 Sair
               </Button>
             ) : null}
@@ -166,12 +174,12 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
             <Button
               variant="secondary"
               size="icon"
-              className="shrink-0"
+              className="shrink-0 border border-[var(--color-title)]/40 bg-white/15 text-[var(--color-text-primary)] hover:bg-[var(--color-title)]/25 transition-colors"
               onClick={() => setIsMoreSheetOpen(true)}
               aria-label="Abrir menu"
               title={user?.email ?? "Mais opções"}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5" strokeWidth={2.5} />
             </Button>
           </div>
         </div>

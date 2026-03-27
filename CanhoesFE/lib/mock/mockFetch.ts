@@ -217,6 +217,7 @@ function handleRead<T>(path: string): T {
   if (/^hub\/posts\/.+\/comments$/.test(path)) return [] as unknown as T;
 
   // /api/me — mock user profile
+  // Necessário para o useAuthCache em produção/mock
   if (path === "me") {
     return {
       user: {
@@ -228,6 +229,6 @@ function handleRead<T>(path: string): T {
     } as unknown as T;
   }
 
-  // fallback
+  // fallback - retorna null para endpoints não mapeados
   return null as unknown as T;
 }

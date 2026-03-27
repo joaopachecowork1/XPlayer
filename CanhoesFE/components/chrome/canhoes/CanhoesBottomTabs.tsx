@@ -96,13 +96,15 @@ function BottomTab({
       type="button"
       onClick={onClick}
       className={cn(
-        "canhoes-tap flex min-h-11 flex-col items-center justify-center gap-1 rounded-xl px-2 pb-1 pt-2 text-[11px] font-semibold",
-        isActive ? activeClasses : "text-[var(--color-text-muted)] hover:text-[var(--color-beige)]"
+        "canhoes-tap flex min-h-11 flex-col items-center justify-center gap-1 rounded-xl px-2 pb-1 pt-2 text-[11px] font-bold",
+        isActive ? activeClasses : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      {icon}
-      <span>{label}</span>
+      <div className={cn("flex items-center justify-center", isActive ? "" : "opacity-80")}>
+        {icon}
+      </div>
+      <span className={cn(isActive ? "font-extrabold" : "font-semibold")}>{label}</span>
       <span
         aria-hidden="true"
         className={cn("h-0.5 w-6 rounded-full transition-opacity", isActive ? indicatorClasses : "opacity-0")}

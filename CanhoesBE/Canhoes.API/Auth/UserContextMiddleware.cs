@@ -65,18 +65,35 @@ public sealed class UserContextMiddleware
 
                 ctx.Items["UserId"] = user.Id;
                 ctx.Items["IsAdmin"] = user.IsAdmin;
+                
+                _logger.LogInformation("User found: Email={Email}, IsAdmin={IsAdmin}, ExternalId={ExternalId}", user.Email, user.IsAdmin, user.ExternalId);
+                
                 // Apply optional admin allowlist (email) from config: Auth:AdminEmails: [ "email1", ... ]
                 try
                 {
                     var adminEmails = _config.GetSection("Auth:AdminEmails").Get<string[]>() ?? Array.Empty<string>();
+                    _logger.LogInformation("AdminEmails configured: {AdminEmailsCount} emails", adminEmails.Length);
+                    
                     if (adminEmails.Length > 0 && adminEmails.Any(e => string.Equals(e.Trim(), user.Email, StringComparison.OrdinalIgnoreCase)))
                     {
+                        _logger.LogInformation("User {Email} is in AdminEmails list", user.Email);
+                        
                         if (!user.IsAdmin)
                         {
                             user.IsAdmin = true;
                             await _db.SaveChangesAsync();
                             _logger.LogInformation("User {Email} promoted to admin via allowlist.", user.Email);
                         }
+                        else
+                        {
+                            _logger.LogInformation("User {Email} is already admin", user.Email);
+                        }
+                        
+                        ctx.Items["IsAdmin"] = true;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("User {Email} is NOT in AdminEmails list", user.Email);
                     }
                 }
                 catch (Exception ex)
