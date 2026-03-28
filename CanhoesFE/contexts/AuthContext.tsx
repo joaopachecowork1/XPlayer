@@ -35,18 +35,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) return;
 
     // Usa dados da sessão NextAuth diretamente
-    const sessionUser = session?.user as any;
+    const sessionUser = session?.user as
+      | {
+          email?: string | null;
+          id?: string | null;
+          isAdmin?: boolean | null;
+          name?: string | null;
+        }
+      | undefined;
     
     const userData = {
       id: sessionUser?.id || "unknown",
       email: sessionUser?.email || "",
-      displayName: sessionUser?.name || sessionUser?.email?.split('@')[0] || "",
+      name: sessionUser?.name || sessionUser?.email?.split("@")[0] || "",
       isAdmin: Boolean(sessionUser?.isAdmin),
     };
 
     console.log("[AuthContext] Setting user from NextAuth:", userData);
     setUser(userData);
-  }, [status, session?.user?.name, session?.user?.email, user]);
+  }, [session?.user, status, user]);
 
   const value = useMemo<AuthContextType>(
     () => ({

@@ -64,6 +64,24 @@ export function useHubFeed() {
     void load();
   }, [load]);
 
+  useEffect(() => {
+    const handlePostCreated = (event: Event) => {
+      const createdPost = (event as CustomEvent<HubPostDto | undefined>).detail;
+      if (!createdPost?.id) return;
+
+      setPosts((currentPosts) => {
+        const dedupedPosts = (currentPosts ?? []).filter(
+          (post) => post?.id !== createdPost.id
+        );
+        return [createdPost, ...dedupedPosts];
+      });
+    };
+
+    window.addEventListener("hub:postCreated", handlePostCreated);
+    return () =>
+      window.removeEventListener("hub:postCreated", handlePostCreated);
+  }, []);
+
   /** Toggle reaction (emoji) num post */
   const toggleReaction = useCallback(async (postId: string, emoji: string) => {
     // Optimistic UI update

@@ -15,7 +15,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className="dark" suppressHydrationWarning>
+    <html lang="pt" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <AppProviders>{children}</AppProviders>
       </body>

@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Gift, ImageOff, Link as LinkIcon, Shuffle, User } from "lucide-react";
 
+import { absMediaUrl } from "@/lib/media";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
-import { CANHOES_API_URL } from "@/lib/api/canhoesClient";
 import type { SecretSantaMeDto, WishlistItemDto } from "@/lib/api/types";
 import { useIsAdmin } from "@/lib/auth/useIsAdmin";
 
@@ -142,10 +142,11 @@ export function CanhoesSecretSantaModule() {
                   {wishlistItem.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={`${CANHOES_API_URL}${wishlistItem.imageUrl}`}
+                      src={absMediaUrl(wishlistItem.imageUrl)}
                       alt={wishlistItem.title}
                       className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <ImageOff className="h-4 w-4 text-[var(--color-text-muted)]" />
@@ -172,5 +173,4 @@ export function CanhoesSecretSantaModule() {
     </div>
   );
 }
-
 

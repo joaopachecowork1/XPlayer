@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Cigarette, ImageOff, Upload } from "lucide-react";
 import { toast } from "sonner";
 
+import { absMediaUrl } from "@/lib/media";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
-import { CANHOES_API_URL } from "@/lib/api/canhoesClient";
 import type { AwardCategoryDto, CanhoesStateDto, NomineeDto } from "@/lib/api/types";
 
 import { Badge } from "@/components/ui/badge";
@@ -222,10 +222,11 @@ export function CanhoesNomineesModule() {
                         {nominee.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={`${CANHOES_API_URL}${nominee.imageUrl}`}
+                            src={absMediaUrl(nominee.imageUrl)}
                             alt={nominee.title}
                             className="h-full w-full object-cover"
-                            referrerPolicy="no-referrer"
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <ImageOff className="h-4 w-4 text-[var(--color-text-muted)]" />

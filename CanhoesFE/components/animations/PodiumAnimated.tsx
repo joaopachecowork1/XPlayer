@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { absMediaUrl } from "@/lib/media";
 import { NumberTicker } from "./NumberTicker";
 
 interface PodiumItem {
@@ -100,7 +101,7 @@ function PodiumColumn({ item, height, gradientFrom, gradientTo, isWinner }: Podi
             )}
           >
             <Image
-              src={item.imageUrl}
+              src={absMediaUrl(item.imageUrl)}
               alt={item.name}
               width={80}
               height={80}

@@ -195,6 +195,15 @@ export function CanhoesComposeSheet({
     setPollOptions(["", ""]);
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+      resetComposer();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }, [open, resetComposer]);
+
   const handleFiles = async (fileList: FileList | null) => {
     if (!fileList) return;
 

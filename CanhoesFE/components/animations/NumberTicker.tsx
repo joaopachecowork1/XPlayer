@@ -11,60 +11,61 @@ interface NumberTickerProps {
   duration?: number;
 }
 
-/**
- * NumberTicker Animation (Mockup Reference)
- *
- * Animação de contagem para badges numéricos:
- * - Conta de 0 até ao valor final
- * - Duração: 400ms
- * - Easing: ease-out
- * - Font: tabular-nums (para alinhamento)
- *
- * Uso:
- * ```tsx
- * <NumberTicker value={4200} />
- * ```
- */
-export function NumberTicker({ value, className, delay = 0, from = 0, duration = 400 }: NumberTickerProps) {
-  const ref = useRef<HTMLSpanElement>(null);
+export function NumberTicker({
+  value,
+  className,
+  delay = 0,
+  from = 0,
+  duration = 400,
+}: NumberTickerProps) {
+  const nodeRef = useRef<HTMLSpanElement>(null);
+  const frameRef = useRef<number | null>(null);
   const [isVisible, setIsVisible] = React.useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay);
-    return () => clearTimeout(timer);
+    const timeoutId = window.setTimeout(() => setIsVisible(true), delay);
+    return () => window.clearTimeout(timeoutId);
   }, [delay]);
 
   useEffect(() => {
-    if (!isVisible || !ref.current) return;
+    if (!isVisible || !nodeRef.current) return undefined;
 
-    const node = ref.current;
-    const start = from;
-    const end = value;
+    const node = nodeRef.current;
+    const startValue = from;
+    const endValue = value;
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      const currentValue = Math.round(
+        startValue + (endValue - startValue) * easedProgress
+      );
 
-      // Easing: ease-out
-      const eased = 1 - Math.pow(1 - progress, 3);
-
-      const current = Math.round(start + (end - start) * eased);
-      node.textContent = current.toLocaleString("pt-PT");
+      node.textContent = currentValue.toLocaleString("pt-PT");
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frameRef.current = requestAnimationFrame(animate);
       } else {
-        node.textContent = value.toLocaleString("pt-PT");
+        node.textContent = endValue.toLocaleString("pt-PT");
+        frameRef.current = null;
       }
     };
 
-    requestAnimationFrame(animate);
-  }, [isVisible, value, from, duration]);
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
+      }
+    };
+  }, [duration, from, isVisible, value]);
 
   return (
     <span
-      ref={ref}
+      ref={nodeRef}
       className={cn("number-ticker inline-block min-w-[1.5em] text-right", className)}
       style={{
         opacity: isVisible ? 1 : 0,

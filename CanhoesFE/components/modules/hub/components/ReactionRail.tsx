@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
 import { MessageCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export const HUB_EMOJIS = ["❤️", "🔥", "😂"] as const;
+export const HUB_EMOJIS = ["â¤ï¸", "ðŸ”¥", "ðŸ˜‚"] as const;
+const HUB_EMOJI_LABELS = ["\u2764\uFE0F", "\uD83D\uDD25", "\uD83D\uDE02"] as const;
 
 export function ReactionRail({
   emojis = HUB_EMOJIS,
@@ -29,9 +29,9 @@ export function ReactionRail({
 
   return (
     <div className="flex w-14 shrink-0 flex-col items-center gap-2 border-r border-[var(--color-beige-dark)]/25 bg-[var(--color-bg-surface)] p-2">
-      {emojis.map((emoji) => {
+      {emojis.map((emoji, emojiIndex) => {
         const isActive = myReactionSet.has(emoji);
-        const reactionCount = counts[emoji] ?? (emoji === "❤️" ? likeCount ?? 0 : 0);
+        const reactionCount = counts[emoji] ?? (emojiIndex === 0 ? likeCount ?? 0 : 0);
 
         return (
           <button
@@ -45,7 +45,7 @@ export function ReactionRail({
                 : "border-[var(--color-beige-dark)]/25 bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)]"
             )}
           >
-            <span className="text-base leading-none">{emoji}</span>
+            <span className="text-base leading-none">{HUB_EMOJI_LABELS[emojiIndex]}</span>
             <span className="font-medium">{reactionCount}</span>
           </button>
         );

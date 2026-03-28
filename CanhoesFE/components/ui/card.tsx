@@ -7,7 +7,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        "editorial-shell overflow-hidden rounded-[var(--radius-lg-token)] border border-[var(--color-moss)]/12 bg-[var(--color-bg-card)] text-[var(--color-text-dark)] shadow-[var(--shadow-card)] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:border-[var(--color-moss)]/22 hover:shadow-[var(--shadow-layered)]",
+        "editorial-shell overflow-hidden rounded-[var(--radius-lg-token)] border border-[var(--color-moss)]/12 bg-[var(--color-bg-card)] text-[var(--color-text-dark)] shadow-[var(--shadow-card)] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:border-[var(--color-moss)]/20 hover:shadow-[var(--shadow-layered)]",
         className
       )}
       {...props}
@@ -20,7 +20,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-4 pt-4 has-data-[slot=card-action]:grid-cols-[1fr_auto] sm:px-5 sm:pt-5 [.border-b]:pb-4",
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2.5 px-4 pt-4 has-data-[slot=card-action]:grid-cols-[1fr_auto] sm:px-5 sm:pt-5 [.border-b]:pb-4",
         className
       )}
       {...props}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -64,6 +64,12 @@ export function MediaCarousel({
   const media = useMemo(() => (urls ?? []).filter(Boolean), [urls]);
   const { currentIndex, setCurrentIndex, handleTouchEnd, handleTouchMove, handleTouchStart } =
     useCarouselGesture(media.length);
+
+  useEffect(() => {
+    setCurrentIndex((previousIndex) =>
+      Math.min(previousIndex, Math.max(media.length - 1, 0))
+    );
+  }, [media.length, setCurrentIndex]);
 
   if (media.length === 0) return null;
 

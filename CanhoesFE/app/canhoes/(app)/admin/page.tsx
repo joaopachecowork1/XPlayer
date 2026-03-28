@@ -1,97 +1,91 @@
-// src/app/canhoes/(app)/admin/page.tsx
-//
-// Admin page with client-side access guard.
-// Shows the full admin panel to confirmed admins.
-// Shows a themed "Acesso Negado" screen to everyone else —
-// the tab remains visible and navigable by design.
 "use client";
 
-import CanhoesAdminModule from "@/components/modules/canhoes/admin/CanhoesAdminModule";
-import { useIsAdmin } from "@/lib/auth/useIsAdmin";
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { Shield } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import CanhoesAdminModule from "@/components/modules/canhoes/admin/CanhoesAdminModule";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/lib/auth/useIsAdmin";
+
+function AdminStateCard({
+  title,
+  description,
+  action,
+}: Readonly<{
+  title: string;
+  description: string;
+  action?: ReactNode;
+}>) {
+  return (
+    <section className="page-hero mx-auto max-w-xl px-5 py-10 text-center sm:px-6">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[var(--color-moss)]/22 bg-[rgba(85,107,79,0.14)] text-[var(--color-title-dark)] shadow-[var(--shadow-paper)]">
+        <Shield className="h-7 w-7" />
+      </div>
+      <div className="mt-5 space-y-2">
+        <h2 className="heading-2 text-[var(--color-title-dark)]">{title}</h2>
+        <p className="body-small text-[var(--color-text-muted)]">{description}</p>
+      </div>
+      {action ? <div className="mt-6">{action}</div> : null}
+    </section>
+  );
+}
 
 export default function AdminPage() {
   const { loading, isLogged, user, loginGoogle } = useAuth();
   const isAdmin = useIsAdmin();
   const router = useRouter();
 
-  // Show a spinner while auth loads so we don't flash the denial screen.
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-muted-foreground animate-pulse">A verificar permissões…</p>
-      </div>
+      <AdminStateCard
+        title="A verificar permissoes"
+        description="A secao de administracao so abre depois de validar a sessao e as regras do evento."
+        action={
+          <div className="mx-auto h-9 w-9 rounded-full border-4 border-[var(--color-moss)] border-t-transparent animate-spin" />
+        }
+      />
     );
   }
 
-  // If session exists but user profile is still missing, avoid flashing a hard deny state.
   if (isLogged && !user) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-4">
-        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-muted-foreground">A sincronizar permissões de administrador...</p>
-      </div>
+      <AdminStateCard
+        title="A sincronizar perfil"
+        description="A conta ja tem sessao, mas o perfil ainda esta a ser sincronizado com o contexto do evento."
+        action={
+          <div className="mx-auto h-9 w-9 rounded-full border-4 border-[var(--color-moss)] border-t-transparent animate-spin" />
+        }
+      />
     );
   }
 
   if (!isLogged) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-6 px-4 text-center">
-        <div className="canhoes-title text-2xl">🔐 Sessão Necessária</div>
-        <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-          Inicia sessão para aceder ao painel de administração.
-        </p>
-        <Button className="canhoes-tap canhoes-neon-border" onClick={loginGoogle}>
-          Iniciar Sessão
-        </Button>
-      </div>
+      <AdminStateCard
+        title="Sessao necessaria"
+        description="Entra com a tua conta para abrir o centro de controlo do evento."
+        action={
+          <Button className="w-full sm:w-auto" onClick={loginGoogle}>
+            Entrar com Google
+          </Button>
+        }
+      />
     );
   }
 
   if (!isAdmin) {
     return (
-      // "Acesso Negado" — themed denial screen.
-      // The tab stays visible so users know this section exists;
-      // only authenticated admins get the full panel.
-      <div className="flex flex-col items-center justify-center py-16 gap-6 px-4 text-center">
-        {/* Icon ring with neon pulse */}
-        <div
-          className="canhoes-pulse h-20 w-20 rounded-full flex items-center justify-center"
-          style={{
-            background: "linear-gradient(145deg, rgba(255,45,117,0.15), rgba(255,45,117,0.05))",
-            border: "2px solid rgba(255,45,117,0.40)",
-          }}
-        >
-          <Shield className="h-9 w-9" style={{ color: "#ff2d75" }} />
-        </div>
-
-        {/* Title */}
-        <div>
-          <h2
-            className="canhoes-title text-2xl mb-2"
-            style={{ color: "#ff2d75", textShadow: "0 0 18px rgba(255,45,117,0.50)" }}
-          >
-            🚫 Acesso Negado
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-            Não tens permissão para aceder ao painel de administração.
-          </p>
-        </div>
-
-        {/* Back button */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="canhoes-tap rounded-full px-6 h-10 border-jungle-700/40 hover:border-primary/50"
-          onClick={() => router.push("/canhoes")}
-        >
-          ← Voltar ao Feed
-        </Button>
-      </div>
+      <AdminStateCard
+        title="Acesso restrito"
+        description="Esta area continua visivel, mas so os admins confirmados conseguem moderar propostas, votos e fases do evento."
+        action={
+          <Button variant="outline" onClick={() => router.push("/canhoes")}>
+            Voltar ao feed
+          </Button>
+        }
+      />
     );
   }
 

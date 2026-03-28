@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { colors, radius } from '@/lib/theme/tokens';
+import { colors } from '@/lib/theme/tokens';
 
 interface NumberBadgeProps {
   value: number;

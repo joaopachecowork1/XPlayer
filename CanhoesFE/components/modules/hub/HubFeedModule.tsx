@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Camera, Pin, RefreshCw, ScrollText, Vote } from "lucide-react";
 import { toast } from "sonner";
@@ -13,7 +13,10 @@ import { useIsAdmin } from "@/lib/auth/useIsAdmin";
 import { cn } from "@/lib/utils";
 
 import { HubPostCard } from "./HubPostCard";
-import { PostComposer, type PostComposerSubmitData } from "./components/PostComposer";
+import {
+  PostComposer,
+  type PostComposerSubmitData,
+} from "./components/PostComposer";
 
 function FeedInsightCard({
   label,
@@ -72,9 +75,11 @@ export function HubFeedModule({
     adminDelete,
   } = useHubFeed();
 
-  if (status === "authenticated" && !session?.idToken) {
-    signOut({ redirect: false }).then(() => signIn("google"));
-  }
+  useEffect(() => {
+    if (status === "authenticated" && !session?.idToken) {
+      void signOut({ redirect: false }).then(() => signIn("google"));
+    }
+  }, [session?.idToken, status]);
 
   const handleCreatePost = async (data: PostComposerSubmitData) => {
     const trimmedText = data.text.trim();
@@ -115,13 +120,15 @@ export function HubFeedModule({
   };
 
   const pinnedPostCount = posts.filter((post) => post.isPinned).length;
-  const postsWithMediaCount = posts.filter((post) => (post.mediaUrls ?? []).length > 0).length;
+  const postsWithMediaCount = posts.filter(
+    (post) => (post.mediaUrls ?? []).length > 0
+  ).length;
   const postsWithPollCount = posts.filter((post) => Boolean(post.poll)).length;
 
   return (
     <div className="space-y-4 xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:gap-5 xl:space-y-0">
       <div className="space-y-4">
-        <section className="editorial-shell rounded-[var(--radius-lg-token)] px-4 py-4 sm:px-5 sm:py-5">
+        <section className="page-hero px-4 py-4 sm:px-5 sm:py-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-[var(--color-title)]">
@@ -129,13 +136,13 @@ export function HubFeedModule({
                 <span className="editorial-kicker">Feed</span>
               </div>
               <div className="space-y-1">
-                <h2 className="heading-2 text-[var(--color-text-primary)]">
+                <h2 className="heading-2 text-[var(--color-title-dark)]">
                   Cronica do evento
                 </h2>
                 <p className="body-small max-w-2xl text-[var(--color-text-muted)]">
-                  Um feed com linguagem editorial, melhor hierarquia para texto,
-                  imagem e interacoes, e respiro suficiente para funcionar bem
-                  em telemovel e desktop.
+                  O feed mistura tom editorial e ritmo de produto: cards
+                  respiraveis, media consistente e interacoes com area de toque
+                  real para funcionar bem em telemovel.
                 </p>
               </div>
             </div>
@@ -211,7 +218,7 @@ export function HubFeedModule({
         <FeedInsightCard
           label="Votacoes"
           value={postsWithPollCount}
-          description="Blocos com participacao direta. Ideal para dinamizar semanas mortas."
+          description="Blocos com participacao direta para dinamizar semanas mortas."
           icon={<Vote className="h-4 w-4" />}
         />
         <FeedInsightCard

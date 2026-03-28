@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Gift, ImageOff, Link as LinkIcon, Trash2, Upload } from "lucide-react";
 
+import { absMediaUrl } from "@/lib/media";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
-import { CANHOES_API_URL } from "@/lib/api/canhoesClient";
 import type { PublicUserDto, WishlistItemDto } from "@/lib/api/types";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -203,10 +203,11 @@ export function CanhoesWishlistModule() {
                         {wishlistItem.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={`${CANHOES_API_URL}${wishlistItem.imageUrl}`}
+                            src={absMediaUrl(wishlistItem.imageUrl)}
                             alt={wishlistItem.title}
                             className="h-full w-full object-cover"
-                            referrerPolicy="no-referrer"
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <ImageOff className="h-4 w-4 text-[var(--color-text-muted)]" />

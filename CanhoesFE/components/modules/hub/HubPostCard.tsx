@@ -14,6 +14,8 @@ import { MediaCarousel } from "./components/MediaCarousel";
 import { PollBox } from "./components/PollBox";
 import { PostHeader } from "./components/PostHeader";
 
+const HUB_EMOJI_LABELS = ["\u2764\uFE0F", "\uD83D\uDD25", "\uD83D\uDE02"] as const;
+
 interface HubPostCardProps {
   post: HubPostDto;
   index: number;
@@ -101,10 +103,10 @@ export function HubPostCard({
 
           <div className="mt-4 space-y-4">
             <div className="flex flex-wrap gap-2">
-              {HUB_EMOJIS.map((emoji) => {
+              {HUB_EMOJIS.map((emoji, emojiIndex) => {
                 const isActive = (post.myReactions ?? []).includes(emoji);
                 const reactionCount =
-                  reactionCounts[emoji] ?? (emoji === "❤️" ? post.likeCount ?? 0 : 0);
+                  reactionCounts[emoji] ?? (emojiIndex === 0 ? post.likeCount ?? 0 : 0);
 
                 return (
                   <Button
@@ -115,7 +117,9 @@ export function HubPostCard({
                     onClick={() => onToggleReaction(post.id, emoji)}
                     className="rounded-full px-3"
                   >
-                    <span className="text-sm leading-none">{emoji}</span>
+                    <span className="text-sm leading-none">
+                      {HUB_EMOJI_LABELS[emojiIndex]}
+                    </span>
                     <NumberTicker value={reactionCount} className="text-xs" />
                   </Button>
                 );
@@ -128,7 +132,9 @@ export function HubPostCard({
                 onClick={() => onToggleComments(post.id)}
                 className="rounded-full px-3"
               >
-                <span className="text-sm leading-none">💬</span>
+                <span className="text-sm leading-none">
+                  {"\uD83D\uDCAC"}
+                </span>
                 <NumberTicker value={post.commentCount ?? 0} className="text-xs" />
                 <span className="text-xs font-semibold">
                   {openComments ? "Fechar" : "Comentarios"}
@@ -143,7 +149,9 @@ export function HubPostCard({
               <span className="rounded-full bg-[var(--color-bg-surface)] px-2.5 py-1">
                 {reactionCountTotal} reacoes
               </span>
-              {post.isPinned ? <Badge variant="secondary">Arquivo em destaque</Badge> : null}
+              {post.isPinned ? (
+                <Badge variant="secondary">Arquivo em destaque</Badge>
+              ) : null}
             </div>
           </div>
 

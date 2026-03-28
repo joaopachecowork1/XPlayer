@@ -511,3 +511,257 @@ h3,
   width: 100%;
   background: linear-gradient(90deg, transparent, rgba(90, 62, 43, 0.18), transparent);
 }
+
+/* =============================================
+   CANHOES APP OVERRIDES
+   ============================================= */
+:root {
+  --page-max-width: 72rem;
+  --page-content-width: 60rem;
+  --radius-sm-token: 12px;
+  --radius-md-token: 14px;
+  --radius-lg-token: 20px;
+  --radius-xl-token: 26px;
+}
+
+@layer base {
+  html {
+    background: var(--color-bg-primary);
+  }
+
+  body {
+    min-height: 100svh;
+    background:
+      radial-gradient(circle at top center, rgba(209, 189, 160, 0.22), transparent 28rem),
+      linear-gradient(180deg, #fcf8f0 0%, var(--color-bg-primary) 36%, #efe4d3 100%);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+  }
+
+  h1,
+  .heading-1 {
+    font-size: clamp(1.85rem, 5vw, 2.55rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  h2,
+  .heading-2 {
+    font-size: clamp(1.35rem, 3vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h3,
+  .heading-3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .body-base {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .body-small {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+}
+
+@layer components {
+  .page-shell {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--page-max-width);
+    padding-inline: 1rem;
+    padding-block: 1rem 1.25rem;
+  }
+
+  .page-shell-wide {
+    margin-inline: auto;
+    width: 100%;
+    max-width: calc(var(--page-max-width) + 10rem);
+    padding-inline: 1rem;
+    padding-block: 1rem 1.25rem;
+  }
+
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(90, 62, 43, 0.14);
+    border-radius: var(--radius-lg-token);
+    background:
+      linear-gradient(135deg, rgba(85, 107, 79, 0.12), rgba(209, 189, 160, 0.18)),
+      linear-gradient(180deg, rgba(251, 247, 239, 0.98), rgba(244, 234, 220, 0.95));
+    box-shadow: var(--shadow-card), var(--shadow-paper);
+  }
+
+  .page-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 1.25rem 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(90, 62, 43, 0.16), transparent);
+  }
+
+  .canhoes-section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 4vw, 1.95rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-title-dark);
+  }
+
+  .canhoes-field-label {
+    display: inline-block;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .canhoes-helper-text {
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .canhoes-list-item {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(90, 62, 43, 0.12);
+    border-radius: var(--radius-md-token);
+    background:
+      linear-gradient(180deg, rgba(251, 247, 239, 0.98), rgba(244, 234, 220, 0.92));
+    box-shadow: var(--shadow-paper);
+  }
+
+  .canhoes-link {
+    color: var(--color-title-dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: rgba(85, 107, 79, 0.34);
+    text-underline-offset: 0.18em;
+  }
+
+  .canhoes-link:hover {
+    color: var(--color-brown-dark);
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes particle-burst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.25) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--tx), var(--ty), 0) scale(1) rotate(220deg);
+  }
+}
+
+@keyframes podium-pulse {
+  0%,
+  100% {
+    filter: saturate(1);
+    transform: translateY(0);
+  }
+  50% {
+    filter: saturate(1.12);
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes leaf-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -5vh, 0) rotate(0deg);
+  }
+  10% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(3vw, 110vh, 0) rotate(280deg);
+  }
+}
+
+@keyframes leaf-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes canhoes-bounce-rotate {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-4deg);
+  }
+}
+
+.particle {
+  animation: particle-burst 780ms cubic-bezier(0.12, 0.74, 0.32, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.podium-pulse {
+  animation: podium-pulse 2.2s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  .page-shell,
+  .page-shell-wide {
+    padding-inline: 1.5rem;
+    padding-block: 1.25rem 1.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .particle,
+  .podium-pulse {
+    animation: none !important;
+  }
+}

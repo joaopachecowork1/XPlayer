@@ -8,7 +8,8 @@ import type { HubCommentDto } from "@/lib/api/types";
 
 import { formatDateTime } from "./hubUtils";
 
-const COMMENT_EMOJIS = ["❤️", "🔥", "😂"];
+const COMMENT_EMOJIS = ["â¤ï¸", "ðŸ”¥", "ðŸ˜‚"] as const;
+const COMMENT_EMOJI_LABELS = ["\u2764\uFE0F", "\uD83D\uDD25", "\uD83D\uDE02"] as const;
 
 export function CommentsSection({
   comments,
@@ -46,7 +47,7 @@ export function CommentsSection({
               </p>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {COMMENT_EMOJIS.map((emoji) => {
+                {COMMENT_EMOJIS.map((emoji, emojiIndex) => {
                   const isActive = (comment.myReactions ?? []).includes(emoji);
                   const reactionCount = comment.reactionCounts?.[emoji] ?? 0;
 
@@ -59,7 +60,9 @@ export function CommentsSection({
                       className="rounded-full px-3"
                       onClick={() => onToggleReaction(comment.id, emoji)}
                     >
-                      <span className="leading-none">{emoji}</span>
+                      <span className="leading-none">
+                        {COMMENT_EMOJI_LABELS[emojiIndex]}
+                      </span>
                       <span className="text-xs tabular-nums">{reactionCount}</span>
                     </Button>
                   );

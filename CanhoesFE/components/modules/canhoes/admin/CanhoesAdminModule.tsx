@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { RefreshCw, Shield } from "lucide-react";
+import { toast } from "sonner";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
-import { RefreshCw, Shield } from "lucide-react";
-import { toast } from "sonner";
 
 import type {
   AwardCategoryDto,
@@ -150,14 +151,14 @@ export default function CanhoesAdminModule() {
       );
     } catch (error) {
       console.error("Admin load error:", error);
-      toast.error("Erro ao carregar dados");
+      toast.error("Erro ao carregar dados do admin");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const pendingReviewCount =
@@ -175,84 +176,89 @@ export default function CanhoesAdminModule() {
     { value: "audit", label: "Auditoria", count: votes.length },
   ] as const;
 
+  const overviewItems = useMemo(
+    () => [
+      { label: "Categorias", value: categories.length },
+      { label: "Membros", value: members.length },
+      { label: "Pendentes", value: pendingReviewCount },
+      { label: "Votos", value: votes.length },
+    ],
+    [categories.length, members.length, pendingReviewCount, votes.length]
+  );
+
   return (
-    <div className="space-y-5">
-      <section className="rounded-[var(--radius-lg-token)] border border-[var(--color-moss)]/20 bg-[var(--color-bg-card)] p-4 sm:p-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 space-y-2">
+    <Tabs defaultValue="dashboard" className="space-y-4 xl:grid xl:grid-cols-[19rem_minmax(0,1fr)] xl:gap-5 xl:space-y-0">
+      <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
+        <section className="page-hero px-4 py-4 sm:px-5">
+          <div className="space-y-4">
             <div className="flex items-center gap-2 text-[var(--color-title)]">
               <Shield className="h-4 w-4" />
-              <span className="label">Admin</span>
+              <span className="editorial-kicker">Admin</span>
             </div>
-            <div className="space-y-1">
-              <h2 className="heading-2 text-[var(--color-text-primary)]">
-                Centro de controlo do evento
+
+            <div className="space-y-2">
+              <h2 className="heading-2 text-[var(--color-title-dark)]">
+                Centro de controlo
               </h2>
-              <p className="body-small max-w-xl text-[var(--color-text-muted)]">
-                Aprova propostas, ajusta fases e acompanha o estado do evento com
-                mais espaco e menos blocos empilhados sem respiracao.
+              <p className="body-small text-[var(--color-text-muted)]">
+                Moderacao, curadoria e estado do evento num painel mais legivel,
+                com blocos compactos em mobile e hierarquia forte em desktop.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant="outline"
-                className="border-[var(--color-moss)]/30 text-[var(--color-text-primary)]"
-              >
-                {categories.length} categorias
-              </Badge>
-              <Badge
-                variant="outline"
-                className="border-[var(--color-moss)]/30 text-[var(--color-text-primary)]"
-              >
-                {members.length} membros
-              </Badge>
-              {pendingReviewCount > 0 ? (
-                <Badge
-                  variant="secondary"
-                  className="bg-[var(--color-brown)] text-[var(--color-text-primary)]"
+
+            <div className="grid grid-cols-2 gap-2">
+              {overviewItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[var(--radius-md-token)] border border-[var(--color-beige-dark)]/20 bg-[rgba(251,247,239,0.7)] px-3 py-3 shadow-[var(--shadow-paper)]"
                 >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+                    {item.label}
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-[var(--color-text-primary)]">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {pendingReviewCount > 0 ? (
+                <Badge variant="secondary">
                   {pendingReviewCount} pendentes
                 </Badge>
+              ) : (
+                <Badge variant="outline">Sem fila critica</Badge>
+              )}
+              {state ? (
+                <Badge variant="outline">Fase: {state.phase}</Badge>
               ) : null}
             </div>
-          </div>
 
-          <div className="flex items-center gap-2 self-start">
-            <Badge
-              variant="outline"
-              className="border-primary/40 px-3 text-primary"
-            >
-              Admin
-            </Badge>
             <Button
               variant="outline"
-              size="sm"
-              onClick={loadData}
+              className="w-full gap-2"
+              onClick={() => void loadData()}
               disabled={loading}
-              className="gap-2"
             >
-              <RefreshCw
-                className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
-              />
-              Atualizar
+              <RefreshCw className={loading ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
+              Atualizar painel
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <Tabs defaultValue="dashboard" className="space-y-4">
-        <TabsList className="gap-2 border border-[var(--color-moss)]/15 bg-[var(--color-bg-surface-alt)] p-1.5">
+        <TabsList className="scrollbar-none h-auto w-full justify-start gap-2 overflow-x-auto border border-[var(--color-moss)]/15 bg-[var(--color-bg-surface-alt)]/78 p-2 xl:flex-col xl:overflow-visible">
           {adminTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="px-3 py-2.5"
+              className="w-full shrink-0 justify-between rounded-[var(--radius-md-token)] px-3 py-3 xl:w-full"
             >
               <span>{tab.label}</span>
-              {tab.count && tab.count > 0 ? (
+              {tab.count > 0 ? (
                 <Badge
                   variant="secondary"
-                  className="min-w-5 justify-center rounded-full bg-[var(--color-brown)] px-1.5 text-[11px] text-[var(--color-text-primary)]"
+                  className="min-w-5 justify-center rounded-full px-1.5 text-[11px]"
                 >
                   {tab.count}
                 </Badge>
@@ -260,7 +266,9 @@ export default function CanhoesAdminModule() {
             </TabsTrigger>
           ))}
         </TabsList>
+      </aside>
 
+      <div className="space-y-4">
         <TabsContent value="dashboard" className="space-y-4">
           <AdminDashboard
             categories={categories}
@@ -317,7 +325,7 @@ export default function CanhoesAdminModule() {
         <TabsContent value="audit" className="space-y-4">
           <VotesAudit votes={votes} categories={categories} loading={loading} />
         </TabsContent>
-      </Tabs>
-    </div>
+      </div>
+    </Tabs>
   );
 }

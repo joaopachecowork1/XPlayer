@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Cigarette, Flame, Trophy } from "lucide-react";
 
+import { absMediaUrl } from "@/lib/media";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
 import type {
   AwardCategoryDto,
@@ -261,10 +262,11 @@ function NomineeVoteOption({
         {nominee.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`/api/proxy${nominee.imageUrl}`}
+            src={absMediaUrl(nominee.imageUrl)}
             alt={nominee.title}
             className="h-full w-full object-cover"
-            referrerPolicy="no-referrer"
+            loading="lazy"
+            decoding="async"
           />
         ) : null}
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Menu, ScrollText } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -9,19 +9,19 @@ import { useAuth } from "@/hooks/useAuth";
 
 import { Button } from "@/components/ui/button";
 import { CanhoesBottomTabs } from "./CanhoesBottomTabs";
-import { CanhoesMoreSheet } from "./CanhoesMoreSheet";
 import { CanhoesComposeSheet } from "./CanhoesComposeSheet";
+import { CanhoesMoreSheet } from "./CanhoesMoreSheet";
 
 const PAGE_TITLES = [
   { href: "/canhoes/admin", label: "Admin" },
-  { href: "/canhoes/amigo-secreto", label: "Amigo Secreto" },
+  { href: "/canhoes/amigo-secreto", label: "Amigo secreto" },
   { href: "/canhoes/categorias", label: "Categorias" },
   { href: "/canhoes/feed", label: "Feed" },
   { href: "/canhoes/gala", label: "Gala" },
   { href: "/canhoes/medidas", label: "Medidas" },
-  { href: "/canhoes/nomeacoes", label: "Nomeações" },
+  { href: "/canhoes/nomeacoes", label: "Nomeacoes" },
   { href: "/canhoes/stickers", label: "Stickers" },
-  { href: "/canhoes/votacao", label: "Votação" },
+  { href: "/canhoes/votacao", label: "Votacao" },
   { href: "/canhoes/wishlist", label: "Wishlist" },
 ] as const;
 
@@ -32,7 +32,9 @@ function getPageTitle(pathname: string | null) {
   return matchedPage?.label ?? "Feed";
 }
 
-export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode }>) {
+export function CanhoesChrome({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const router = useRouter();
   const { isLogged, logout, user } = useAuth();
@@ -41,70 +43,112 @@ export function CanhoesChrome({ children }: Readonly<{ children: React.ReactNode
   const [isComposeSheetOpen, setIsComposeSheetOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Scroll handler se necessário
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    setIsMoreSheetOpen(false);
+    setIsComposeSheetOpen(false);
+  }, [pathname]);
 
   const pageTitle = getPageTitle(pathname);
-  const isFeedPath = pathname === "/canhoes" || pathname === "/canhoes/" || pathname === "/canhoes/feed";
+  const isFeedPath =
+    pathname === "/canhoes" ||
+    pathname === "/canhoes/" ||
+    pathname === "/canhoes/feed";
+
+  const userLabel = useMemo(() => {
+    const displayName = user?.name?.trim();
+    if (displayName) return displayName;
+    if (user?.email) return user.email;
+    return "Membro";
+  }, [user?.email, user?.name]);
 
   return (
     <div
       data-theme="canhoes"
       className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[var(--color-bg-primary)]"
     >
-      {/* Header Sticky */}
-      <header
-        className={cn(
-          "sticky top-0 z-30 border-b border-[var(--color-border-default)]",
-          "bg-[var(--color-bg-card)]/95 backdrop-blur"
-        )}
-      >
-        <div className="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4 py-3">
-          <div className="min-w-0">
-            <p className="label text-[var(--color-title)] font-bold">Canhões</p>
-            <div className="flex items-center gap-2">
-              <div className="min-w-0">
-                <h1 className="heading-2 truncate text-[var(--color-title)] font-extrabold">Canhões do Ano</h1>
-                <p className="body-small truncate text-[var(--color-text-secondary)] font-semibold">{pageTitle}</p>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(85,107,79,0.14),transparent_70%)]"
+      />
+
+      <header className="sticky top-0 z-40 border-b border-[var(--border-default)]/70 bg-[rgba(247,242,232,0.9)] backdrop-blur-xl">
+        <div className="page-shell-wide pb-3 pt-3">
+          <div className="page-hero px-4 py-4 sm:px-5 sm:py-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0 space-y-3">
+                <div className="flex items-center gap-2 text-[var(--color-title)]">
+                  <ScrollText className="h-4 w-4" />
+                  <span className="label">Canhoes</span>
+                </div>
+
+                <div className="space-y-1">
+                  <h1 className="heading-2 truncate text-[var(--color-title-dark)]">
+                    Canhoes do Ano
+                  </h1>
+                  <p className="body-small text-[var(--color-text-muted)]">
+                    {pageTitle}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 sm:justify-end">
+                <div className="rounded-full border border-[var(--color-beige-dark)]/25 bg-[rgba(251,247,239,0.8)] px-3 py-2 text-right shadow-[var(--shadow-paper)]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+                    Perfil
+                  </p>
+                  <p className="max-w-[11rem] truncate text-sm font-semibold text-[var(--color-text-primary)]">
+                    {userLabel}
+                  </p>
+                </div>
+
+                {isLogged ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full px-4"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      logout();
+                    }}
+                  >
+                    Sair
+                  </Button>
+                ) : null}
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 rounded-full"
+                  onClick={() => setIsMoreSheetOpen(true)}
+                  aria-label="Abrir menu"
+                  title={user?.email ?? "Mais opcoes"}
+                >
+                  <Menu className="h-5 w-5" strokeWidth={2.1} />
+                </Button>
               </div>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isLogged ? (
-              <Button
-                variant="ghost"
-                className="inline-flex px-4 py-2 font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-danger)]/30 hover:text-[var(--color-danger)] transition-colors"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  logout();
-                }}
-              >
-                Sair
-              </Button>
-            ) : null}
-
-            <Button
-              variant="secondary"
-              size="icon"
-              className="shrink-0 border border-[var(--color-title)]/40 bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] hover:bg-[var(--color-title)]/25 transition-colors"
-              onClick={() => setIsMoreSheetOpen(true)}
-              aria-label="Abrir menu"
-              title={user?.email ?? "Mais opções"}
-            >
-              <Menu className="h-5 w-5" strokeWidth={2.5} />
-            </Button>
           </div>
         </div>
       </header>
 
-      <main className="relative z-10 flex-1 overflow-y-auto pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))]">
-        <div className={cn("mx-auto w-full max-w-2xl py-4", isFeedPath ? "px-0 sm:px-4" : "px-4")}>{children}</div>
+      <main className="relative z-10 flex-1 overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">
+        <div
+          className={cn(
+            isFeedPath ? "page-shell-wide" : "page-shell",
+            "w-full"
+          )}
+        >
+          <div
+            className={cn(
+              "mx-auto w-full",
+              isFeedPath
+                ? "max-w-[var(--page-max-width)]"
+                : "max-w-[var(--page-content-width)]"
+            )}
+          >
+            {children}
+          </div>
+        </div>
       </main>
 
       <CanhoesBottomTabs
