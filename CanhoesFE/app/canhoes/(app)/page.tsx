@@ -1,7 +1,7 @@
 "use client";
 
-import { HubFeedModule } from "@/components/modules/hub/HubFeedModule";
+import { CanhoesEventHomeModule } from "@/components/modules/canhoes/CanhoesEventHomeModule";
 
 export default function CanhoesPage() {
-  return <HubFeedModule showComposer />;
+  return <CanhoesEventHomeModule />;
 }

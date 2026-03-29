@@ -22,9 +22,12 @@ import {
   MOCK_PROPOSALS_HISTORY,
   MOCK_EVENT_CATEGORIES,
   MOCK_EVENT_CONTEXT,
+  MOCK_EVENT_OVERVIEW,
   MOCK_EVENT_POSTS,
   MOCK_EVENT_PROPOSALS,
+  MOCK_EVENT_SECRET_SANTA_OVERVIEW,
   MOCK_EVENT_SUMMARY,
+  MOCK_EVENT_VOTING_OVERVIEW,
   MOCK_EVENT_VOTING_BOARD,
   MOCK_EVENT_WISHLIST,
 } from "./mockData";
@@ -267,6 +270,16 @@ function handleRead<T>(path: string): T {
   if (path === "v1/events") return [MOCK_EVENT_SUMMARY] as unknown as T;
 
   if (/^v1\/events\/[^/]+$/.test(path)) return MOCK_EVENT_CONTEXT as unknown as T;
+
+  if (/^v1\/events\/[^/]+\/overview$/.test(path)) return MOCK_EVENT_OVERVIEW as unknown as T;
+
+  if (/^v1\/events\/[^/]+\/voting\/overview$/.test(path)) {
+    return MOCK_EVENT_VOTING_OVERVIEW as unknown as T;
+  }
+
+  if (/^v1\/events\/[^/]+\/secret-santa\/overview$/.test(path)) {
+    return MOCK_EVENT_SECRET_SANTA_OVERVIEW as unknown as T;
+  }
 
   if (/^v1\/events\/[^/]+\/feed\/posts$/.test(path)) return MOCK_EVENT_POSTS as unknown as T;
 

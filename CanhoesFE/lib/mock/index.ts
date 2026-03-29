@@ -21,6 +21,12 @@ export const IS_MOCK_MODE: boolean =
   process.env.NEXT_PUBLIC_MOCK_AUTH !== "false";
 
 /**
+ * Local mode is currently the same thing as mock mode:
+ * development without the real production event/runtime guarantees.
+ */
+export const IS_LOCAL_MODE = IS_MOCK_MODE;
+
+/**
  * Mock admin user injected into AuthContext when mock mode is active.
  * Role: admin — has access to all protected pages and the admin panel.
  */

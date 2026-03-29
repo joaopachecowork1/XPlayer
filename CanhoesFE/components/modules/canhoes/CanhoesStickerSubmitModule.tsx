@@ -232,8 +232,8 @@ export function CanhoesStickerSubmitModule() {
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <div className="space-y-3">
               <p className="canhoes-field-label">Imagem</p>
-              <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-md-token)] border border-[var(--color-moss)]/20 bg-[rgba(251,247,239,0.72)] px-4 py-3 text-sm font-semibold text-[var(--color-text-primary)] shadow-[var(--shadow-paper)]">
-                <Upload className="h-4 w-4 text-[var(--color-brown)]" />
+              <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-md-token)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-3 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-panel)]">
+                <Upload className="h-4 w-4 text-[var(--neon-cyan)]" />
                 <span className="truncate">
                   {selectedFile?.name ?? "Adicionar imagem (opcional)"}
                 </span>
@@ -252,7 +252,7 @@ export function CanhoesStickerSubmitModule() {
               </p>
             </div>
 
-            <div className="rounded-[var(--radius-md-token)] border border-[var(--color-beige-dark)]/22 bg-[rgba(251,247,239,0.7)] p-3 shadow-[var(--shadow-paper)]">
+            <div className="rounded-[var(--radius-md-token)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3 shadow-[var(--shadow-panel)]">
               <div className="aspect-square overflow-hidden rounded-[calc(var(--radius-md-token)-4px)] bg-[var(--color-bg-surface)]">
                 {selectedFilePreviewUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element

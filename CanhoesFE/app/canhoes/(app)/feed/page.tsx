@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { HubFeedModule } from "@/components/modules/hub/HubFeedModule";
 
 export default function CanhoesFeedPage() {
-  redirect("/canhoes");
+  return <HubFeedModule showComposer={false} />;
 }

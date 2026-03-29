@@ -4,18 +4,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex min-h-8 items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-psycho-4)] focus:ring-offset-0",
+  "inline-flex min-h-8 items-center justify-center rounded-full border px-3 py-1 font-[var(--font-mono)] text-xs font-semibold uppercase tracking-[0.08em] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-psycho-4)] focus:ring-offset-0",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-[var(--color-moss)] text-[var(--color-bg-card)] shadow-[var(--shadow-paper)]",
+          "border-transparent bg-[var(--color-moss)] text-[var(--text-primary)] shadow-[var(--shadow-paper)]",
         secondary:
-          "border-transparent bg-[var(--color-beige-dark)] text-[var(--color-text-dark)] shadow-[var(--shadow-paper)]",
+          "border-transparent bg-[var(--bark)] text-[var(--text-primary)] shadow-[var(--shadow-panel)]",
         destructive:
           "border-transparent bg-[var(--color-danger)] text-white shadow-sm hover:opacity-90",
         outline:
-          "border-[var(--color-beige-dark)]/30 bg-[rgba(251,247,239,0.74)] text-[var(--color-text-secondary)]",
+          "border-[var(--border-neon)] bg-transparent text-[var(--neon-green)]",
       },
     },
     defaultVariants: {

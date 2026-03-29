@@ -10,8 +10,8 @@
   /* Cores Base */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-app);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-jetbrains-mono);
 
   /* Cores UI (shadcn) */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -172,9 +172,11 @@
 
   body {
     min-height: 100vh;
-    background: linear-gradient(180deg, #F5F0E8 0%, var(--color-bg-primary) 40%, #DCD5C9 100%);
-    color: var(--color-text-primary);
-    font-family: var(--font-app), system-ui, sans-serif;
+    background:
+      radial-gradient(circle at top center, rgba(0, 255, 136, 0.12), transparent 26rem),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-void) 100%);
+    color: var(--text-primary);
+    font-family: var(--font-body), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -195,18 +197,18 @@
   /* Inputs - Mobile friendly */
   input, textarea, select {
     min-height: 3rem;
-    background: var(--color-bg-surface);
-    border: 2px solid var(--border-subtle);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md-token);
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     padding: 0.875rem 1rem;
     font-size: 1rem;
   }
 
   input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: var(--color-moss);
-    box-shadow: 0 0 0 3px var(--color-moss-subtle);
+    border-color: var(--border-neon);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.18);
   }
 
   /* Buttons - Minimum touch target */
@@ -227,18 +229,18 @@
 @layer components {
   /* Cards */
   .card {
-    background: var(--color-bg-card);
-    color: var(--color-text-dark);
+    background: var(--bg-deep);
+    color: var(--text-primary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg-token);
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-panel);
     padding: 1rem;
     transition: border-color 150ms ease, box-shadow 150ms ease;
   }
 
   .card:hover {
-    border-color: var(--border-default);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    border-color: var(--border-neon);
+    box-shadow: var(--shadow-layered);
   }
 
   /* Botões */
@@ -267,11 +269,11 @@
 
   /* Canhões UI */
   .canhoes-panel {
-    background: var(--color-bg-card);
-    color: var(--color-text-dark);
+    background: var(--bg-deep);
+    color: var(--text-primary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg-token);
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-panel);
   }
 
   .canhoes-title {
@@ -377,71 +379,150 @@
 .stagger-6 { animation-delay: 0.48s; }
 
 /* =============================================
-   PREMIUM EDITORIAL OVERRIDES
+   CYBER-ORGANIC THEME OVERRIDES
    ============================================= */
 :root {
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  --font-body: var(--font-app), "Inter", system-ui, sans-serif;
+  --bg-void: #0f1209;
+  --bg-deep: #161c0e;
+  --bg-surface: #1e2614;
+  --bg-paper: #f5ede0;
+  --bg-paper-alt: #ede3cc;
 
-  --color-bg-primary: #f7f2e8;
-  --color-bg-secondary: #efe6d7;
-  --color-bg-card: #fbf7ef;
-  --color-bg-surface: #f3ebdc;
-  --color-bg-surface-alt: #eadfcf;
+  --text-primary: #e8dfc8;
+  --text-dark: #1a1f14;
+  --text-muted: #6b7c55;
+  --text-ghost: #3d4a2e;
 
-  --color-text-primary: #31251d;
-  --color-text-secondary: #5d4a3b;
-  --color-text-muted: #8a7767;
-  --color-text-dark: #241914;
+  --moss: #4a5c2f;
+  --moss-light: #6b7c45;
+  --moss-glow: #7aad3a;
+  --bark: #6b4c2a;
+  --bark-dark: #3d2b18;
+  --beige: #d4b896;
+  --sand: #b89b7a;
 
-  --color-title: #556b4f;
-  --color-title-dark: #314235;
-  --color-title-light: #6d8265;
+  --neon-green: #00ff88;
+  --neon-amber: #ffb800;
+  --neon-cyan: #00d4aa;
+  --neon-red: #ff3a3a;
 
-  --color-btn-primary: #556b4f;
-  --color-btn-primary-hover: #465a40;
-  --color-btn-secondary: #efe4d2;
-  --color-btn-secondary-hover: #e4d6c0;
+  --glow-green: 0 0 6px #00ff88, 0 0 20px rgba(0, 255, 136, 0.25),
+    0 0 40px rgba(0, 255, 136, 0.12);
+  --glow-green-sm: 0 0 4px #00ff88, 0 0 10px rgba(0, 255, 136, 0.2);
+  --glow-amber: 0 0 6px #ffb800, 0 0 20px rgba(255, 184, 0, 0.25);
+  --glow-moss: 0 10px 30px rgba(74, 92, 47, 0.4);
+  --glow-paper: 0 18px 40px rgba(10, 12, 8, 0.2);
 
-  --color-danger: #bb6a54;
-  --color-danger-hover: #a55a46;
-  --color-success: #5f7a57;
-  --color-moss: #556b4f;
-  --color-moss-subtle: rgba(85, 107, 79, 0.12);
-  --color-moss-light: #708668;
-  --color-beige: #d1bda0;
-  --color-beige-dark: #ad9578;
-  --color-beige-light: #fbf7ef;
-  --color-brown: #8b6b4a;
-  --color-brown-dark: #5a3e2b;
-  --color-fire: #c57a52;
-  --color-tan: #cbb69d;
+  --success: #4caf50;
+  --danger: #e05a3a;
+  --fire: #ff6b35;
 
-  --border-subtle: rgba(90, 62, 43, 0.12);
-  --border-default: rgba(90, 62, 43, 0.22);
-  --border-beige: rgba(173, 149, 120, 0.36);
-  --color-border-subtle: rgba(90, 62, 43, 0.12);
+  --psycho-1: #ff6b9d;
+  --psycho-2: #ffd93d;
+  --psycho-3: #6bcb77;
+  --psycho-4: #4d96ff;
+  --psycho-5: #c77dff;
+  --gradient-psycho: linear-gradient(135deg, #ff6b9d, #ffd93d, #6bcb77, #4d96ff, #c77dff);
 
-  --shadow-card: 0 10px 28px rgba(74, 55, 40, 0.08);
-  --shadow-layered: 0 18px 46px rgba(49, 38, 30, 0.1);
-  --shadow-glow-title: 0 0 20px rgba(85, 107, 79, 0.12);
-  --shadow-paper: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --border-subtle: rgba(74, 92, 47, 0.2);
+  --border-moss: rgba(74, 92, 47, 0.5);
+  --border-neon: rgba(0, 255, 136, 0.4);
+  --border-paper: rgba(212, 184, 150, 0.5);
+  --border-default: var(--border-moss);
+  --border-beige: var(--border-paper);
 
-  --background: var(--color-bg-primary);
-  --card: var(--color-bg-card);
-  --popover: var(--color-bg-card);
-  --secondary: var(--color-bg-surface);
-  --muted: var(--color-bg-surface);
-  --accent: var(--color-bg-surface-alt);
-  --sidebar: var(--color-bg-card);
+  --shadow-card: 0 16px 36px rgba(10, 12, 8, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  --shadow-paper: 0 12px 30px rgba(12, 14, 9, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --shadow-layered: 0 22px 52px rgba(10, 12, 8, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-panel: 0 24px 64px rgba(0, 0, 0, 0.42);
+  --shadow-modal: 0 28px 80px rgba(0, 0, 0, 0.45);
+  --shadow-glow-title: var(--glow-green-sm);
+
+  --font-display: var(--font-orbitron);
+  --font-body: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-accent: var(--font-fraunces);
+  --font-app: var(--font-dm-sans);
+
+  --page-max-width: 72rem;
+  --page-content-width: 60rem;
+  --radius-sm-token: 12px;
+  --radius-md-token: 14px;
+  --radius-lg-token: 20px;
+  --radius-xl-token: 26px;
+
+  --background: var(--bg-void);
+  --foreground: var(--text-primary);
+  --card: var(--bg-deep);
+  --popover: var(--bg-surface);
+  --secondary: rgba(245, 237, 224, 0.08);
+  --muted: rgba(245, 237, 224, 0.08);
+  --accent: rgba(0, 255, 136, 0.08);
+  --sidebar: var(--bg-deep);
+
+  /* Backwards-compatible aliases used across the current codebase */
+  --color-bg-primary: var(--bg-void);
+  --color-bg-secondary: var(--bg-deep);
+  --color-bg-card: var(--bg-deep);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-alt: var(--bg-surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--beige);
+  --color-text-muted: var(--text-muted);
+  --color-text-dark: var(--text-primary);
+  --color-title: var(--neon-green);
+  --color-title-dark: var(--text-primary);
+  --color-title-light: var(--moss-glow);
+  --color-btn-primary: var(--moss);
+  --color-btn-primary-hover: var(--moss-light);
+  --color-btn-secondary: var(--bark-dark);
+  --color-btn-secondary-hover: var(--bark);
+  --color-danger: var(--danger);
+  --color-danger-hover: #c94f31;
+  --color-success: var(--success);
+  --color-moss: var(--moss);
+  --color-moss-subtle: rgba(74, 92, 47, 0.16);
+  --color-moss-light: var(--moss-light);
+  --color-beige: var(--beige);
+  --color-beige-dark: var(--sand);
+  --color-beige-light: var(--bg-paper);
+  --color-brown: var(--bark);
+  --color-brown-dark: var(--bark-dark);
+  --color-fire: var(--fire);
+  --color-tan: var(--sand);
+  --color-psycho-1: var(--psycho-1);
+  --color-psycho-2: var(--psycho-2);
+  --color-psycho-3: var(--psycho-3);
+  --color-psycho-4: var(--psycho-4);
+  --color-psycho-5: var(--psycho-5);
+  --color-border-subtle: var(--border-subtle);
 }
 
 html {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
   font-family: var(--font-body);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.12;
 }
 
 h1,
@@ -458,29 +539,27 @@ h3,
 .canhoes-panel,
 .canhoes-glass,
 .editorial-shell {
-  background: linear-gradient(180deg, rgba(251, 247, 239, 0.98) 0%, rgba(244, 234, 220, 0.92) 100%);
-  border: 1px solid rgba(90, 62, 43, 0.12);
-  box-shadow: var(--shadow-card), var(--shadow-paper);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-panel);
 }
 
 .canhoes-neon-border {
-  border: 1px solid rgba(85, 107, 79, 0.18);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-neon);
+  box-shadow: var(--glow-green-sm);
 }
 
 .canhoes-chip {
-  background: rgba(238, 228, 214, 0.72);
-  border: 1px solid rgba(90, 62, 43, 0.12);
-  color: var(--color-text-primary);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  background: rgba(30, 38, 20, 0.82);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
 }
 
 .canhoes-sheet {
-  border-color: rgba(90, 62, 43, 0.12);
+  border-color: var(--border-subtle);
   background:
-    radial-gradient(circle at top center, rgba(209, 189, 160, 0.18), transparent 28%),
-    linear-gradient(180deg, rgba(251, 247, 239, 0.98) 0%, rgba(243, 235, 220, 0.98) 100%);
-  color: var(--color-text-dark);
+    radial-gradient(circle at top center, rgba(0, 255, 136, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(22, 28, 14, 0.98) 0%, rgba(15, 18, 9, 0.98) 100%);
+  color: var(--text-primary);
 }
 
 .editorial-shell {
@@ -494,12 +573,12 @@ h3,
   inset: 0 auto auto 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, var(--color-brown), var(--color-moss), transparent);
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), transparent);
   opacity: 0.55;
 }
 
 .editorial-kicker {
-  color: var(--color-brown);
+  color: var(--neon-green);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -509,32 +588,45 @@ h3,
 .editorial-divider {
   height: 1px;
   width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(90, 62, 43, 0.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.18), transparent);
 }
 
-/* =============================================
-   CANHOES APP OVERRIDES
-   ============================================= */
-:root {
-  --page-max-width: 72rem;
-  --page-content-width: 60rem;
-  --radius-sm-token: 12px;
-  --radius-md-token: 14px;
-  --radius-lg-token: 20px;
-  --radius-xl-token: 26px;
+.bg-circuit {
+  background-image:
+    linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.chamfer {
+  clip-path: polygon(
+    0 8px, 8px 0,
+    calc(100% - 8px) 0, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 8px) 100%,
+    8px 100%, 0 calc(100% - 8px)
+  );
+}
+
+.chamfer-lg {
+  clip-path: polygon(
+    0 14px, 14px 0,
+    calc(100% - 14px) 0, 100% 14px,
+    100% calc(100% - 14px), calc(100% - 14px) 100%,
+    14px 100%, 0 calc(100% - 14px)
+  );
 }
 
 @layer base {
   html {
-    background: var(--color-bg-primary);
+    background: var(--bg-void);
   }
 
   body {
     min-height: 100svh;
     background:
-      radial-gradient(circle at top center, rgba(209, 189, 160, 0.22), transparent 28rem),
-      linear-gradient(180deg, #fcf8f0 0%, var(--color-bg-primary) 36%, #efe4d3 100%);
-    color: var(--color-text-primary);
+      radial-gradient(circle at top center, rgba(0, 255, 136, 0.12), transparent 26rem),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-void) 100%);
+    color: var(--text-primary);
     font-family: var(--font-body);
   }
 
@@ -542,16 +634,18 @@ h3,
   .heading-1 {
     font-size: clamp(1.85rem, 5vw, 2.55rem);
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: 0.03em;
     line-height: 1.05;
+    text-transform: uppercase;
   }
 
   h2,
   .heading-2 {
     font-size: clamp(1.35rem, 3vw, 1.9rem);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
     line-height: 1.1;
+    text-transform: uppercase;
   }
 
   h3,
@@ -569,6 +663,11 @@ h3,
   .body-small {
     font-size: 0.92rem;
     line-height: 1.6;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    letter-spacing: 0.14em;
   }
 }
 
@@ -592,12 +691,12 @@ h3,
   .page-hero {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(90, 62, 43, 0.14);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg-token);
     background:
-      linear-gradient(135deg, rgba(85, 107, 79, 0.12), rgba(209, 189, 160, 0.18)),
-      linear-gradient(180deg, rgba(251, 247, 239, 0.98), rgba(244, 234, 220, 0.95));
-    box-shadow: var(--shadow-card), var(--shadow-paper);
+      radial-gradient(circle at top right, rgba(0, 255, 136, 0.14), transparent 30%),
+      linear-gradient(180deg, rgba(30, 38, 20, 0.98), rgba(15, 18, 9, 0.98));
+    box-shadow: var(--shadow-panel);
   }
 
   .page-hero::after {
@@ -605,7 +704,7 @@ h3,
     position: absolute;
     inset: auto 1.25rem 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(90, 62, 43, 0.16), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.18), transparent);
   }
 
   .canhoes-section-title {
@@ -634,11 +733,11 @@ h3,
   .canhoes-list-item {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(90, 62, 43, 0.12);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md-token);
     background:
-      linear-gradient(180deg, rgba(251, 247, 239, 0.98), rgba(244, 234, 220, 0.92));
-    box-shadow: var(--shadow-paper);
+      linear-gradient(180deg, rgba(30, 38, 20, 0.96), rgba(22, 28, 14, 0.96));
+    box-shadow: var(--shadow-panel);
   }
 
   .canhoes-link {

@@ -324,6 +324,71 @@ export type EventContextDto = {
   activePhase?: EventPhaseDto | null;
 };
 
+export type EventPermissionsDto = {
+  isAdmin: boolean;
+  isMember: boolean;
+  canPost: boolean;
+  canSubmitProposal: boolean;
+  canVote: boolean;
+  canManage: boolean;
+};
+
+export type EventCountsDto = {
+  memberCount: number;
+  feedPostCount: number;
+  categoryCount: number;
+  pendingProposalCount: number;
+  wishlistItemCount: number;
+};
+
+export type EventModulesDto = {
+  feed: boolean;
+  secretSanta: boolean;
+  wishlist: boolean;
+  categories: boolean;
+  voting: boolean;
+  gala: boolean;
+  stickers: boolean;
+  measures: boolean;
+  nominees: boolean;
+  admin: boolean;
+};
+
+export type EventOverviewDto = {
+  event: EventSummaryDto;
+  activePhase?: EventPhaseDto | null;
+  nextPhase?: EventPhaseDto | null;
+  permissions: EventPermissionsDto;
+  counts: EventCountsDto;
+  hasSecretSantaDraw: boolean;
+  hasSecretSantaAssignment: boolean;
+  myWishlistItemCount: number;
+  myProposalCount: number;
+  myVoteCount: number;
+  votingCategoryCount: number;
+  modules: EventModulesDto;
+};
+
+export type EventVotingOverviewDto = {
+  eventId: string;
+  phaseId?: string | null;
+  canVote: boolean;
+  endsAt?: string | null;
+  categoryCount: number;
+  submittedVoteCount: number;
+  remainingVoteCount: number;
+};
+
+export type EventSecretSantaOverviewDto = {
+  eventId: string;
+  hasDraw: boolean;
+  hasAssignment: boolean;
+  drawEventCode?: string | null;
+  assignedUser?: EventUserDto | null;
+  assignedWishlistItemCount: number;
+  myWishlistItemCount: number;
+};
+
 export type EventFeedPostDto = {
   id: string;
   eventId: string;

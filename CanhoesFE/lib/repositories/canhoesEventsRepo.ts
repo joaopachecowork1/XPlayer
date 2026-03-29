@@ -7,6 +7,15 @@ export const canhoesEventsRepo = {
   getEventContext: (eventId: string) =>
     canhoesFetch<T.EventContextDto>(`/v1/events/${eventId}`),
 
+  getEventOverview: (eventId: string) =>
+    canhoesFetch<T.EventOverviewDto>(`/v1/events/${eventId}/overview`),
+
+  getVotingOverview: (eventId: string) =>
+    canhoesFetch<T.EventVotingOverviewDto>(`/v1/events/${eventId}/voting/overview`),
+
+  getSecretSantaOverview: (eventId: string) =>
+    canhoesFetch<T.EventSecretSantaOverviewDto>(`/v1/events/${eventId}/secret-santa/overview`),
+
   getFeedPosts: (eventId: string) =>
     canhoesFetch<T.EventFeedPostDto[]>(`/v1/events/${eventId}/feed/posts`),
 

@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { IS_LOCAL_MODE } from "@/lib/mock";
 import { canhoesRepo } from "@/lib/repositories/canhoesRepo";
 import type { AwardCategoryDto, CanhoesPhase, CanhoesStateDto } from "@/lib/api/types";
 import { toast } from "sonner";
@@ -40,6 +41,9 @@ export function EventStateCard({
   const [isBusy, setIsBusy] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [categoryKind, setCategoryKind] = useState<CategoryKind>("UserVote");
+  const phaseOptions = IS_LOCAL_MODE
+    ? PHASE_OPTIONS.filter((phase) => phase.value !== "gala")
+    : PHASE_OPTIONS;
 
   const updateState = async (patch: Partial<CanhoesStateDto>) => {
     if (!state) return;
@@ -192,7 +196,7 @@ export function EventStateCard({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PHASE_OPTIONS.map((phase) => (
+                {phaseOptions.map((phase) => (
                   <SelectItem key={phase.value} value={phase.value}>
                     {phase.label}
                   </SelectItem>
@@ -245,6 +249,7 @@ export function EventStateCard({
           A votacao so funciona em <strong>voting</strong>. Os resultados aparecem
           quando <strong>resultsVisible</strong> esta ativo ou quando a fase entra
           em <strong>gala</strong>.
+          {IS_LOCAL_MODE ? " Em modo local, a fase Gala fica escondida." : ""}
         </p>
       </div>
     </div>

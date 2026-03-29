@@ -27,6 +27,87 @@ public record EventContextDto(
     EventPhaseDto? ActivePhase
 );
 
+public record EventPermissionsDto(
+    bool IsAdmin,
+    bool IsMember,
+    bool CanPost,
+    bool CanSubmitProposal,
+    bool CanVote,
+    bool CanManage
+);
+
+public record EventCountsDto(
+    int MemberCount,
+    int FeedPostCount,
+    int CategoryCount,
+    int PendingProposalCount,
+    int WishlistItemCount
+);
+
+/// <summary>
+/// Controls which event modules should be visible to regular members for the
+/// current event state. The frontend uses this to keep navigation aligned with
+/// the active phase instead of exposing every page all the time.
+/// </summary>
+public record EventModulesDto(
+    bool Feed,
+    bool SecretSanta,
+    bool Wishlist,
+    bool Categories,
+    bool Voting,
+    bool Gala,
+    bool Stickers,
+    bool Measures,
+    bool Nominees,
+    bool Admin
+);
+
+/// <summary>
+/// Lightweight dashboard payload for the shell and event home. It combines the
+/// current phase, member permissions, high-level counts and module visibility.
+/// </summary>
+public record EventOverviewDto(
+    EventSummaryDto Event,
+    EventPhaseDto? ActivePhase,
+    EventPhaseDto? NextPhase,
+    EventPermissionsDto Permissions,
+    EventCountsDto Counts,
+    bool HasSecretSantaDraw,
+    bool HasSecretSantaAssignment,
+    int MyWishlistItemCount,
+    int MyProposalCount,
+    int MyVoteCount,
+    int VotingCategoryCount,
+    EventModulesDto Modules
+);
+
+/// <summary>
+/// Summary of the member's current voting progress for the active event.
+/// </summary>
+public record EventVotingOverviewDto(
+    string EventId,
+    string? PhaseId,
+    bool CanVote,
+    DateTimeOffset? EndsAt,
+    int CategoryCount,
+    int SubmittedVoteCount,
+    int RemainingVoteCount
+);
+
+/// <summary>
+/// Summary of the current member's Secret Santa state, including assignment and
+/// wishlist counts for both sides of the pairing when available.
+/// </summary>
+public record EventSecretSantaOverviewDto(
+    string EventId,
+    bool HasDraw,
+    bool HasAssignment,
+    string? DrawEventCode,
+    EventUserDto? AssignedUser,
+    int AssignedWishlistItemCount,
+    int MyWishlistItemCount
+);
+
 public record EventFeedPostDto(
     string Id,
     string EventId,

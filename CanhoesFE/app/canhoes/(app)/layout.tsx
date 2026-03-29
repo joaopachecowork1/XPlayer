@@ -10,10 +10,12 @@ function AuthLoadingState({ label }: Readonly<{ label: string }>) {
   return (
     <div
       data-theme="canhoes"
-      className="min-h-[100svh] flex flex-col items-center justify-center bg-[var(--color-bg-primary)]"
+      className="bg-circuit min-h-[100svh] flex flex-col items-center justify-center bg-[var(--bg-void)] text-[var(--text-primary)]"
     >
-      <div className="mb-4 h-10 w-10 rounded-full border-4 border-[var(--color-moss)] border-t-transparent animate-spin" />
-      <p className="text-sm text-[var(--color-text-muted)] animate-pulse">{label}</p>
+      <div className="mb-4 h-10 w-10 rounded-full border-4 border-[var(--moss)] border-t-transparent animate-spin" />
+      <p className="font-[var(--font-mono)] text-sm uppercase tracking-[0.14em] text-[var(--beige)]/76 animate-pulse">
+        {label}
+      </p>
     </div>
   );
 }

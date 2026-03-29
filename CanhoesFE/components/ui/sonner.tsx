@@ -25,24 +25,24 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           actionButton:
-            "!bg-[var(--color-moss)] !text-[var(--color-bg-card)]",
+            "!bg-[var(--color-moss)] !text-[var(--text-primary)]",
           cancelButton:
-            "!bg-[var(--color-bg-surface-alt)] !text-[var(--color-text-dark)]",
+            "!bg-[var(--color-bg-surface-alt)] !text-[var(--color-text-primary)]",
           closeButton:
-            "!border-[var(--color-beige-dark)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-dark)]",
+            "!border-[var(--color-beige-dark)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-primary)]",
           description: "!text-[var(--color-text-muted)]",
           error:
-            "!border-[var(--color-danger)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-dark)]",
+            "!border-[var(--color-danger)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-primary)]",
           info:
-            "!border-[var(--color-beige-dark)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-dark)]",
+            "!border-[var(--color-beige-dark)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-primary)]",
           loading:
-            "!border-[var(--color-beige-dark)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-dark)]",
+            "!border-[var(--color-beige-dark)]/25 !bg-[var(--color-bg-card)] !text-[var(--color-text-primary)]",
           success:
-            "!border-[var(--color-moss)]/22 !bg-[var(--color-bg-card)] !text-[var(--color-text-dark)]",
+            "!border-[var(--color-moss)]/22 !bg-[var(--color-bg-card)] !text-[var(--color-text-primary)]",
           toast:
             "!rounded-[var(--radius-md-token)] !border !shadow-[var(--shadow-layered)]",
           warning:
-            "!border-[var(--color-fire)]/20 !bg-[var(--color-bg-card)] !text-[var(--color-text-dark)]",
+            "!border-[var(--color-fire)]/20 !bg-[var(--color-bg-card)] !text-[var(--color-text-primary)]",
         },
       }}
       icons={{
@@ -55,8 +55,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       style={
         {
           "--normal-bg": "var(--color-bg-card)",
-          "--normal-text": "var(--color-text-dark)",
-          "--normal-border": "rgba(90, 62, 43, 0.16)",
+          "--normal-text": "var(--color-text-primary)",
+          "--normal-border": "var(--border-subtle)",
           "--border-radius": "var(--radius-md-token)",
         } as CSSProperties
       }

@@ -15,11 +15,24 @@ public sealed class EventsController : ControllerBase
 {
     private readonly CanhoesDbContext _db;
 
+    private sealed record EventAccessContext(
+        EventEntity Event,
+        Guid UserId,
+        bool IsAdmin,
+        bool IsMember)
+    {
+        public bool CanAccess => IsAdmin || IsMember;
+        public bool CanManage => IsAdmin;
+    }
+
     public EventsController(CanhoesDbContext db)
     {
         _db = db;
     }
 
+    /// <summary>
+    /// Lists events ordered by the currently active cycle first.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<EventSummaryDto>>> ListEvents(CancellationToken ct)
     {
@@ -35,11 +48,9 @@ public sealed class EventsController : ControllerBase
     [HttpGet("{eventId}")]
     public async Task<ActionResult<EventContextDto>> GetEventContext([FromRoute] string eventId, CancellationToken ct)
     {
-        var eventEntity = await _db.Events
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == eventId, ct);
-
-        if (eventEntity is null) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
         var members = await _db.EventMembers
             .AsNoTracking()
@@ -80,17 +91,215 @@ public sealed class EventsController : ControllerBase
         var activePhase = phaseDtos.FirstOrDefault(x => x.IsActive);
 
         return Ok(new EventContextDto(
-            ToEventSummaryDto(eventEntity),
+            ToEventSummaryDto(access.Event),
             userDtos,
             phaseDtos,
             activePhase
         ));
     }
 
+    /// <summary>
+    /// Returns the event shell snapshot used by the home screen and chrome to
+    /// decide what the member can see and what action matters next.
+    /// </summary>
+    [HttpGet("{eventId}/overview")]
+    public async Task<ActionResult<EventOverviewDto>> GetEventOverview([FromRoute] string eventId, CancellationToken ct)
+    {
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
+
+        var phases = await _db.EventPhases
+            .AsNoTracking()
+            .Where(x => x.EventId == eventId)
+            .OrderBy(x => x.StartDateUtc)
+            .ToListAsync(ct);
+
+        var activePhaseEntity = phases.FirstOrDefault(x => x.IsActive);
+        var activePhase = activePhaseEntity is null ? null : ToEventPhaseDto(activePhaseEntity);
+        var nextPhase = phases
+            .Where(x => activePhaseEntity is null ? x.EndDateUtc >= DateTime.UtcNow : x.StartDateUtc > activePhaseEntity.StartDateUtc)
+            .OrderBy(x => x.StartDateUtc)
+            .Select(ToEventPhaseDto)
+            .FirstOrDefault();
+        var legacyState = await _db.CanhoesEventState
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ct);
+
+        var categoryIds = await _db.AwardCategories
+            .AsNoTracking()
+            .Where(x => x.EventId == eventId && x.IsActive)
+            .Select(x => x.Id)
+            .ToListAsync(ct);
+
+        var latestDraw = await GetLatestSecretSantaDrawAsync(ct);
+        var hasAssignment = latestDraw is not null && await _db.SecretSantaAssignments
+            .AsNoTracking()
+            .AnyAsync(x => x.DrawId == latestDraw.Id && x.GiverUserId == access.UserId, ct);
+
+        var myNomineeVotes = categoryIds.Count == 0
+            ? 0
+            : await _db.Votes
+                .AsNoTracking()
+                .CountAsync(x => x.UserId == access.UserId && categoryIds.Contains(x.CategoryId), ct);
+
+        var myUserVotes = categoryIds.Count == 0
+            ? 0
+            : await _db.UserVotes
+                .AsNoTracking()
+                .CountAsync(x => x.VoterUserId == access.UserId && categoryIds.Contains(x.CategoryId), ct);
+
+        var canSubmitProposal = activePhaseEntity?.Type == EventPhaseTypes.Proposals && IsPhaseOpen(activePhaseEntity);
+        var canVote = activePhaseEntity?.Type == EventPhaseTypes.Voting && IsPhaseOpen(activePhaseEntity);
+
+        return Ok(new EventOverviewDto(
+            ToEventSummaryDto(access.Event),
+            activePhase,
+            nextPhase,
+            new EventPermissionsDto(
+                access.IsAdmin,
+                access.IsMember,
+                access.CanAccess,
+                canSubmitProposal,
+                canVote,
+                access.CanManage
+            ),
+            new EventCountsDto(
+                await _db.EventMembers.AsNoTracking().CountAsync(x => x.EventId == eventId, ct),
+                await _db.HubPosts.AsNoTracking().CountAsync(x => x.EventId == eventId, ct),
+                categoryIds.Count,
+                await _db.CategoryProposals.AsNoTracking().CountAsync(x => x.EventId == eventId && x.Status == "pending", ct),
+                await _db.WishlistItems.AsNoTracking().CountAsync(x => x.EventId == eventId, ct)
+            ),
+            latestDraw is not null,
+            hasAssignment,
+            await _db.WishlistItems.AsNoTracking().CountAsync(x => x.EventId == eventId && x.UserId == access.UserId, ct),
+            await _db.CategoryProposals.AsNoTracking().CountAsync(x => x.EventId == eventId && x.ProposedByUserId == access.UserId, ct),
+            myNomineeVotes + myUserVotes,
+            categoryIds.Count,
+            BuildModuleVisibility(
+                activePhaseEntity,
+                latestDraw is not null,
+                hasAssignment,
+                legacyState,
+                access.IsAdmin
+            )
+        ));
+    }
+
+    /// <summary>
+    /// Returns the member's voting progress for the active event.
+    /// </summary>
+    [HttpGet("{eventId}/voting/overview")]
+    public async Task<ActionResult<EventVotingOverviewDto>> GetVotingOverview([FromRoute] string eventId, CancellationToken ct)
+    {
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
+
+        var votingPhase = await GetActivePhaseAsync(eventId, EventPhaseTypes.Voting, ct);
+        var categoryIds = await _db.AwardCategories
+            .AsNoTracking()
+            .Where(x => x.EventId == eventId && x.IsActive)
+            .Select(x => x.Id)
+            .ToListAsync(ct);
+
+        var submittedNomineeVotes = categoryIds.Count == 0
+            ? 0
+            : await _db.Votes
+                .AsNoTracking()
+                .CountAsync(x => x.UserId == access.UserId && categoryIds.Contains(x.CategoryId), ct);
+
+        var submittedUserVotes = categoryIds.Count == 0
+            ? 0
+            : await _db.UserVotes
+                .AsNoTracking()
+                .CountAsync(x => x.VoterUserId == access.UserId && categoryIds.Contains(x.CategoryId), ct);
+
+        var submittedVoteCount = submittedNomineeVotes + submittedUserVotes;
+
+        return Ok(new EventVotingOverviewDto(
+            eventId,
+            votingPhase?.Id,
+            IsPhaseOpen(votingPhase),
+            votingPhase is null ? null : new DateTimeOffset(votingPhase.EndDateUtc, TimeSpan.Zero),
+            categoryIds.Count,
+            submittedVoteCount,
+            Math.Max(0, categoryIds.Count - submittedVoteCount)
+        ));
+    }
+
+    /// <summary>
+    /// Returns the current member's Secret Santa assignment state plus the
+    /// relevant wishlist counts used by the combined secret-santa flow.
+    /// </summary>
+    [HttpGet("{eventId}/secret-santa/overview")]
+    public async Task<ActionResult<EventSecretSantaOverviewDto>> GetSecretSantaOverview([FromRoute] string eventId, CancellationToken ct)
+    {
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
+
+        var latestDraw = await GetLatestSecretSantaDrawAsync(ct);
+        if (latestDraw is null)
+        {
+            return Ok(new EventSecretSantaOverviewDto(
+                eventId,
+                false,
+                false,
+                null,
+                null,
+                0,
+                await _db.WishlistItems.AsNoTracking().CountAsync(x => x.EventId == eventId && x.UserId == access.UserId, ct)
+            ));
+        }
+
+        var assignment = await _db.SecretSantaAssignments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.DrawId == latestDraw.Id && x.GiverUserId == access.UserId, ct);
+
+        EventUserDto? assignedUser = null;
+        var assignedWishlistItemCount = 0;
+
+        if (assignment is not null)
+        {
+            var receiver = await _db.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == assignment.ReceiverUserId, ct);
+
+            if (receiver is not null)
+            {
+                var role = await _db.EventMembers
+                    .AsNoTracking()
+                    .Where(x => x.EventId == eventId && x.UserId == receiver.Id)
+                    .Select(x => x.Role)
+                    .FirstOrDefaultAsync(ct)
+                    ?? EventRoles.User;
+
+                assignedUser = new EventUserDto(receiver.Id, GetUserName(receiver), role);
+                assignedWishlistItemCount = await _db.WishlistItems
+                    .AsNoTracking()
+                    .CountAsync(x => x.EventId == eventId && x.UserId == receiver.Id, ct);
+            }
+        }
+
+        return Ok(new EventSecretSantaOverviewDto(
+            eventId,
+            true,
+            assignment is not null && assignedUser is not null,
+            latestDraw.EventCode,
+            assignedUser,
+            assignedWishlistItemCount,
+            await _db.WishlistItems.AsNoTracking().CountAsync(x => x.EventId == eventId && x.UserId == access.UserId, ct)
+        ));
+    }
+
     [HttpGet("{eventId}/feed/posts")]
     public async Task<ActionResult<List<EventFeedPostDto>>> GetPosts([FromRoute] string eventId, CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
         var posts = await _db.HubPosts
             .AsNoTracking()
@@ -128,11 +337,12 @@ public sealed class EventsController : ControllerBase
         [FromBody] CreateEventPostRequest request,
         CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
         if (string.IsNullOrWhiteSpace(request.Content)) return BadRequest("Content is required.");
 
-        var userId = HttpContext.GetUserId();
-        var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId, ct);
+        var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == access.UserId, ct);
         if (user is null) return Unauthorized();
 
         var mediaUrls = string.IsNullOrWhiteSpace(request.ImageUrl)
@@ -143,7 +353,7 @@ public sealed class EventsController : ControllerBase
         {
             Id = Guid.NewGuid().ToString(),
             EventId = eventId,
-            AuthorUserId = userId,
+            AuthorUserId = access.UserId,
             Text = request.Content.Trim(),
             MediaUrl = string.IsNullOrWhiteSpace(request.ImageUrl) ? null : request.ImageUrl.Trim(),
             MediaUrlsJson = JsonSerializer.Serialize(mediaUrls),
@@ -168,7 +378,9 @@ public sealed class EventsController : ControllerBase
     [HttpGet("{eventId}/categories")]
     public async Task<ActionResult<List<EventCategoryDto>>> GetCategories([FromRoute] string eventId, CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
         var categories = await _db.AwardCategories
             .AsNoTracking()
@@ -185,8 +397,9 @@ public sealed class EventsController : ControllerBase
         [FromBody] CreateEventCategoryRequest request,
         CancellationToken ct)
     {
-        if (!HttpContext.IsAdmin()) return Forbid();
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanManage) return Forbid();
         if (string.IsNullOrWhiteSpace(request.Title)) return BadRequest("Title is required.");
         if (!Enum.TryParse<AwardCategoryKind>(request.Kind, true, out var kind))
             return BadRequest("Invalid kind.");
@@ -214,9 +427,10 @@ public sealed class EventsController : ControllerBase
     [HttpGet("{eventId}/voting")]
     public async Task<ActionResult<EventVotingBoardDto>> GetVotingBoard([FromRoute] string eventId, CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
-        var userId = HttpContext.GetUserId();
         var votingPhase = await GetActivePhaseAsync(eventId, EventPhaseTypes.Voting, ct);
 
         var categories = await _db.AwardCategories
@@ -246,12 +460,12 @@ public sealed class EventsController : ControllerBase
 
         var nomineeVotes = await _db.Votes
             .AsNoTracking()
-            .Where(x => x.UserId == userId && categoryIds.Contains(x.CategoryId))
+            .Where(x => x.UserId == access.UserId && categoryIds.Contains(x.CategoryId))
             .ToDictionaryAsync(x => x.CategoryId, x => x.NomineeId, ct);
 
         var userVotes = await _db.UserVotes
             .AsNoTracking()
-            .Where(x => x.VoterUserId == userId && categoryIds.Contains(x.CategoryId))
+            .Where(x => x.VoterUserId == access.UserId && categoryIds.Contains(x.CategoryId))
             .ToDictionaryAsync(x => x.CategoryId, x => x.TargetUserId.ToString(), ct);
 
         var categoryDtos = categories.Select(category =>
@@ -310,7 +524,9 @@ public sealed class EventsController : ControllerBase
         [FromBody] CreateEventVoteRequest request,
         CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
         var votingPhase = await GetActivePhaseAsync(eventId, EventPhaseTypes.Voting, ct);
         if (!IsPhaseOpen(votingPhase)) return BadRequest("Voting is closed.");
@@ -319,8 +535,6 @@ public sealed class EventsController : ControllerBase
             .FirstOrDefaultAsync(x => x.Id == request.CategoryId && x.EventId == eventId && x.IsActive, ct);
 
         if (category is null) return BadRequest("Invalid category.");
-
-        var userId = HttpContext.GetUserId();
 
         if (category.Kind == AwardCategoryKind.UserVote)
         {
@@ -334,7 +548,7 @@ public sealed class EventsController : ControllerBase
             if (!isMember) return BadRequest("Invalid option.");
 
             var existingUserVote = await _db.UserVotes
-                .FirstOrDefaultAsync(x => x.CategoryId == category.Id && x.VoterUserId == userId, ct);
+                .FirstOrDefaultAsync(x => x.CategoryId == category.Id && x.VoterUserId == access.UserId, ct);
 
             if (existingUserVote is null)
             {
@@ -342,7 +556,7 @@ public sealed class EventsController : ControllerBase
                 {
                     Id = Guid.NewGuid().ToString(),
                     CategoryId = category.Id,
-                    VoterUserId = userId,
+                    VoterUserId = access.UserId,
                     TargetUserId = targetUserId,
                     UpdatedAtUtc = DateTime.UtcNow
                 };
@@ -376,7 +590,7 @@ public sealed class EventsController : ControllerBase
         if (nominee is null) return BadRequest("Invalid option.");
 
         var existingVote = await _db.Votes
-            .FirstOrDefaultAsync(x => x.CategoryId == category.Id && x.UserId == userId, ct);
+            .FirstOrDefaultAsync(x => x.CategoryId == category.Id && x.UserId == access.UserId, ct);
 
         if (existingVote is null)
         {
@@ -385,7 +599,7 @@ public sealed class EventsController : ControllerBase
                 Id = Guid.NewGuid().ToString(),
                 CategoryId = category.Id,
                 NomineeId = nominee.Id,
-                UserId = userId,
+                UserId = access.UserId,
                 CreatedAtUtc = DateTime.UtcNow,
                 UpdatedAtUtc = DateTime.UtcNow
             };
@@ -411,7 +625,9 @@ public sealed class EventsController : ControllerBase
     [HttpGet("{eventId}/proposals")]
     public async Task<ActionResult<List<EventProposalDto>>> GetProposals([FromRoute] string eventId, CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
         var proposals = await _db.CategoryProposals
             .AsNoTracking()
@@ -428,7 +644,9 @@ public sealed class EventsController : ControllerBase
         [FromBody] CreateEventProposalRequest request,
         CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
         if (string.IsNullOrWhiteSpace(request.Content)) return BadRequest("Content is required.");
 
         var phase = await GetActivePhaseAsync(eventId, EventPhaseTypes.Proposals, ct);
@@ -438,7 +656,7 @@ public sealed class EventsController : ControllerBase
         {
             Id = Guid.NewGuid().ToString(),
             EventId = eventId,
-            ProposedByUserId = HttpContext.GetUserId(),
+            ProposedByUserId = access.UserId,
             Name = request.Content.Trim(),
             Description = null,
             Status = "pending",
@@ -458,8 +676,9 @@ public sealed class EventsController : ControllerBase
         [FromBody] UpdateEventProposalRequest request,
         CancellationToken ct)
     {
-        if (!HttpContext.IsAdmin()) return Forbid();
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanManage) return Forbid();
 
         var proposal = await _db.CategoryProposals
             .FirstOrDefaultAsync(x => x.Id == proposalId && x.EventId == eventId, ct);
@@ -506,7 +725,9 @@ public sealed class EventsController : ControllerBase
     [HttpGet("{eventId}/wishlist")]
     public async Task<ActionResult<List<EventWishlistItemDto>>> GetWishlist([FromRoute] string eventId, CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
 
         var items = await _db.WishlistItems
             .AsNoTracking()
@@ -530,14 +751,16 @@ public sealed class EventsController : ControllerBase
         [FromBody] CreateEventWishlistItemRequest request,
         CancellationToken ct)
     {
-        if (!await EventExistsAsync(eventId, ct)) return NotFound();
+        var access = await GetEventAccessAsync(eventId, ct);
+        if (access is null) return NotFound();
+        if (!access.CanAccess) return Forbid();
         if (string.IsNullOrWhiteSpace(request.Title)) return BadRequest("Title is required.");
 
         var item = new WishlistItemEntity
         {
             Id = Guid.NewGuid().ToString(),
             EventId = eventId,
-            UserId = HttpContext.GetUserId(),
+            UserId = access.UserId,
             Title = request.Title.Trim(),
             Url = string.IsNullOrWhiteSpace(request.Link) ? null : request.Link.Trim(),
             CreatedAtUtc = DateTime.UtcNow,
@@ -557,8 +780,22 @@ public sealed class EventsController : ControllerBase
         ));
     }
 
-    private Task<bool> EventExistsAsync(string eventId, CancellationToken ct) =>
-        _db.Events.AsNoTracking().AnyAsync(x => x.Id == eventId, ct);
+    private async Task<EventAccessContext?> GetEventAccessAsync(string eventId, CancellationToken ct)
+    {
+        var eventEntity = await _db.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == eventId, ct);
+
+        if (eventEntity is null) return null;
+
+        var userId = HttpContext.GetUserId();
+        var isAdmin = HttpContext.IsAdmin();
+        var isMember = await _db.EventMembers
+            .AsNoTracking()
+            .AnyAsync(x => x.EventId == eventId && x.UserId == userId, ct);
+
+        return new EventAccessContext(eventEntity, userId, isAdmin, isMember);
+    }
 
     private Task<EventPhaseEntity?> GetActivePhaseAsync(string eventId, string phaseType, CancellationToken ct) =>
         _db.EventPhases
@@ -566,6 +803,16 @@ public sealed class EventsController : ControllerBase
             .Where(x => x.EventId == eventId && x.Type == phaseType && x.IsActive)
             .OrderByDescending(x => x.StartDateUtc)
             .FirstOrDefaultAsync(ct);
+
+    private Task<SecretSantaDrawEntity?> GetLatestSecretSantaDrawAsync(CancellationToken ct)
+    {
+        // TODO: Secret Santa draws are still keyed by legacy EventCode instead of EventId.
+        // Until that model is consolidated, use the latest draw as the active event draw.
+        return _db.SecretSantaDraws
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .FirstOrDefaultAsync(ct);
+    }
 
     private static bool IsPhaseOpen(EventPhaseEntity? phase)
     {
@@ -575,8 +822,59 @@ public sealed class EventsController : ControllerBase
         return phase.StartDateUtc <= now && now <= phase.EndDateUtc;
     }
 
+    /// <summary>
+    /// Bridges the new phase model with the legacy admin toggles that still
+    /// exist in <see cref="CanhoesEventStateEntity"/> until that state is fully
+    /// consolidated into the event-scoped model.
+    /// </summary>
+    private static EventModulesDto BuildModuleVisibility(
+        EventPhaseEntity? activePhase,
+        bool hasSecretSantaDraw,
+        bool hasSecretSantaAssignment,
+        CanhoesEventStateEntity? legacyState,
+        bool isAdmin)
+    {
+        var legacyPhase = legacyState?.Phase?.Trim().ToLowerInvariant();
+        var nominationsVisible = legacyState?.NominationsVisible ?? false;
+        var resultsVisible = legacyState?.ResultsVisible ?? false;
+        var activeType = activePhase?.Type;
+
+        var isDrawPhase = activeType == EventPhaseTypes.Draw;
+        var isProposalPhase = activeType == EventPhaseTypes.Proposals || legacyPhase == "nominations";
+        var isVotingPhase = activeType == EventPhaseTypes.Voting || legacyPhase == "voting";
+        var isResultsPhase =
+            activeType == EventPhaseTypes.Results ||
+            legacyPhase == "gala" ||
+            (legacyPhase == "locked" && resultsVisible);
+
+        var proposalModulesVisible = isAdmin || (nominationsVisible && isProposalPhase);
+        var resultsModulesVisible = isAdmin || resultsVisible || isResultsPhase;
+
+        return new EventModulesDto(
+            Feed: true,
+            SecretSanta: isAdmin || isDrawPhase || hasSecretSantaDraw || hasSecretSantaAssignment || isVotingPhase || isResultsPhase,
+            Wishlist: true,
+            Categories: isAdmin || isProposalPhase || isVotingPhase || resultsModulesVisible,
+            Voting: isAdmin || isVotingPhase,
+            Gala: resultsModulesVisible,
+            Stickers: proposalModulesVisible,
+            Measures: proposalModulesVisible,
+            Nominees: isAdmin || nominationsVisible || resultsModulesVisible,
+            Admin: isAdmin
+        );
+    }
+
     private static EventSummaryDto ToEventSummaryDto(EventEntity entity) =>
         new(entity.Id, entity.Name, entity.IsActive);
+
+    private static EventPhaseDto ToEventPhaseDto(EventPhaseEntity entity) =>
+        new(
+            entity.Id,
+            entity.Type,
+            new DateTimeOffset(entity.StartDateUtc, TimeSpan.Zero),
+            new DateTimeOffset(entity.EndDateUtc, TimeSpan.Zero),
+            entity.IsActive
+        );
 
     private static EventCategoryDto ToEventCategoryDto(AwardCategoryEntity entity) =>
         new(entity.Id, entity.EventId, entity.Name, entity.Kind.ToString(), entity.IsActive, entity.Description);

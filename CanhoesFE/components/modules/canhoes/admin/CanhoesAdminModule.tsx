@@ -210,7 +210,7 @@ export default function CanhoesAdminModule() {
               {overviewItems.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[var(--radius-md-token)] border border-[var(--color-beige-dark)]/20 bg-[rgba(251,247,239,0.7)] px-3 py-3 shadow-[var(--shadow-paper)]"
+                  className="rounded-[var(--radius-md-token)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-3 shadow-[var(--shadow-panel)]"
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
                     {item.label}

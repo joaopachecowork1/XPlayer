@@ -5,21 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md-token)] border text-sm font-semibold transition-[transform,background-color,border-color,color,box-shadow] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-psycho-4)] focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md-token)] border font-[var(--font-mono)] text-sm font-semibold transition-[transform,background-color,border-color,color,box-shadow] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-psycho-4)] focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-[var(--color-moss)] text-[var(--color-bg-card)] shadow-[var(--shadow-card)] hover:bg-[var(--color-moss-light)] hover:shadow-[var(--shadow-layered)] active:scale-[0.98]",
+          "border-transparent bg-[var(--color-moss)] text-[var(--text-primary)] shadow-[var(--shadow-card)] hover:bg-[var(--color-moss-light)] hover:shadow-[var(--shadow-layered)] active:scale-[0.98]",
         destructive:
           "border-transparent bg-[var(--color-danger)] text-white shadow-[var(--shadow-card)] hover:bg-[var(--color-danger-hover)] active:scale-[0.98]",
         outline:
-          "border-[var(--color-beige-dark)]/30 bg-[rgba(251,247,239,0.78)] text-[var(--color-text-primary)] shadow-[var(--shadow-paper)] hover:border-[var(--color-brown)]/35 hover:bg-[var(--color-bg-surface)] active:scale-[0.98]",
+          "border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-[var(--shadow-panel)] hover:border-[var(--border-neon)]/45 hover:bg-[var(--accent)] active:scale-[0.98]",
         secondary:
-          "border-[var(--color-brown-dark)]/12 bg-[var(--color-brown-dark)] text-[var(--color-bg-card)] shadow-[var(--shadow-card)] hover:bg-[var(--color-brown)] active:scale-[0.98]",
+          "border-[var(--border-moss)] bg-[var(--bark-dark)] text-[var(--text-primary)] shadow-[var(--shadow-panel)] hover:bg-[var(--bark)] active:scale-[0.98]",
         ghost:
-          "border-transparent bg-transparent text-[var(--color-text-primary)] shadow-none hover:bg-[var(--color-bg-surface)] active:scale-[0.98]",
-        link: "border-transparent px-0 text-[var(--color-brown)] underline-offset-4 shadow-none hover:text-[var(--color-text-primary)] hover:underline",
+          "border-transparent bg-transparent text-[var(--text-primary)] shadow-none hover:bg-[var(--bg-surface)] active:scale-[0.98]",
+        link: "border-transparent px-0 text-[var(--neon-cyan)] underline-offset-4 shadow-none hover:text-[var(--text-primary)] hover:underline",
       },
       size: {
         default: "px-4 py-3",

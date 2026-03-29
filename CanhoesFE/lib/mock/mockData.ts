@@ -16,9 +16,13 @@ import type {
   EventCategoryDto,
   EventContextDto,
   EventFeedPostDto,
+  EventModulesDto,
+  EventOverviewDto,
   EventPhaseDto,
   EventProposalDto,
+  EventSecretSantaOverviewDto,
   EventSummaryDto,
+  EventVotingOverviewDto,
   EventVotingBoardDto,
   EventWishlistItemDto,
 } from "@/lib/api/types";
@@ -353,6 +357,71 @@ export const MOCK_EVENT_CONTEXT: EventContextDto = {
   })),
   phases: MOCK_EVENT_PHASES,
   activePhase: MOCK_EVENT_PHASES.find((phase) => phase.isActive) ?? null,
+};
+
+export const MOCK_EVENT_MODULES: EventModulesDto = {
+  feed: true,
+  secretSanta: true,
+  wishlist: true,
+  categories: true,
+  voting: false,
+  gala: false,
+  stickers: true,
+  measures: true,
+  nominees: true,
+  admin: true,
+};
+
+export const MOCK_EVENT_OVERVIEW: EventOverviewDto = {
+  event: MOCK_EVENT_SUMMARY,
+  activePhase: MOCK_EVENT_CONTEXT.activePhase,
+  nextPhase: MOCK_EVENT_PHASES.find((phase) => phase.type === "VOTING") ?? null,
+  permissions: {
+    isAdmin: true,
+    isMember: true,
+    canPost: true,
+    canSubmitProposal: true,
+    canVote: false,
+    canManage: true,
+  },
+  counts: {
+    memberCount: MOCK_MEMBERS.length,
+    feedPostCount: MOCK_HUB_POSTS.length,
+    categoryCount: MOCK_CATEGORIES.filter((category) => category.isActive).length,
+    pendingProposalCount: MOCK_PENDING.categoryProposals.length,
+    wishlistItemCount: 2,
+  },
+  hasSecretSantaDraw: true,
+  hasSecretSantaAssignment: true,
+  myWishlistItemCount: 1,
+  myProposalCount: 1,
+  myVoteCount: 0,
+  votingCategoryCount: 2,
+  modules: MOCK_EVENT_MODULES,
+};
+
+export const MOCK_EVENT_VOTING_OVERVIEW: EventVotingOverviewDto = {
+  eventId: MOCK_EVENT_SUMMARY.id,
+  phaseId: "phase-voting",
+  canVote: false,
+  endsAt: MOCK_EVENT_PHASES.find((phase) => phase.type === "VOTING")?.endDate ?? null,
+  categoryCount: 2,
+  submittedVoteCount: 0,
+  remainingVoteCount: 2,
+};
+
+export const MOCK_EVENT_SECRET_SANTA_OVERVIEW: EventSecretSantaOverviewDto = {
+  eventId: MOCK_EVENT_SUMMARY.id,
+  hasDraw: true,
+  hasAssignment: true,
+  drawEventCode: "canhoes2026",
+  assignedUser: {
+    id: "user-003",
+    name: "Maria S.",
+    role: "user",
+  },
+  assignedWishlistItemCount: 1,
+  myWishlistItemCount: 1,
 };
 
 export const MOCK_EVENT_POSTS: EventFeedPostDto[] = MOCK_HUB_POSTS.map((post) => ({

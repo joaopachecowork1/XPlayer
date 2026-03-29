@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export type AuthUser = {
@@ -23,18 +23,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
 
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const user = useMemo<AuthUser | null>(() => {
+    if (status !== "authenticated") return null;
 
-  useEffect(() => {
-    if (status !== "authenticated") {
-      setUser(null);
-      return;
-    }
-
-    // Se já temos user definido, não faz nada
-    if (user) return;
-
-    // Usa dados da sessão NextAuth diretamente
     const sessionUser = session?.user as
       | {
           email?: string | null;
@@ -43,17 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name?: string | null;
         }
       | undefined;
-    
-    const userData = {
+
+    return {
       id: sessionUser?.id || "unknown",
       email: sessionUser?.email || "",
       name: sessionUser?.name || sessionUser?.email?.split("@")[0] || "",
       isAdmin: Boolean(sessionUser?.isAdmin),
     };
-
-    console.log("[AuthContext] Setting user from NextAuth:", userData);
-    setUser(userData);
-  }, [session?.user, status, user]);
+  }, [session?.user, status]);
 
   const value = useMemo<AuthContextType>(
     () => ({
@@ -63,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loginGoogle: () => signIn("google"),
       logout: () => signOut({ callbackUrl: "/canhoes/login", redirect: true }),
     }),
-    [user, status]
+    [status, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
